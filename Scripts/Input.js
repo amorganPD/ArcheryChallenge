@@ -7,10 +7,10 @@ var DownDown = false;
 //KEYS
 var KEYS = {
     SPACE: 32,
-    LEFT: 65,
-    UP: 87,
-    RIGHT: 68,
-    DOWN: 83,
+    LEFT: 'A'.charCodeAt(0),
+    UP: 'W'.charCodeAt(0),
+    RIGHT: 'D'.charCodeAt(0),
+    DOWN: 'S'.charCodeAt(0),
     P: 80
 };
 
@@ -76,47 +76,40 @@ function processInput(entity,speed) {
 	var activeScene = Game.scene[Game.activeScene];
 	var delta = activeScene.joystick.deltaJoystickVector;
 	
-    if (UpDown && !DownDown || delta.y < -5) {
-        vZ=1;
-		iZ=1;
-    }
-    else if (DownDown && !UpDown || delta.y > 5) {
-        vZ=-1;
-		iZ=2;
-    }
-	else {
-		iZ=0;
-	}
+    // if (UpDown && !DownDown || delta.y < -5) {
+        // vZ=1; // velocity
+		// iZ=1; // angle index
+    // }
+    // else if (DownDown && !UpDown || delta.y > 5) {
+        // vZ=-1; // velocity
+		// iZ=2; // angle index
+    // }
     if (LeftDown && !RightDown || delta.x < -5) {
-        vX=-1;
-		iX=2;
+        vZ=-1; // velocity
+		iX=1; // angle index
     }
     else if (RightDown && !LeftDown || delta.x > 5) {
-        vX=1;
-		iX=1;
+        vZ=1; // velocity
+		iX=2; // angle index
     }
-	else {
-		iX=0;
-	}
 	if (vX || vZ) {
 		var angle = Game.ltArray[iZ][iX];
 		var newRotation = -angle + entity.mesh.rotationOffset.y;
 		entity.mesh.rotation.y = newRotation;
 		entity.mesh.currentFacingAngle = new BABYLON.Vector3(entity.mesh.rotation.x, newRotation, entity.mesh.rotation.z);
-		//var waveValue = ((Game.engine.loopCounter*Game.engine.loopCounter) % 40)/40*Math.PI;
-		// entity.velocity.direction = new BABYLON.Vector3(speed*vX, .6*(Math.cos(waveValue)-.5), speed*vZ);
-		entity.velocity.direction = new BABYLON.Vector3(speed*vX, activeScene.gravity.y, speed*vZ);
+		
+		entity.velocity.magnitude = new BABYLON.Vector3(0, activeScene.gravity.y, speed*vZ);
 		entity.velocity.angle = angle;
 		entity.mesh.playerAnimations.move.start(activeScene, entity);
 	}
 	else {
-		entity.velocity.direction = new BABYLON.Vector3(speed*vX, activeScene.gravity.y, speed*vZ);
+		entity.velocity.magnitude = new BABYLON.Vector3(speed*vX, activeScene.gravity.y, 0);
 		entity.mesh.playerAnimations.idle.start(activeScene, entity);
 	}	
 	
 	if (activeScene.joystickAction._joystickPressed) {
-		if (activeScene.player.attacking==false) {
-			activeScene.player.mesh.playerAnimations.attack.start(activeScene, entity);
+		if (entity.attacking==false) {
+			entity.mesh.playerAnimations.attack.start(activeScene, entity);
 		}
 	}
 
