@@ -4,6 +4,8 @@ var LeftDown = false;
 var RightDown = false;
 var UpDown = false;
 var DownDown = false;
+var SpaceDownActive = false;
+
 //KEYS
 var KEYS = {
     SPACE: 32,
@@ -33,6 +35,9 @@ function doKeyDown(evt) {
         case KEYS.DOWN:
             DownDown = true;
             break;
+        case KEYS.SPACE:
+            SpaceDownActive = true;
+            break;
     }
 }
 
@@ -51,6 +56,9 @@ function doKeyUp(evt) {
         case KEYS.DOWN:
             DownDown = false;
             break;
+        case KEYS.SPACE:
+            SpaceDownActive = false;
+            break;
     }
 }
 function lookupTableATan2() {
@@ -67,6 +75,7 @@ function lookupTableATan2() {
 	
 	return ltArray;
 }
+
 
 function processInput(entity,speed) {
 	var vX=0;

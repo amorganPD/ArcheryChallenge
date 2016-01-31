@@ -186,6 +186,7 @@ Game.CreateGameScene = function() {
 		// // scene.player.weaponCollisionMesh = task.loadedMeshes[2];
 	// }
 	
+	var arrowFiring = false;
 	scene.bowModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
 		scene.bowMesh = task.loadedMeshes[0];
@@ -200,7 +201,9 @@ Game.CreateGameScene = function() {
 		
 		//-- Manipulate model --/
 		scene.arrowMesh.scaling = new BABYLON.Vector3(.8, .8, .8);
-		scene.arrowMesh.rotation = new BABYLON.Vector3(Math.PI/16, 0, 0);
+		// scene.arrowMesh.backFaceCulling = false;
+		// scene.arrowMesh.position = new BABYLON.Vector3(-.1, .15, 4);
+		// scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2.1, -Math.PI/30);
 	}
 	
 	scene.targetModelTask.onSuccess = function(task) {
@@ -219,9 +222,18 @@ Game.CreateGameScene = function() {
 		scene.bowMesh.parent = scene.camera;
 		scene.arrowMesh.parent = scene.camera;
 		scene.bowMesh.position = new BABYLON.Vector3(0, 0, 4);
-		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, Math.PI/2.4, -Math.PI/16);
+		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, Math.PI/2.2, -Math.PI/16);
 		scene.arrowMesh.position = new BABYLON.Vector3(-.1, .15, 4);
 		scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2.1, -Math.PI/30);
+		
+		
+		// create intersect action
+		scene.arrowMesh.actionManager = new BABYLON.ActionManager(scene);
+		// detect collision between enemy and player's weapon for an attack
+		scene.arrowMesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+		{ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: scene.targetMesh}, function (data) {
+			arrowFiring = false;
+		}));
 		
 		// scene.ground = BABYLON.Mesh.CreateGround("ground1", 10, 100, 2, scene);
 		// scene.rotation = new BABYLON.Vector3(0,Math.PI/2,0);
@@ -299,12 +311,37 @@ Game.CreateGameScene = function() {
 		// processInput(self.player, self.player.speed);
 	};
 	
+	var theta = scene.camera.alpha;
+	var phi = scene.camera.beta;
+	var vel = -.5;
 	scene.moveMeshes = function () {
 		var self = scene;
 		var i=0;
 		var tempVal;
 		var animationRatio = self.getAnimationRatio();
 		
+		if (SpaceDownActive && arrowFiring == false) {
+			var tempPos = scene.arrowMesh.position;
+			var tempRot = scene.arrowMesh.rotation;
+			theta = scene.camera.alpha;
+			phi = scene.camera.beta;
+			scene.arrowMesh.parent = null;
+			arrowFiring = true;
+			scene.arrowMesh.position = new BABYLON.Vector3(0, tempPos.y, tempPos.x);
+			scene.arrowMesh.rotation = new BABYLON.Vector3(0, tempRot.z, tempRot.z);
+		}
+		if (arrowFiring) {
+			var motion = translateAlongVector(scene.arrowMesh.position.x, scene.arrowMesh.position.y, scene.arrowMesh.position.y, vel, animationRatio, theta, phi);
+			// scene.arrowMesh.position.z = -.1;
+			scene.arrowMesh.position.y = motion.y;
+			scene.arrowMesh.position.x = motion.x;
+		}
+		// scene.arrowMesh.rotation = new BABYLON.Vector3(0, 0, 0);
+		// scene.arrowMesh.position = new BABYLON.Vector3(0, 0, 0);
+		// var motion = CalculateProjectile(.01, scene.arrowMesh.position.x, scene.arrowMesh.position.y, scene.arrowMesh.position.z, theta, phi, animationRatio);
+		
+		$('#debugInfo').html('Camera<br />Alpha: ' + scene.camera.alpha + '<br />Beta: ' + scene.camera.beta + '<br />Arrow<br />X: ' + scene.arrowMesh.position.x + '<br />Y: ' + scene.arrowMesh.position.y + '<br />Z: ' + scene.arrowMesh.position.z +
+		'<br />rX: ' + scene.arrowMesh.rotation.x + '<br />rY: ' + scene.arrowMesh.rotation.y + '<br />rZ: ' + scene.arrowMesh.rotation.z);
 		//----For movement, this needs updated every frame, otherwise it would not update----//
 		// for (i=0; i < self.activeRoom.enemy.length;i++) {
 			// if (self.activeRoom.enemy[i].action == 1 && self.activeRoom.enemy[i].isDead == false) {
