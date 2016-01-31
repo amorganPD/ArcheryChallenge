@@ -123,27 +123,34 @@ Game.CreateGameScene = function() {
     //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);
     var Alpha = 0;
     var Beta = 0.00000001;
-    scene.camera = new BABYLON.ArcRotateCamera("Camera", Alpha, Math.PI/2, 20, new BABYLON.Vector3(0,0,0), scene);
+    scene.camera = new BABYLON.ArcRotateCamera("Camera", Alpha, Math.PI/2, 5, new BABYLON.Vector3(0,0,0), scene);
 	// scene.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-	scene.camera.aspectRatio = $( window ).width()/$( window ).height();
-	scene.camera.magnification = 30;
-    scene.camera.orthoTop = Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
-    scene.camera.orthoBottom = -Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
-    scene.camera.orthoLeft = -Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
-    scene.camera.orthoRight = Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
+	// scene.camera.aspectRatio = $( window ).width()/$( window ).height();
+	// scene.camera.magnification = 30;
+    // scene.camera.orthoTop = Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
+    // scene.camera.orthoBottom = -Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
+    // scene.camera.orthoLeft = -Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
+    // scene.camera.orthoRight = Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
 	scene.camera.attachControl(Game.canvas, true);
-	scene.camera.target = new BABYLON.Vector3(0,0,0);
+	// scene.camera.target = new BABYLON.Vector3(0,0,0);
     // //set camera to not move
     // scene.camera.lowerAlphaLimit = Alpha;
     // scene.camera.upperAlphaLimit = Alpha;
     // scene.camera.lowerBetaLimit = Beta;
     // scene.camera.upperBetaLimit = Beta;
 	
+    // var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);
+	// scene.camera.attachControl(Game.canvas, true);
+	// camera.keysUp = null;
+	// camera.keysDown = null;
+	// camera.keysLeft = null;
+	// camera.keysRight = null;
+	
 	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
-	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .95, .9);
+	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight.specular = new BABYLON.Color3(.1, .1, .1);
 	scene.ambientLight.groundColor = new BABYLON.Color3(.1, .1, .1);
-	scene.ambientLight.intensity = 1;
+	scene.ambientLight.intensity = 3;
 	
 	// scene.light= new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 20, 0), scene);
 	// scene.light.diffuse = new BABYLON.Color3(.18, .15, .1);
@@ -160,6 +167,8 @@ Game.CreateGameScene = function() {
 	
 	//create Asset Tasks
 	// scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.b.js");
+	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBow.b.js");
+	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood.b.js");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-01.b.js");
 		
 	//Set functions to assign loaded meshes
@@ -177,19 +186,42 @@ Game.CreateGameScene = function() {
 		// // scene.player.weaponCollisionMesh = task.loadedMeshes[2];
 	// }
 	
-	scene.targetModelTask.onSuccess = function(task) {
+	scene.bowModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
-		var mesh = task.loadedMeshes[0];
+		scene.bowMesh = task.loadedMeshes[0];
 		
 		//-- Manipulate model --/
-		mesh.scaling = new BABYLON.Vector3(2, 2, 2);
-		mesh.rotation = new BABYLON.Vector3(0, -Math.PI/2, 0);
-		mesh.position = new BABYLON.Vector3(0, 2, 0);
+		scene.bowMesh.scaling = new BABYLON.Vector3(2, 2, 2);
+		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, 0, 0);
+	}
+	scene.arrowModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		scene.arrowMesh = task.loadedMeshes[0];
 		
+		//-- Manipulate model --/
+		scene.arrowMesh.scaling = new BABYLON.Vector3(.8, .8, .8);
+		scene.arrowMesh.rotation = new BABYLON.Vector3(Math.PI/16, 0, 0);
+	}
+	
+	scene.targetModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		scene.targetMesh = task.loadedMeshes[0];
+		
+		//-- Manipulate model --/
+		scene.targetMesh.scaling = new BABYLON.Vector3(2, 2, 2);
+		scene.targetMesh.rotation = new BABYLON.Vector3(0, -Math.PI/2, 0);
+		scene.targetMesh.position = new BABYLON.Vector3(-20, 2, 0);
 	}
 	
 	//Set up Scene after all Tasks are complete
 	scene.assetsManager.onFinish = function (tasks) {
+		
+		scene.bowMesh.parent = scene.camera;
+		scene.arrowMesh.parent = scene.camera;
+		scene.bowMesh.position = new BABYLON.Vector3(0, 0, 4);
+		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, Math.PI/2.4, -Math.PI/16);
+		scene.arrowMesh.position = new BABYLON.Vector3(-.1, .15, 4);
+		scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2.1, -Math.PI/30);
 		
 		// scene.ground = BABYLON.Mesh.CreateGround("ground1", 10, 100, 2, scene);
 		// scene.rotation = new BABYLON.Vector3(0,Math.PI/2,0);
