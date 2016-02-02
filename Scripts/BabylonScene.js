@@ -234,7 +234,7 @@ Game.CreateGameScene = function() {
 		scene.arrowMesh.actionManager = new BABYLON.ActionManager(scene);
 		// detect collision between enemy and player's weapon for an attack
 		scene.arrowMesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
-		{ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: scene.targetMesh}, function (data) {
+		{ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.targetMesh, usePreciseIntersection: true} }, function (data) {
 			arrowFiring = false;
 		}));
 		
