@@ -36,14 +36,15 @@ function cleanseRounding(value) {
 		return value;
 	}
 }
-function translateAlongVector(x0, y0, z0, v0, t, theta0, phi0) {
+function calcProjectileMotion(x0, y0, z0, v0, t, theta0, phi0) {
   var Ax = 0.0;
-  var Ay = 0; //-9.8/1000000;
+  var Ay = 0.0; //9.8/100;
   var Az = 0.0;
 
-  var Vx_ = v0 * Math.cos(theta0) * Math.sin(phi0) + (Ax * t);
-  var Vy_ = v0 * Math.sin(theta0) * Math.sin(phi0) + (Ay * t);
-  var Vz_ = v0 * Math.cos(phi0) + (Az * t);
+  var Vz_ = v0 * Math.cos(theta0) * Math.sin(Math.PI/2 + phi0) + (Ax * t);
+  var Vx_ = v0 * Math.sin(theta0) * Math.sin(Math.PI/2 + phi0) + (Ay * t);
+  var Vy_ = v0 * Math.cos(Math.PI/2 + phi0) + (Az * t);
+  // var Vy_ = 0;
 
   var x1 = x0 + (Vx_ * t) + 0.5*(Ax * Math.pow(t, 2));
   var y1 = y0 + (Vy_ * t) + 0.5*(Ay * Math.pow(t, 2));
@@ -51,8 +52,8 @@ function translateAlongVector(x0, y0, z0, v0, t, theta0, phi0) {
 
   var v1 = Math.sqrt(Math.pow(Vx_, 2) + Math.pow(Vy_, 2) + Math.pow(Vz_, 2));
 
-  var theta1 = Math.atan(Vy_ / Vx_);
-  var phi1 = Math.acos(Vz_ / v1);
+  var theta1 = Math.atan(Vz_ / Vx_);
+  var phi1 = Math.acos(Vy_ / v1);
   // cleanse rounding error
   x1 = cleanseRounding(x1);
   y1 = cleanseRounding(y1);
@@ -64,3 +65,24 @@ function translateAlongVector(x0, y0, z0, v0, t, theta0, phi0) {
   return {x: x1, y: y1, z: z1, v: v1, theta: theta1, phi: phi1};
   
 }
+
+function translateAlongVector(initialPos, originalPos, theta, phi) {
+	// get unit vectors and multiply
+	var r = Math.sqrt(Math.pow(originalPos.x, 2) + Math.pow(originalPos.y, 2) + Math.pow(originalPos.z, 2));
+	var ogTheta = Math.atan(originalPos.x / originalPos.z);
+	var ogPhi = Math.acos(originalPos.y / r);
+	
+	// var x_ = r * Math.cos(theta - ogTheta) * Math.sin(phi - ogPhi);
+	// var y_ = r * Math.sin(theta - ogTheta) * Math.sin(phi - ogPhi);
+	// var z_ = r * Math.cos(phi - ogPhi);
+	var z_ = r * Math.cos(ogTheta + theta) * Math.sin(ogPhi + phi);
+	var x_ = r * Math.sin(ogTheta + theta) * Math.sin(ogPhi + phi);
+	var y_ = r * Math.cos(ogPhi + phi);
+	
+	return new BABYLON.Vector3(initialPos.x + x_, initialPos.y + y_, initialPos.z + z_);
+}
+
+
+
+
+

@@ -52,7 +52,7 @@ Game.initGameScene = function() {
 			if (this.isErrthingReady) {
 				/* Initialization Code */
 				
-				this.octree = this.createOrUpdateSelectionOctree(64, 2);
+				// this.octree = this.createOrUpdateSelectionOctree(64, 2);
 				
 				if (Game.debug) {
 					this.debugLayer.show();
