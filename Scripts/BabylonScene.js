@@ -128,7 +128,7 @@ Game.CreateGameScene = function() {
 	// scene.camera.aspectRatio = $( window ).width()/$( window ).height();
 	// scene.camera.magnification = 30;
 	// scene.camera.attachControl(Game.canvas, true);
-	scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 0, 0), scene);
+	scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 2, 0), scene);
 	scene.camera.rotation.y = -Math.PI/2;
 	scene.activeCamera = scene.camera;
 	scene.activeCamera.attachControl(Game.canvas);
@@ -174,6 +174,8 @@ Game.CreateGameScene = function() {
 	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBow.b.js");
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood.b.js");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-01.b.js");
+	scene.bowShotTask = scene.assetsManager.addBinaryFileTask("bowShotTask", "./Audio/Bow_Shot_Sound.wav");
+	scene.arrowHitTask = scene.assetsManager.addBinaryFileTask("arrowHitTask", "./Audio/Target_Hit-03.wav");
 		
 	//Set functions to assign loaded meshes
 	// scene.playerTask.onSuccess = function (task) {
@@ -203,8 +205,8 @@ Game.CreateGameScene = function() {
 		scene.arrowMesh = task.loadedMeshes[0];
 		
 		//-- Manipulate model --/
-		scene.arrowMesh.scaling = new BABYLON.Vector3(.8, .8, .8);
-		// scene.arrowMesh.backFaceCulling = false;
+		scene.arrowMesh.scaling = new BABYLON.Vector3(.8, .5, .5);
+		// scene.arrowMesh.backFaceCulling = true;
 		// scene.arrowMesh.position = new BABYLON.Vector3(-.1, .15, 4);
 		// scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2.1, -Math.PI/30);
 	}
@@ -219,15 +221,35 @@ Game.CreateGameScene = function() {
 		scene.targetMesh.position = new BABYLON.Vector3(-20, 2, 0);
 	}
 	
+	scene.audio = {};
+	scene.bowShotTask.onSuccess = function (task) {
+		scene.audio.bowShot = new BABYLON.Sound("BowShot", task.data, scene, function () {}, { loop: false });
+	}
+	scene.arrowHitTask.onSuccess = function (task) {
+		scene.audio.targetHit = new BABYLON.Sound("targetHit", task.data, scene, function () {}, { loop: false });
+	}
+	
+	
 	//Set up Scene after all Tasks are complete
 	scene.assetsManager.onFinish = function (tasks) {
+			// If audio is not working (seems to be something wrong with Chrome and BJS?)
+		if (scene.audio.bowShot == undefined) {
+			scene.audio.bowShot = new Howl({
+				urls: ['./Audio/Bow_Shot_Sound.wav']
+			});
+		}
+		if (scene.audio.targetHit == undefined) {
+			scene.audio.targetHit = new Howl({
+				urls: ['./Audio/Target_Hit-03.wav']
+			});
+		}
 		
 		scene.bowMesh.parent = scene.camera;
 		scene.arrowMesh.parent = scene.camera;
 		scene.bowMesh.position = new BABYLON.Vector3(.1, -.3, 4);
 		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, Math.PI/2.2, -Math.PI/16);
-		scene.arrowMesh.position = new BABYLON.Vector3(0, -.15, 4);
-		scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2, 0);
+		scene.arrowMesh.position = new BABYLON.Vector3(.05, -.175, 4);
+		scene.arrowMesh.rotation = new BABYLON.Vector3(0, Math.PI/2.01, 0.02);
 		
 		
 		// create intersect action
@@ -236,6 +258,7 @@ Game.CreateGameScene = function() {
 		scene.arrowMesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
 		{ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.targetMesh, usePreciseIntersection: true} }, function (data) {
 			arrowFiring = false;
+			scene.audio.targetHit.play();
 		}));
 		
 		// scene.ground = BABYLON.Mesh.CreateGround("ground1", 10, 100, 2, scene);
@@ -322,6 +345,7 @@ Game.CreateGameScene = function() {
 		
 		var arrowRot = new BABYLON.Vector3(0,0,0);
 		if (SpaceDownActive && arrowFiring == false) {
+			scene.audio.bowShot.play();
 			var currentCameraPos = scene.camera.position;
 			var currentCameraRot = scene.camera.rotation;
 			var arrowPos = scene.arrowMesh.position;
@@ -332,7 +356,7 @@ Game.CreateGameScene = function() {
 			scene.arrowMesh.rotation = new BABYLON.Vector3(0, arrowRot.y + currentCameraRot.y, arrowRot.z + currentCameraRot.x);
 			var newPos = translateAlongVector(currentCameraPos, arrowPos, currentCameraRot.y, currentCameraRot.x);
 			scene.arrowMesh.position = new BABYLON.Vector3(newPos.x, newPos.y, newPos.z);
-			scene.arrowMesh.speed = .5;
+			scene.arrowMesh.speed = 1;
 		}
 		if (arrowFiring) {
 			var motion = calcProjectileMotion(scene.arrowMesh.position.x, scene.arrowMesh.position.y, scene.arrowMesh.position.z, scene.arrowMesh.speed, animationRatio, scene.camera.rotation.y, scene.camera.rotation.x);
