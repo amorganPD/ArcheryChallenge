@@ -13,7 +13,8 @@
 
 var onStartScreen=1;
 var Game = new function () {
-	this.debug = true;
+	this.debug = false;
+	this.enableJoystick = false;
 	this.mapSize=2;
 	this.map = {};
 	this.canvas = document.getElementById("renderCanvas");
@@ -61,6 +62,17 @@ $(document).ready(function () {
 		});
 		Game.runRenderLoop();
 	};
+	// Show About information
+	$('#about').click(function () 
+		{$('#modalDiv').fadeOut(200, function () {
+			$('#aboutModal').fadeIn(200);
+		});
+	});
+	$('#MainMenu').click(function () 
+		{$('#aboutModal').fadeOut(200, function () {
+			$('#modalDiv').fadeIn(200);
+		});
+	});
 });
 
 //function for modal pop-up

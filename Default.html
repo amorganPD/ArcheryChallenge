@@ -14,15 +14,22 @@
         </div>
         <div class="modalForeground">
             <div id="modalDiv" class="modalDiv">
-				<div class="modalButton startGame" id="startGame">Loading...</div><br />
+				<div class="modalButton loadingGame" id="startGame">Loading...</div><br />
 				<div class="modalButton" id="about">About</div>
+			</div>
+			<div id="aboutModal" class="modalDiv">
+				<div class="modalButton" id="MainMenu">Main Menu</div>
+				<div class="aboutText">Developers - Tony Morgan, J. Morris</div>
+				<div class="aboutText">3D Framework - <a href="http://babylonjs.com/" title="Visit Babylon JS" target="_blank"> Babylon JS v2.0</a></div>
+				<div class="aboutText">Keys Used<br />W - Up<br />A - Left<br />S - Down<br />D - Right<br />Spacebar - Shoot</div>
 			</div>
         </div>
     </div>
-	<div class='topMenu' id='topMenu'>
-		<div class="hpDiv" id="hpDiv"></div>
-		<div class='fps' id="fps">FPS:</div>
-	</div>
+	<div class='menu' id='Menu'>M</div>
+	<div class='roundInfo' id='roundInfo'>ROUND 1</div>
+	<div class='scoreInfo' id='scoreInfo'>000</div>
+	<div class='arrowInfo' id='arrowInfo'>x 03</div>
+	<div class='fps' id="fps">FPS:</div>
 	<div class='debugMenu' id='debugMenu'>
 		<div class='lps' id="lps">LPS:</div>
 		<div class='lps' id="debugInfo">LPS:</div>
