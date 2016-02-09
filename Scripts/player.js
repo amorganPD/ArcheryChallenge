@@ -1,4 +1,39 @@
 
+
+function Player(options) {
+
+	$.extend(this,{
+		points: 0,
+		arrows: 5
+	},options||{});
+	
+	this.arrowFired = function () {
+		this.arrows -= 1;
+	}
+	
+	this.updatePoints = function (distance, maxDistance) {
+		// 5 zones on target
+		var zone = Math.floor((distance/maxDistance)*5);
+		switch(zone){
+			case 0:
+				this.points+=100;
+				break;
+			case 1:
+				this.points+=75;
+				break;
+			case 2:
+				this.points+=50;
+				break;
+			case 3:
+				this.points+=25;
+				break;
+			case 4:
+				this.points+=10;
+				break;
+		}
+	}
+};
+
 Game.playerAnimations = function(activeScene) {
 	var self = this;
 	self.animating = 0;

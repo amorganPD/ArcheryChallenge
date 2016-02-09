@@ -1,10 +1,22 @@
 ﻿
 //Key States
+var KeyState = {
+		'Down': 0,
+		'Up': 1,
+		'Clear': 2
+	};
 var LeftDown = false;
 var RightDown = false;
 var UpDown = false;
 var DownDown = false;
-var SpaceDownActive = false;
+var KDown = false;
+var SpacebarState = KeyState.Clear;
+
+function getKeyState(keystate) {
+	var state = keystate;
+	keystate = KeyState.Clear;
+	return state;
+}
 
 //KEYS
 var KEYS = {
@@ -13,6 +25,7 @@ var KEYS = {
     UP: 'W'.charCodeAt(0),
     RIGHT: 'D'.charCodeAt(0),
     DOWN: 'S'.charCodeAt(0),
+    K: 'K'.charCodeAt(0),
     P: 80
 };
 
@@ -21,7 +34,13 @@ window.addEventListener('keydown', doKeyDown, true);
 window.addEventListener('keyup', doKeyUp, true);
 
 function doKeyDown(evt) {
-    switch (evt.keyCode) {   
+    switch (evt.keyCode) {
+        case KEYS.SPACE:
+            SpacebarState = KeyState.Down;
+            break;
+        case KEYS.K:
+            KDown = true;
+            break;
         case KEYS.LEFT:
             LeftDown = true;
             break;
@@ -35,14 +54,17 @@ function doKeyDown(evt) {
         case KEYS.DOWN:
             DownDown = true;
             break;
-        case KEYS.SPACE:
-            SpaceDownActive = true;
-            break;
     }
 }
 
 function doKeyUp(evt) {
-    switch (evt.keyCode) {   
+    switch (evt.keyCode) {
+        case KEYS.SPACE:
+            SpacebarState = KeyState.Up;
+            break;
+        case KEYS.K:
+            KDown = false;
+            break;
         case KEYS.LEFT:
             LeftDown = false;
             break;
@@ -55,9 +77,6 @@ function doKeyUp(evt) {
             break;
         case KEYS.DOWN:
             DownDown = false;
-            break;
-        case KEYS.SPACE:
-            SpaceDownActive = false;
             break;
     }
 }

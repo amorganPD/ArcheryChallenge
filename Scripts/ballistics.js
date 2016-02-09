@@ -38,7 +38,7 @@ function cleanseRounding(value) {
 }
 function calcProjectileMotion(x0, y0, z0, v0, t, theta0, phi0) {
   var Ax = 0.0;
-  var Ay = -9.8/(t*400);
+  var Ay = -9.8/(t*800);
   var Az = 0.0;
 
   var Vz_ = v0 * Math.cos(theta0) * Math.sin(Math.PI/2 + phi0) + (Az * t);
@@ -64,6 +64,14 @@ function calcProjectileMotion(x0, y0, z0, v0, t, theta0, phi0) {
 
   return {x: x1, y: y1, z: z1, v: v1, theta: theta1, phi: phi1};
   
+}
+
+function getDistance(fromPosition, toPosition, unitVectors, toOffset, fromOffset) {
+	var diffX = (toPosition.x - fromPosition.x)*unitVectors[0];
+	var diffY = (toPosition.y - fromPosition.y)*unitVectors[1];
+	var diffZ = (toPosition.z - fromPosition.z)*unitVectors[2];;
+	
+	return Math.sqrt(Math.pow(diffX,2) + Math.pow(diffY,2) + Math.pow(diffZ,2));
 }
 
 function translateAlongVector(initialPos, originalPos, theta, phi) {

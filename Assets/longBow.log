@@ -1,15 +1,17 @@
 	Babylon.js Exporter version: 1.5.0, Blender version: 2.73 (sub 0)
 ========= Conversion from Blender to Babylon.js =========
 	Python World class constructor completed
+	processing begun of material:  longBow.Black_Gloss
 	processing begun of material:  longBow.Wood
 	Diffuse texture found
 	processing begun of mesh:  LongBow
-		num positions      :  678
-		num normals        :  678
-		num uvs            :  1356
+		processing begun of multimaterial:  longBow.Multimaterial#0
+		num positions      :  852
+		num normals        :  852
+		num uvs            :  1704
 		num uvs2           :  0
 		num colors         :  0
-		num indices        :  4098
+		num indices        :  4218
 	processing begun of camera (FreeCamera):  Camera
 	processing begun of light (POINT):  Lamp
 ========= Writing of scene file started =========

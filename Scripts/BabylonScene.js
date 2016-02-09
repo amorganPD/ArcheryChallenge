@@ -129,12 +129,23 @@ Game.CreateGameScene = function() {
 	// scene.camera.attachControl(Game.canvas, true);
 	scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
 	scene.camera.rotation.y = -Math.PI/2;
+	scene.camera.keysUp.push(87);// W
+	scene.camera.keysLeft.push(65); // A 
+	scene.camera.keysDown.push(83); // S 
+	scene.camera.keysRight.push(68); // D
+	
+	
+	// scene.debugCamera = new BABYLON.FreeCamera("DebugFreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
+	// scene.debugCamera.rotation.y = -Math.PI/2;
+	// // scene.activeCamera = scene.debugCamera;
+	// scene.debugCamera.keysUp.push(87);// W
+	// scene.debugCamera.keysLeft.push(65); // A 
+	// scene.debugCamera.keysDown.push(83); // S 
+	// scene.debugCamera.keysRight.push(68); // D
+	
 	scene.activeCamera = scene.camera;
 	scene.activeCamera.attachControl(Game.canvas);
-	scene.activeCamera.keysUp.push(87);// W
-	scene.activeCamera.keysLeft.push(65); // A 
-	scene.activeCamera.keysDown.push(83); // S 
-	scene.activeCamera.keysRight.push(68); // D
+	
 	// scene.camera.target = new BABYLON.Vector3(0,0,0);
     // //set camera to not move
     // scene.camera.lowerAlphaLimit = Alpha;
@@ -176,7 +187,7 @@ Game.CreateGameScene = function() {
 	//create Asset Tasks
 	// scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.b.js");
 	scene.skyDomeTask = scene.assetsManager.addMeshTask("skyDomeTask", "", "./Assets/", "sky_dome.b.js");
-	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBow.b.js");
+	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCentered.b.js");
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood.b.js");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-01.b.js");
 	scene.bowShotTask = scene.assetsManager.addBinaryFileTask("bowShotTask", "./Audio/Bow_Shot_Sound.wav");
@@ -217,12 +228,34 @@ Game.CreateGameScene = function() {
 	scene.bowModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
 		scene.bowMesh = task.loadedMeshes[0];
+		scene.bowMesh.skeletons = task.loadedSkeletons[0];
 		
 		//-- Manipulate model --/
 		scene.bowMesh.scaling = new BABYLON.Vector3(2, 2, 2);
 		scene.bowMesh.material.ambientColor = new BABYLON.Color3(.1, .1, .1);
-		scene.bowMesh.material.diffuseColor = new BABYLON.Color3(.5, .5, .5);
+		scene.bowMesh.material.subMaterials[0].diffuseColor = new BABYLON.Color3(.5, .5, .5);
+		// scene.bowMesh.material.subMaterials[1].diffuseColor = new BABYLON.Color3(.5, .5, .5);
 		scene.applyOutline(scene.bowMesh);
+		//create Animation functions
+		scene.bowMesh.drawArrow = function () {
+			if (scene.bowMesh.animatable) {
+				scene.bowMesh.animatable.stop();
+			}
+			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 0, 40, false, 1, function () {
+				// scene.arrowMeshes[scene.activeArrow].arrowDrawing = false;
+			});
+		}
+		scene.bowMesh.shootArrow = function () {
+			var completionRatio = 1; // used to calculate initial speed of arrow and start frame of shoot animation
+			if (scene.bowMesh.animatable) {
+				var lengthOfAnim = scene.bowMesh.animatable.toFrame - scene.bowMesh.animatable.fromFrame;
+				// unclear why there is an array for _animations, but choosing 0
+				completionRatio= scene.bowMesh.animatable._animations[0].currentFrame / lengthOfAnim;
+				scene.bowMesh.animatable.stop();
+			}
+			scene.arrowMeshes[scene.activeArrow].speed = 1*completionRatio;
+			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {});
+		}
 	}
 	scene.arrowModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -255,7 +288,9 @@ Game.CreateGameScene = function() {
 		scene.audio.targetHit = new BABYLON.Sound("targetHit", task.data, scene, function () {}, { loop: false });
 	}
 	
-	
+	// Set up Players
+	scene.Players = [];
+	scene.activePlayer = scene.Players.push(new Player({points: 0})) - 1;
 	//Set up Scene after all Tasks are complete
 	scene.assetsManager.onFinish = function (tasks) {
 		// If audio is not working (seems to be something wrong with Chrome and BJS?)
@@ -270,19 +305,36 @@ Game.CreateGameScene = function() {
 			});
 		}
 		
+		// Create Skybox
+		// scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
+		// scene.skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+		// scene.skyboxMaterial.backFaceCulling = false;
+		// scene.skyboxMaterial.disableLighting = true;
+		// scene.skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+		// scene.skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+		// scene.skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./Textures/ds", scene);
+		// scene.skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+		// scene.skybox.material = scene.skyboxMaterial;
+		// scene.skybox.infiniteDistance = true;
+		
 		// Bind Bow Mesh to camera
 		scene.bowMesh.parent = scene.camera;
-		scene.bowMesh.position = new BABYLON.Vector3(.1, -.3, 4);
-		scene.bowMesh.rotation = new BABYLON.Vector3(Math.PI/16, Math.PI/2.2, -Math.PI/16);
+		// scene.bowMesh.position = new BABYLON.Vector3(.125, -.3, 3.1);
+		// scene.bowMesh.rotation = new BABYLON.Vector3(-Math.PI/16, .05, -Math.PI/16);
+		scene.bowMesh.position = new BABYLON.Vector3(.15, -.3, 3.1);
+		scene.bowMesh.rotation = new BABYLON.Vector3(.02, 0, -Math.PI/16);
 		
 		scene.arrowMeshes = [];
 		scene.createNewArrow = function () {
 			var newIndex = scene.arrowMeshes.push(scene.arrowMesh.clone()) - 1;
 			
 			scene.arrowMeshes[newIndex].parent = scene.camera;
-			scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.05, -.19, 4);
-			scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(0, Math.PI/2.01, 0.02);
+			// scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.15, -.28, 6.5); //4.1
+			// scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(.2, Math.PI/1.999, 0.02);
+			scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.16, -.25, 6.3); //4.1
+			scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(0, Math.PI/2, .019);
 			scene.arrowMeshes[newIndex].arrowFiring = false;
+			scene.arrowMeshes[newIndex].arrowDrawing = false;
 			
 			scene.arrowMeshes[newIndex].isVisible = true;
 			
@@ -296,6 +348,11 @@ Game.CreateGameScene = function() {
 			{ trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.targetMesh, usePreciseIntersection: true} }, function (data) {
 				scene.arrowMeshes[index].arrowFiring = false;
 				scene.audio.targetHit.play();
+				// get points
+				var distance = getDistance(scene.targetMesh.position, scene.arrowMeshes[index].position, [0, 1, 1], new BABYLON.Vector3(0, .5, .5));
+				scene.Players[scene.activePlayer].updatePoints(distance, 3);
+				$('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3));
+				
 				// scene.arrowMeshes[index].parent = scene.targetMesh;
 				// Clear Timeout
 				if (scene.timerId) {
@@ -303,7 +360,9 @@ Game.CreateGameScene = function() {
 				}
 				
 				// Create a new arrow
-				scene.activeArrow = scene.createNewArrow();
+				if (scene.Players[scene.activePlayer].arrows != 0) {
+					scene.activeArrow = scene.createNewArrow();
+				}
 			}));
 		}
 		
@@ -382,6 +441,7 @@ Game.CreateGameScene = function() {
 	};
 	
 	scene.cameraCounter = 0;
+	scene.easingCounter = 0;
 	scene.targetCounter = 0;
 	scene.moveMeshes = function () {
 		var self = scene;
@@ -392,38 +452,72 @@ Game.CreateGameScene = function() {
 		var arrowRot = new BABYLON.Vector3(0,0,0);
 		var activeArrowMesh = scene.arrowMeshes[scene.activeArrow];
 		
-		if (SpaceDownActive && activeArrowMesh.arrowFiring == false) {
-			var currentCameraPos = scene.camera.position;
-			var currentCameraRot = scene.camera.rotation;
-			var arrowPos = activeArrowMesh.position;
-			
-			scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
-			scene.audio.bowShot.play(); // Play Shooting sound
-			
-			arrowRot = activeArrowMesh.rotation;
-			activeArrowMesh.parent = null;
-			
-			activeArrowMesh.rotation = new BABYLON.Vector3(0, arrowRot.y + currentCameraRot.y, arrowRot.z + currentCameraRot.x);
-			var newPos = translateAlongVector(currentCameraPos, arrowPos, currentCameraRot.y, currentCameraRot.x);
-			activeArrowMesh.position = new BABYLON.Vector3(newPos.x, newPos.y, newPos.z);
-			activeArrowMesh.speed = 1.5;
-			
-			activeArrowMesh.arrowFiring = true;
-			// Make sure timer is not active, if it is kill it
-			if (scene.timerId) {
-				clearTimeout(scene.timerId);
+		if (scene.Players[scene.activePlayer].arrows != 0) {
+			if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false) {
+				// This gets called once for drawing the arrow
+				scene.bowMesh.drawArrow();
+				SpacebarState = KeyState.Clear;
+				activeArrowMesh.arrowDrawing = true;
+				scene.easingCounter=0;
 			}
-			scene.timerId = setTimeout(function () {
-				if (scene.arrowMeshes[scene.activeArrow].arrowFiring) {
-					scene.arrowMeshes[scene.activeArrow].arrowFiring = false;
-					scene.arrowMeshes[scene.activeArrow].position.y = 0.0;
-					// Create a new arrow
-					scene.activeArrow = scene.createNewArrow();
+			else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false) {
+				// This gets called once for shooting the arrow
+				var currentCameraPos = scene.camera.position;
+				var currentCameraRot = scene.camera.rotation;
+				var arrowPos = activeArrowMesh.position;
+				
+				SpacebarState = KeyState.Clear;
+				activeArrowMesh.arrowDrawing = false;
+				scene.Players[scene.activePlayer].arrowFired();
+				$('#arrowInfo').html('x ' + pad(scene.Players[scene.activePlayer].arrows,2));
+				
+				scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
+				scene.audio.bowShot.play(); // Play Shooting sound
+				
+				arrowRot = activeArrowMesh.rotation;
+				activeArrowMesh.parent = null;
+				
+				activeArrowMesh.rotation = new BABYLON.Vector3(0, arrowRot.y + currentCameraRot.y, arrowRot.z + currentCameraRot.x);
+				var newPos = translateAlongVector(currentCameraPos, arrowPos, currentCameraRot.y, currentCameraRot.x);
+				activeArrowMesh.position = new BABYLON.Vector3(newPos.x, newPos.y, newPos.z);
+				// activeArrowMesh.speed = 1;
+				
+				activeArrowMesh.arrowFiring = true;
+				scene.bowMesh.shootArrow();
+				// Make sure timer is not active, if it is kill it
+				if (scene.timerId) {
+					clearTimeout(scene.timerId);
 				}
-			}, 5000); // drop arrow after 5 seconds
+				scene.timerId = setTimeout(function () {
+					if (scene.arrowMeshes[scene.activeArrow].arrowFiring) {
+						scene.arrowMeshes[scene.activeArrow].arrowFiring = false;
+						scene.arrowMeshes[scene.activeArrow].position.y = 0.0;
+						// Create a new arrow
+						if (scene.Players[scene.activePlayer].arrows != 0) {
+							scene.activeArrow = scene.createNewArrow();
+						}
+					}
+				}, 5000); // drop arrow after 5 seconds
+			}
 		}
-		if (activeArrowMesh.arrowFiring) {
+		if (activeArrowMesh.arrowDrawing) {
+			// Handles the arrow getting drawn back
+			if (activeArrowMesh.position.z > 4.08) {
+				activeArrowMesh.position.z -= 3.2*Math.sin(scene.easingCounter)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
+			}
+			if (activeArrowMesh.position.y < -0.21) {
+				activeArrowMesh.position.y += .09*Math.sin(scene.easingCounter)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
+			}
+			scene.easingCounter += .00009;
+			
+			// scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.16, -.2, 6.3); //4.1
+			// scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(0, Math.PI/2, .019);
+			// activeArrowMesh.position.z -= ((6.5-4.1)/160)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
+		}
+		else if (activeArrowMesh.arrowFiring) {
+			// Handles the arrow firing
 			var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, scene.camera.rotation.y, scene.camera.rotation.x);
+			// var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.rotation.y - Math.PI/1.999, activeArrowMesh.rotation.z - .02);
 			activeArrowMesh.position.x = motion.x;
 			activeArrowMesh.position.y = motion.y;
 			activeArrowMesh.position.z = motion.z;
@@ -448,6 +542,14 @@ Game.CreateGameScene = function() {
 		// tempVal = self.player.velocity.magnitude.multiply(new BABYLON.Vector3(animationRatio,animationRatio,animationRatio));
 		// self.player.mesh.moveWithCollisions(tempVal);
 		
+		if (KDown == true) {
+			if (scene.activeCamera === scene.camera) {
+				scene.activeCamera = scene.debugCamera;
+			}
+			else {
+				scene.activeCamera = scene.camera;
+			}
+		}
 		scene.camera.applyGravity=true;
 	}
 	
