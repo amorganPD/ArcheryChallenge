@@ -1,0 +1,9 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    
+	// Always include all words from the current document.
+	"javascript.suggest.alwaysAllWords": true,
+
+	// Complete functions with their parameter signature.
+	"javascript.suggest.useCodeSnippetsOnMethodSuggest": true
+}

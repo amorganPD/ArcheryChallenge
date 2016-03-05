@@ -75,6 +75,23 @@ Game.initGameScene = function() {
 				// }, function() {
 				   // // FPS target not reached
 				// });
+				
+				// Allow Game to be started
+				$('#startGame').click(function () {
+					$('#modal').fadeOut(50, function () {
+						$('#modalDiv').html('');
+						Game.activeScene=Game.sceneType.Game;
+						Game.runRenderLoop();
+						//prepareHealthBars();
+						$('#topMenu').fadeIn(200, function () {	});
+						$('#hotKeys').fadeIn(200, function () {	});
+						if (Game.debug) {
+							$('#debugMenu').fadeIn(200, function () {	});
+						}
+					});
+				});
+				$('#startGame').html("Start Game");
+				$('#startGame').removeClass("loadingGame");
 			}
 		}
 		else {
