@@ -39,6 +39,37 @@ var Game = new function () {
 		this.viewDistance = 200;
 	}
 }
+// Pointer lock function for hiding pointer binding pointer movement to camera
+Game.initPointerLock = function(whichCamera) {
+    var self = this;
+    // On click event, request pointer lock
+    self.canvas.addEventListener("click", function(evt) {
+        self.canvas.requestPointerLock = self.canvas.requestPointerLock || self.canvas.msRequestPointerLock || self.canvas.mozRequestPointerLock || self.canvas.webkitRequestPointerLock;
+        if (self.canvas.requestPointerLock) {
+            self.canvas.requestPointerLock();
+        }
+    }, false);
+
+    // Event listener when the pointerlock is updated (or removed by pressing ESC for example).
+    var pointerlockchange = function (evt) {
+        self.controlEnabled = ( document.mozPointerLockElement === self.canvas
+                        || document.webkitPointerLockElement === self.canvas
+                        || document.msPointerLockElement === self.canvas
+                        || document.pointerLockElement === self.canvas);
+        // If the user is alreday locked
+        if (!self.controlEnabled) {
+            whichCamera.detachControl(self.canvas);
+        } else {
+            whichCamera.attachControl(self.canvas);
+        }
+    };
+
+    // Attach events to the document
+    document.addEventListener("pointerlockchange", pointerlockchange, false);
+    document.addEventListener("mspointerlockchange", pointerlockchange, false);
+    document.addEventListener("mozpointerlockchange", pointerlockchange, false);
+    document.addEventListener("webkitpointerlockchange", pointerlockchange, false);
+}
 
 $(document).ready(function () {
 	// modal('Browser not supported. Download latest version of Chrome here: https://www.google.com/chrome/browser/');

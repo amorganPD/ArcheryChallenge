@@ -1,0 +1,44 @@
+	Babylon.js Exporter version: 1.5.0, Blender version: 2.73 (sub 0)
+========= Conversion from Blender to Babylon.js =========
+	Python World class constructor completed
+	processing begun of material:  fence.Material
+	Diffuse texture found
+	processing begun of material:  fence.Material.001
+	Diffuse texture found
+	processing begun of material:  fence.Material.002
+	Diffuse texture found
+	processing begun of mesh:  Post.001
+		WARNING:  No materials have been assigned: 
+		num positions      :  131
+		num normals        :  131
+		num uvs            :  0
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  798
+	processing begun of mesh:  FenceBottom
+		num positions      :  58
+		num normals        :  58
+		num uvs            :  116
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  336
+	processing begun of mesh:  FenceTop
+		num positions      :  58
+		num normals        :  58
+		num uvs            :  116
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  336
+	processing begun of mesh:  Post
+		num positions      :  191
+		num normals        :  191
+		num uvs            :  382
+		num uvs2           :  0
+		num colors         :  0
+		num indices        :  798
+	processing begun of camera (FreeCamera):  Camera
+	processing begun of light (SUN):  Lamp.001
+	processing begun of light (SUN):  Lamp
+========= Writing of scene file started =========
+========= Writing of scene file completed =========
+========= end of processing =========

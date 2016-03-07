@@ -132,6 +132,7 @@ Game.CreateGameScene = function() {
 	scene.activeCamera = scene.camera;
 	// scene.activeCamera = scene.debugCamera;
 	scene.activeCamera.attachControl(Game.canvas);
+    Game.initPointerLock(scene.activeCamera);
 	
 	// scene.camera.target = new BABYLON.Vector3(0,0,0);
     // //set camera to not move
@@ -172,12 +173,16 @@ Game.CreateGameScene = function() {
 	scene.assetsManager.useDefaultLoadingScreen=false;
 	
 	//create Asset Tasks
-	// scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.b.js");
-	// scene.skyDomeTask = scene.assetsManager.addMeshTask("skyDomeTask", "", "./Assets/", "sky_dome.b.js");
+    // Meshes
 	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCenteredwArrow.b.js");
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.b.js");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-01.b.js");
 	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-01.b.js");
+	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.b.js");
+	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.b.js");
+	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.b.js");
+	scene.rock04ModelTask = scene.assetsManager.addMeshTask("rock04ModelTask", "", "./Assets/", "rock-04.b.js");
+    // Sounds
 	scene.bowShotTask = scene.assetsManager.addBinaryFileTask("bowShotTask", "./Audio/Bow_Shot_Sound.wav");
 	scene.arrowHitTask = scene.assetsManager.addBinaryFileTask("arrowHitTask", "./Audio/Target_Hit-03.wav");
 		
@@ -255,6 +260,7 @@ Game.CreateGameScene = function() {
 			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {
 				scene.arrowMeshes[scene.activeArrow].isVisible = true;
 				scene.bowArrowMesh.isVisible = false;
+                scene.activeCamera.rotation.y += (Math.random() > 0.5) ? (0.01 + Math.random()*.02) : (-Math.random()*.02 - 0.01);
 			});
 		}
 	}
@@ -280,6 +286,7 @@ Game.CreateGameScene = function() {
 		scene.applyOutline(scene.targetMesh);
 	}
 	
+    // Environment Meshes
 	scene.treeModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
 		scene.treeMesh = task.loadedMeshes[3];
@@ -303,6 +310,59 @@ Game.CreateGameScene = function() {
 		scene.treeMesh.position = new BABYLON.Vector3(20, 2, 40);
 		scene.applyOutline(scene.treeMesh);
 	}
+    scene.fenceModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		scene.fenceMesh = task.loadedMeshes[3];
+		scene.fenceMeshes = [];
+		scene.fenceMeshes.push(task.loadedMeshes[1]);
+		scene.fenceMeshes[0].parent = scene.fenceMesh;
+        scene.fenceMeshes[0].checkCollisions = true;
+		scene.applyOutline(scene.fenceMeshes[0]);
+		scene.fenceMeshes.push(task.loadedMeshes[2]);
+		scene.fenceMeshes[1].parent = scene.fenceMesh;
+        scene.fenceMeshes[1].checkCollisions = true;
+		scene.applyOutline(scene.fenceMeshes[1]);
+        
+        task.loadedMeshes[0].isVisible = false;
+        
+		//-- Manipulate model --/
+		scene.fenceMesh.material.diffuseColor.r*=2;
+		scene.fenceMesh.material.diffuseColor.g*=2;
+		scene.fenceMesh.material.diffuseColor.b*=2;
+		scene.fenceMesh.scaling = new BABYLON.Vector3(5, 4, 5);
+		scene.fenceMesh.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+		scene.fenceMesh.position = new BABYLON.Vector3(0, 0, -40);
+        scene.fenceMesh.checkCollisions = true;
+		scene.applyOutline(scene.fenceMesh);
+    }
+    scene.rockMesh = [];
+    scene.rock01ModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
+        
+		//-- Manipulate model --/
+		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
+		scene.rockMesh[index].position = new BABYLON.Vector3(-20, 0, 10);
+		scene.applyOutline(scene.rockMesh[index]);
+    }
+    scene.rock03ModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
+        
+		//-- Manipulate model --/
+		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
+		scene.rockMesh[index].position = new BABYLON.Vector3(0, 0, 40);
+		scene.applyOutline(scene.rockMesh[index]);
+    }
+    scene.rock04ModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
+        
+		//-- Manipulate model --/
+		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
+		scene.rockMesh[index].position = new BABYLON.Vector3(30, 0, 30);
+		scene.applyOutline(scene.rockMesh[index]);
+    }
 	
 	// On success Audio Tasks
 	scene.audio = {};
@@ -395,7 +455,7 @@ Game.CreateGameScene = function() {
                         scene.isfloatingScoreActive = false;
                     });
                 });
-                $('.floatingHitScore').css({'left': (screenCoords.x - 30) + 'px', 'top': (screenCoords.y + 30) + 'px'})
+                $('.floatingHitScore').css({'left': ((screenCoords.x - 30) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y + 30) / window.devicePixelRatio) + 'px'})
 				
 				// scene.arrowMeshes[index].parent = scene.targetMesh;
 				// Clear Timeout
@@ -413,7 +473,7 @@ Game.CreateGameScene = function() {
 		// Create First arrow
 		scene.activeArrow = scene.createNewArrow();
 
-		scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 40, 0, 100, scene, false, function (mesh) {
+		scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 30, 0, 140, scene, false, function (mesh) {
 			scene.ground.material = new BABYLON.StandardMaterial("textureGround", scene);
 			scene.ground.material.diffuseTexture = new BABYLON.Texture('./Textures/texture_Grass-03.jpg', scene);
 			scene.ground.material.diffuseTexture.uScale=8;
@@ -421,7 +481,7 @@ Game.CreateGameScene = function() {
 			// scene.ground.material.diffuseColor = new BABYLON.Color3(.01, .1, .01);
 			scene.ground.checkCollisions = true;
 			scene.camera.checkCollisions = true;
-			scene.camera.ellipsoid = new BABYLON.Vector3(3, 4, 3);
+			scene.camera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
 		});
 		// scene.ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, scene);
 		
@@ -455,6 +515,24 @@ Game.CreateGameScene = function() {
 		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone()) - 1;
 		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-80, 4, 80);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/1.5, 0);
+        
+        // Set up the fence
+		scene.fenceMeshes = [];
+        var xMult = 9;
+		var newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
+		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult, 0, -40);
+        for (var i=0; i < 10; i++) {
+            newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
+            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult, 0, -40);
+        }
+        
+		newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
+        var rightStart = newFenceIndex;
+		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult, 0, -40);
+        for (var i=0; i < 14; i++) {
+            newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
+            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult, 0, -40);
+        }
 		
 		// // Set up Collisions
 		// scene.player.mesh.checkCollisions = true;
@@ -517,7 +595,7 @@ Game.CreateGameScene = function() {
 		var activeArrowMesh = scene.arrowMeshes[scene.activeArrow];
 		
 		if (scene.Players[scene.activePlayer].arrows != 0) {
-			if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false) {
+			if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false && activeArrowMesh.arrowFiring == false) {
 				// This gets called once for drawing the arrow
 				scene.bowMesh.drawArrow();
 				SpacebarState = KeyState.Clear;
@@ -609,7 +687,7 @@ Game.CreateGameScene = function() {
         if (scene.isfloatingScoreActive) {
             // keep score at previous arrow
             var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.camera.viewport.toGlobal(Game.engine));
-            $('.floatingHitScore').css({'left': (screenCoords.x - 40) + 'px', 'top': (screenCoords.y - (40 + scene.floatingTextCounter)) + 'px'});
+            $('.floatingHitScore').css({'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px'});
             scene.floatingTextCounter += 1;
         }
         

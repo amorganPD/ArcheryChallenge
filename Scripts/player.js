@@ -14,7 +14,7 @@ function Player(options) {
 	this.updatePoints = function (distance, maxDistance) {
 		// 5 zones on target
 		var zone = Math.floor((distance/maxDistance)*5);
-        var hitScore;
+        var hitScore = 0;
 		switch(zone){
 			case 0:
 				hitScore = 100;
