@@ -12,64 +12,6 @@
 *********************************************************************/
 
 var onStartScreen=1;
-var Game = new function () {
-	this.debug = false;
-	this.enableJoystick = false;
-	this.mapSize=2;
-	this.map = {};
-	this.canvas = document.getElementById("renderCanvas");
-	this.engine = new BABYLON.Engine(this.canvas, true);
-	//this.engine.renderEvenInBackground = false;
-	this.engine.loopCounter = 0;
-	this.scene = [];
-	this.sceneType = {
-		Start: 0,
-		Game: 1
-	};
-	this.activeScene = this.sceneType.Game;
-	this.ltArray = lookupTableATan2();
-	this.activeRooms=0;
-	this.difficultyLevel = 1;
-	this.enemyCount = 0;
-	this.bossCount = 0;
-	
-	this.performance = new function () {
-		this.quality = 1;
-		this.particleDensity;
-		this.viewDistance = 200;
-	}
-}
-// Pointer lock function for hiding pointer binding pointer movement to camera
-Game.initPointerLock = function(whichCamera) {
-    var self = this;
-    // On click event, request pointer lock
-    self.canvas.addEventListener("click", function(evt) {
-        self.canvas.requestPointerLock = self.canvas.requestPointerLock || self.canvas.msRequestPointerLock || self.canvas.mozRequestPointerLock || self.canvas.webkitRequestPointerLock;
-        if (self.canvas.requestPointerLock) {
-            self.canvas.requestPointerLock();
-        }
-    }, false);
-
-    // Event listener when the pointerlock is updated (or removed by pressing ESC for example).
-    var pointerlockchange = function (evt) {
-        self.controlEnabled = ( document.mozPointerLockElement === self.canvas
-                        || document.webkitPointerLockElement === self.canvas
-                        || document.msPointerLockElement === self.canvas
-                        || document.pointerLockElement === self.canvas);
-        // If the user is alreday locked
-        if (!self.controlEnabled) {
-            whichCamera.detachControl(self.canvas);
-        } else {
-            whichCamera.attachControl(self.canvas);
-        }
-    };
-
-    // Attach events to the document
-    document.addEventListener("pointerlockchange", pointerlockchange, false);
-    document.addEventListener("mspointerlockchange", pointerlockchange, false);
-    document.addEventListener("mozpointerlockchange", pointerlockchange, false);
-    document.addEventListener("webkitpointerlockchange", pointerlockchange, false);
-}
 
 $(document).ready(function () {
 	// modal('Browser not supported. Download latest version of Chrome here: https://www.google.com/chrome/browser/');

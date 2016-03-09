@@ -79,12 +79,53 @@ Game.initGameScene = function() {
 				// Allow Game to be started
 				$('#startGame').click(function () {
 					$('#modal').fadeOut(50, function () {
-						$('#modalDiv').html('');
 						Game.activeScene=Game.sceneType.Game;
 						Game.runRenderLoop();
-						//prepareHealthBars();
-						$('#topMenu').fadeIn(200, function () {	});
-						$('#hotKeys').fadeIn(200, function () {	});
+                        
+                        window.addEventListener('pointerdown', pointerDown, true);
+                        window.addEventListener('pointerup', pointerUp, true);
+                        
+						$('#prefMenu').fadeIn(200, function () {
+                            $('#prefMenu').click(function () {
+                                $('#modalDiv').fadeOut(50);
+                                $('#modal').fadeIn(50);
+                                $('#preferenceModal').fadeIn(200);
+                            });
+                            $('#exitButton').click(function () {
+                                $('#modal').fadeOut(50);
+                                $('#preferenceModal').fadeOut(200);
+                            });
+                            $('#cameraMode').click(function () {
+                                var activeCamera = Game.scene[Game.activeScene].camera;
+                                if (!Game.preferences.isCameraInverted) {
+                                    $('#cameraMode').html('Inverted');
+                                    activeCamera.angularSensibility = -activeCamera.angularSensibility;
+                                }
+                                else {
+                                    $('#cameraMode').html('Normal');
+                                    activeCamera.angularSensibility = Math.abs(activeCamera.angularSensibility);
+                                }
+                                Game.preferences.isCameraInverted = !Game.preferences.isCameraInverted;
+                            });
+                            $('#touchScreenMode').click(function () {
+                                var activeScene = Game.scene[Game.activeScene];
+                                if (!Game.preferences.touchEnabled) {
+                                    $('#touchScreenMode').html('On');
+                                    activeScene.activeCamera = activeScene.mobileCamera;
+                                }
+                                else {
+                                    $('#touchScreenMode').html('Off');
+                                    activeScene.activeCamera = activeScene.camera;
+                                }
+                                Game.preferences.touchEnabled = !Game.preferences.touchEnabled;
+                            });
+                        });
+						$('.sceneAlert').fadeIn(200, function () {
+                            setTimeout(function () {
+                                $('.sceneAlert').fadeOut(500, function () {});
+                                $('.infoRight').fadeIn(500, function () {});
+                            },1000);
+                        });
 						if (Game.debug) {
 							$('#debugMenu').fadeIn(200, function () {	});
 						}

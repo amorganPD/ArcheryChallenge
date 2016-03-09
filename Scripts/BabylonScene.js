@@ -113,14 +113,29 @@ Game.CreateGameScene = function() {
 	// scene.camera.aspectRatio = $( window ).width()/$( window ).height();
 	// scene.camera.magnification = 30;
 	// scene.camera.attachControl(Game.canvas, true);
-	scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
-	scene.camera.position.z = -80;
+    if (Modernizr.touchevents) {
+        scene.camera = new BABYLON.VirtualJoysticksCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
+        scene.camera.angularSensibility *= .75;
+        scene.camera.inertia = .1;
+        Game.preferences.touchEnabled = true;
+    }
+    else {
+        scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
+    }
+	scene.camera.position.z = -60;
 	scene.camera.rotation.y = .03;
 	scene.camera.keysUp.push(87);// W
 	scene.camera.keysLeft.push(65); // A 
 	scene.camera.keysDown.push(83); // S 
 	scene.camera.keysRight.push(68); // D
 	
+    // Set up Mobile Camera
+	// scene.mobileCamera = new BABYLON.VirtualJoysticksCamera("MobileCamera", new BABYLON.Vector3(0, 8, 0), scene);
+	// scene.mobileCamera.rotation.y = Math.PI;
+	// scene.mobileCamera.keysUp.push(87);// W
+	// scene.mobileCamera.keysLeft.push(65); // A 
+	// scene.mobileCamera.keysDown.push(83); // S 
+	// scene.mobileCamera.keysRight.push(68); // D
 	
 	scene.debugCamera = new BABYLON.FreeCamera("DebugFreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
 	scene.debugCamera.rotation.y = Math.PI;
@@ -256,7 +271,7 @@ Game.CreateGameScene = function() {
 				scene.bowMesh.animatable.stop();
 			}
 			scene.bowMesh.animatable = {};
-			scene.arrowMeshes[scene.activeArrow].speed = 1*completionRatio;
+			scene.arrowMeshes[scene.activeArrow].speed = 2*completionRatio;
 			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {
 				scene.arrowMeshes[scene.activeArrow].isVisible = true;
 				scene.bowArrowMesh.isVisible = false;
@@ -282,7 +297,7 @@ Game.CreateGameScene = function() {
 		//-- Manipulate model --/
 		scene.targetMesh.scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.targetMesh.rotation = new BABYLON.Vector3(0, 0, 0);
-		scene.targetMesh.position = new BABYLON.Vector3(0, 6, 40);
+		scene.targetMesh.position = new BABYLON.Vector3(0, 6, 20);
 		scene.applyOutline(scene.targetMesh);
 	}
 	
@@ -326,8 +341,8 @@ Game.CreateGameScene = function() {
         task.loadedMeshes[0].isVisible = false;
         
 		//-- Manipulate model --/
-		scene.fenceMesh.material.diffuseColor.r*=2;
-		scene.fenceMesh.material.diffuseColor.g*=2;
+		scene.fenceMesh.material.diffuseColor.r*=1.4;
+		scene.fenceMesh.material.diffuseColor.g*=1.8;
 		scene.fenceMesh.material.diffuseColor.b*=2;
 		scene.fenceMesh.scaling = new BABYLON.Vector3(5, 4, 5);
 		scene.fenceMesh.rotation = new BABYLON.Vector3(0, Math.PI, 0);
@@ -467,8 +482,19 @@ Game.CreateGameScene = function() {
 				if (scene.Players[scene.activePlayer].arrows != 0) {
 					scene.activeArrow = scene.createNewArrow();
 				}
+                else {
+                    setTimeout(function () {
+                        Game.startNextRound(scene.Players[scene.activePlayer], scene);
+                    }, 2000);
+                }
 			}));
 		}
+        scene.disposeOfArrows = function () {
+            for (var i = 0; i < scene.arrowMeshes.length; i++) {
+                scene.arrowMeshes[i].dispose();
+            }
+            scene.arrowMeshes = [];
+        }
 		
 		// Create First arrow
 		scene.activeArrow = scene.createNewArrow();
@@ -519,19 +545,21 @@ Game.CreateGameScene = function() {
         // Set up the fence
 		scene.fenceMeshes = [];
         var xMult = 9;
+        var xOffset = xMult/2;
+        scene.fenceMesh.position = new BABYLON.Vector3(xOffset, 0, -40);
 		var newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
-		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult, 0, -40);
+		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
         for (var i=0; i < 10; i++) {
             newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
-            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult, 0, -40);
+            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
         }
         
 		newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
         var rightStart = newFenceIndex;
-		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult, 0, -40);
+		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
         for (var i=0; i < 14; i++) {
             newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone()) - 1;
-            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult, 0, -40);
+            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
         }
 		
 		// // Set up Collisions
@@ -602,7 +630,7 @@ Game.CreateGameScene = function() {
 				activeArrowMesh.arrowDrawing = true;
 				scene.easingCounter=0;
 			}
-			else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false) {
+			else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false && activeArrowMesh.arrowDrawing) {
 				// This gets called once for shooting the arrow
 				activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.camera.position);
 				activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.camera.rotation);
@@ -646,6 +674,11 @@ Game.CreateGameScene = function() {
 						if (scene.Players[scene.activePlayer].arrows != 0) {
 							scene.activeArrow = scene.createNewArrow();
 						}
+                        else {
+                            setTimeout(function () {
+                                Game.startNextRound(scene.Players[scene.activePlayer], scene);
+                            }, 2000);
+                        }
 					}
 				}, 5000); // drop arrow after 5 seconds
 			}

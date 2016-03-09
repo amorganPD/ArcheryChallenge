@@ -32,6 +32,8 @@ var KEYS = {
 //Key Listeners
 window.addEventListener('keydown', doKeyDown, true);
 window.addEventListener('keyup', doKeyUp, true);
+window.addEventListener('mousedown', mouseDown, true);
+window.addEventListener('mouseup', mouseUp, true);
 
 function doKeyDown(evt) {
     switch (evt.keyCode) {
@@ -54,6 +56,16 @@ function doKeyDown(evt) {
         case KEYS.DOWN:
             DownDown = true;
             break;
+    }
+}
+function mouseDown(evt) {
+    if (Game.controlEnabled) {
+        SpacebarState = KeyState.Down;
+    }
+}
+function pointerDown(evt) {
+    if (Game.preferences.touchEnabled) {
+        SpacebarState = KeyState.Down;
     }
 }
 
@@ -80,6 +92,17 @@ function doKeyUp(evt) {
             break;
     }
 }
+function mouseUp(evt) {
+    if (Game.controlEnabled) {
+        SpacebarState = KeyState.Up;
+    }
+}
+function pointerUp(evt) {
+    if (Game.preferences.touchEnabled) {
+        SpacebarState = KeyState.Up;
+    }
+}
+
 function lookupTableATan2() {
 	var ltArray = [[],[],[]];
 	ltArray[0][0] = 0;

@@ -23,19 +23,27 @@
 				<div class="aboutText">3D Framework - <a href="http://babylonjs.com/" title="Visit Babylon JS" target="_blank"> Babylon JS v2.4</a></div>
 				<div class="aboutText">Keys Used<br />W - Up<br />A - Left<br />S - Down<br />D - Right<br />Spacebar - Shoot</div>
 			</div>
+			<div id="preferenceModal" class="modalDiv">
+				<div class="menuTitle">User Preferences Menu</div>
+                <div class="prefOption">Camera Mode: </div><div class="optionButton" id="cameraMode">Normal</div><p></p>
+                <div class="prefOption">Touch Screen Mode: </div><div class="optionButton" id="touchScreenMode">Off</div><p></p>
+				<div class="modalButton" id="exitButton">Return to Game</div>
+			</div>
         </div>
     </div>
-	<div class='menu' id='Menu'>M</div>
-	<div class='roundInfo' id='roundInfo'>ROUND 1</div>
-	<div class='scoreInfo' id='scoreInfo'>000</div>
-	<div class='arrowInfo' id='arrowInfo'>x 05</div>
-	<div class='fps' id="fps">FPS:</div>
+	<div class='menu' id='prefMenu'>M</div>
+    <div class='infoRight'>
+        <div class='fps' id="fps">FPS:</div>
+        <div class='roundInfo' id='roundInfo'>ROUND 1</div>
+        <div class='scoreInfo' id='scoreInfo'>000</div>
+        <div class='arrowInfo' id='arrowInfo'>x 05</div>
+    </div>
 	<div class='debugMenu' id='debugMenu'>
 		<div class='lps' id="lps">LPS:</div>
 		<div class='lps' id="debugInfo">LPS:</div>
 	</div>
     <div class="floatingHitScore"></div>
-</body>
+    <div class='sceneAlert'>Round 1</div>
 	<!--Script references. -->
     <script type="text/javascript" src="Scripts/ga.js"></script>
 	<script type="text/javascript" src="Scripts/jquery-1.11.3.min.js"></script>
@@ -47,9 +55,11 @@
 	<script type="text/javascript" src="Scripts/bjs/babylon.gamefx.virtualjoystick.js"></script>
 	<script type="text/javascript" src="Scripts/howler.min.js"></script>
 	<script type="text/javascript" src="Scripts/setImmediate.js"></script>
+	<script type="text/javascript" src="Scripts/modernizr-custom.js"></script>
 	
 	<script type="text/javascript" src="Scripts/input.js"></script>
 	<script type="text/javascript" src="Scripts/ballistics.js"></script>
+	<script type="text/javascript" src="Scripts/game.js"></script>
     <script type="text/javascript" src="Scripts/site.js"></script>
     <script type="text/javascript" src="Scripts/player.js"></script>
 	<!-- <script type="text/javascript" src="Scripts/collisions.js"></script> -->
@@ -57,5 +67,6 @@
 	<!-- <script type="text/javascript" src="Scripts/entity.js"></script> -->
     <script type="text/javascript" src="Scripts/BabylonScene.js"></script>
     <script type="text/javascript" src="Scripts/BabylonMechanics.js"></script>
+</body>
 	
 </html>

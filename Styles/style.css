@@ -20,14 +20,6 @@
 	height: 100%;
 }
 
-.fps {
-	color: white;
-	position: absolute;
-	top: 0em;
-	right: .5em;
-	margin: .1em;
-}
-
 .debugMenu {
 	display: none;
 	color: white;
@@ -40,6 +32,7 @@
 }
 
 .menu {
+    /*display: none;*/
 	position: absolute;
 	left: .2em;
 	top: .2em;
@@ -60,26 +53,48 @@
 	color: #888888;
 }
 
+.infoRight {
+    display: none;
+    position: absolute;
+    right: 0em;
+    top: 0em;
+    width: auto;
+    height: auto;
+    text-align: right;
+    margin: 1em;
+}
+.fps {
+	color: white;
+}
 .roundInfo {
-	position: absolute;
-	right: .2em;
-	top: .2em;
+	position: relative;
 	font-size: 3em;
 	color: #EFEFEF;
+    margin: -.2em 0em -.1em 0em;
 }
 .scoreInfo {
-	position: absolute;
-	right: .2em;
-	top: 1.2em;
+	position: relative;
 	font-size: 3em;
 	color: #EFEFEF;
+    margin: -.2em 0em -.1em 0em;
 }
 .arrowInfo {
-	position: absolute;
-	right: .2em;
-	top: 2.2em;
+	position: relative;
 	font-size: 3em;
 	color: #EFEFEF;
+    margin: -.2em 0em -.1em 0em;
+}
+
+.sceneAlert{
+    display: none;
+    position: absolute;
+    font-size: 4em;
+    width: 12em;
+    left: calc(50% - 6em);
+    top: 16%;
+	color: #EFEFEF;
+    text-align: center;
+    text-shadow: .08em .08em 2px #282828;
 }
 
 .topMenu {
@@ -190,11 +205,40 @@
 	color: #226666;
 	text-decoration: none;
 }
+#preferenceModal {
+    display: none;
+	color: #DDDDDD;
+}
+.menuTitle{
+    font-size: 3em;
+    margin: .4em;
+}
+.prefOption {
+    display: inline-block;
+    font-size: 2em;
+    padding: .2em;
+}
+.optionButton {
+    display: inline-block;
+    font-size: 2em;
+    padding: .2em;
+    border: .1em solid;
+    border-radius: .2em;
+    border-color: #AFAFAF;
+}
+.optionButton:hover {
+    cursor: pointer;
+    color: #888888;   
+}
 
 /*END - Modal CSS*/
 .startGame {
 	cursor: default;
 	color: #888888;
+}
+#prefMenu {
+    display: none;
+    z-index: 999;
 }
 
 

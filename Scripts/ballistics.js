@@ -38,7 +38,7 @@ function cleanseRounding(value) {
 }
 function calcProjectileMotion(x0, y0, z0, v0, t, theta0, phi0) {
   var Ax = 0.0;
-  var Ay = -9.8/(t*800);
+  var Ay = -9.8/(t*400);
   var Az = 0.0;
 
   var Vz_ = v0 * Math.cos(theta0) * Math.sin(Math.PI/2 + phi0) + (Az * t);
