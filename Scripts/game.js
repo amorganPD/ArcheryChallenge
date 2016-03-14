@@ -29,6 +29,36 @@ var Game = new function () {
 	}
 }
 
+Game.targetType = {
+    NORMAL: 0,
+    ONESHOT: 1
+}
+
+Game.stageInformation = new function() {
+    var newRoundIndex = 0;
+    this.rounds = [];
+    this.round = function (TotalPoints, TargetData) {
+        this.totalPoints = 0;
+        this.targetData = {
+            positions : {},
+            type : targetType.NORMAL
+        };
+    }
+    // Round 1 - 1 Normal Target - Need 100 points - 5 arrows
+    // newRoundIndex = this.rounds.push()
+    
+    // Round 2 - 1 Normal Target - Need 200 points - 5 arrows
+    
+    // Round 3 - 1 Normal Target - Need 300 points - 5 arrows
+    
+    // Round 4 - 3 OneShot Targets - N/A Points - 5 Arrows
+    
+    // Round 5 - 5 OneShot Targets - N/A Points - 8 Arrows
+    
+    // Round 6 - 4 OneShot Targets - 1 Normal Target - 200 Points - 12 Arrows
+    
+}
+
 Game.startNextRound = function(player, scene) {
     Game.round++;
     
@@ -59,12 +89,14 @@ Game.startNextRound = function(player, scene) {
 Game.initPointerLock = function(whichCamera) {
     var self = this;
     // On click event, request pointer lock
-    self.canvas.addEventListener("click", function(evt) {
+    // self.canvas.addEventListener("click", function(evt) {
+    Game.pointerLock = function() {
         self.canvas.requestPointerLock = self.canvas.requestPointerLock || self.canvas.msRequestPointerLock || self.canvas.mozRequestPointerLock || self.canvas.webkitRequestPointerLock;
         if (self.canvas.requestPointerLock) {
             self.canvas.requestPointerLock();
         }
-    }, false);
+    }
+    // }, false);
 
     // Event listener when the pointerlock is updated (or removed by pressing ESC for example).
     var pointerlockchange = function (evt) {
@@ -73,11 +105,8 @@ Game.initPointerLock = function(whichCamera) {
                         || document.msPointerLockElement === self.canvas
                         || document.pointerLockElement === self.canvas);
         // If the user is alreday locked
-        if (!self.controlEnabled) {
-            whichCamera.detachControl(self.canvas);
-        } else {
-            whichCamera.attachControl(self.canvas);
-        }
+        whichCamera.detachControl(self.canvas);
+        whichCamera.attachControl(self.canvas);
     };
 
     // Attach events to the document

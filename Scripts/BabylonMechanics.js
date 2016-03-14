@@ -65,6 +65,11 @@ Game.initGameScene = function() {
 				//-- start game logic loop (only one instance can occur) --//
 				timedLoop.registerFunction(this.logicLoop);
 				timedLoop.start();
+                
+                // Give the scene a chance to render, but pause renderLoop until player press start
+                Game.pauseId = setTimeout(function () {
+                    Game.engine.stopRenderLoop(); // pause game
+                }, 1000);
 				
 				// TO DO: Implement optimization (only available in BJS v2+)
 				//BABYLON.SceneOptimizer.OptimizeAsync(Game.scene[Game.activeScene]);
@@ -78,20 +83,28 @@ Game.initGameScene = function() {
 				
 				// Allow Game to be started
 				$('#startGame').click(function () {
-					$('#modal').fadeOut(50, function () {
+                    clearTimeout(Game.pauseId);
+                    Game.runRenderLoop(); // resume game
+                    $('.logo').fadeOut(200);
+					$('#modal').fadeOut(200, function () {
 						Game.activeScene=Game.sceneType.Game;
 						Game.runRenderLoop();
                         
                         window.addEventListener('pointerdown', pointerDown, true);
                         window.addEventListener('pointerup', pointerUp, true);
                         
+                        // Preference menu click events
 						$('#prefMenu').fadeIn(200, function () {
                             $('#prefMenu').click(function () {
-                                $('#modalDiv').fadeOut(50);
+                                Game.engine.stopRenderLoop(); // pause game
+                                $('.logo').fadeIn(50);
+                                $('#modalDiv').css({'display':'none'});
                                 $('#modal').fadeIn(50);
                                 $('#preferenceModal').fadeIn(200);
                             });
                             $('#exitButton').click(function () {
+                                Game.runRenderLoop(); // resume game
+                                $('.logo').fadeOut(50);
                                 $('#modal').fadeOut(50);
                                 $('#preferenceModal').fadeOut(200);
                             });
@@ -120,7 +133,8 @@ Game.initGameScene = function() {
                                 Game.preferences.touchEnabled = !Game.preferences.touchEnabled;
                             });
                         });
-						$('.sceneAlert').fadeIn(200, function () {
+                        // Fade In Round 1 Alert
+						$('.sceneAlert').fadeIn(500, function () {
                             setTimeout(function () {
                                 $('.sceneAlert').fadeOut(500, function () {});
                                 $('.infoRight').fadeIn(500, function () {});

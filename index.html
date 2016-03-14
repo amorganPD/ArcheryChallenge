@@ -3,12 +3,13 @@
 <head>
     <title>Archery Challenge</title>
     <link href="Styles/style.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="Scripts/ga.js"></script>
 </head>
 <body>
     <div class="container">
 		<canvas class="renderCanvas" id="renderCanvas"></canvas>
     </div>
-	
+	<div class='logo'></div>
 	<div id="modal" class="modal">
         <div id="modalUnderlay" class="modalUnderlay">
         </div>
@@ -18,10 +19,26 @@
 				<div class="modalButton" id="about">About</div>
 			</div>
 			<div id="aboutModal" class="modalDiv">
-				<div class="modalButton" id="MainMenu">Main Menu</div>
-				<div class="aboutText">Developers - Tony Morgan, J. Morris</div>
+				<div class="aboutText">Developers - <a href='http://antonmorgan.com' title="A. Morgan" target="_blank">A. Morgan</a>, J. Morris</div>
 				<div class="aboutText">3D Framework - <a href="http://babylonjs.com/" title="Visit Babylon JS" target="_blank"> Babylon JS v2.4</a></div>
-				<div class="aboutText">Keys Used<br />W - Up<br />A - Left<br />S - Down<br />D - Right<br />Spacebar - Shoot</div>
+				<div class="aboutText">
+                    <div class='descriptionText'>Move:</div>
+                    <div class='keys' id='AKey'>A</div>
+                    <div class='keyWrapper'>
+                        <div class='keys' id='WKey'>W</div>
+                        <div class='keys' id='SKey'>S</div>
+                    </div>
+                    <div class='keys' id='DKey'>D</div>
+                </div>
+                <div class="aboutText">
+                    <div class='descriptionText'>Draw/Shoot:</div>
+                    <div class='keys' id='SpaceKey'>Space</div>
+                </div>
+                <div class="aboutText">
+                    <div class='descriptionText'>Use Mouse:</div>
+                    <div class='keys' id='OneKey'>1</div>
+                </div>
+				<div class="modalButton" id="MainMenu">Main Menu</div>
 			</div>
 			<div id="preferenceModal" class="modalDiv">
 				<div class="menuTitle">User Preferences Menu</div>
@@ -45,7 +62,6 @@
     <div class="floatingHitScore"></div>
     <div class='sceneAlert'>Round 1</div>
 	<!--Script references. -->
-    <script type="text/javascript" src="Scripts/ga.js"></script>
 	<script type="text/javascript" src="Scripts/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="Scripts/timedLoop.js"></script>
 	<script type="text/javascript" src="Scripts/bjs/cannon.js"></script>

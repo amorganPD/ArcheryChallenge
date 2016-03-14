@@ -26,7 +26,8 @@ var KEYS = {
     RIGHT: 'D'.charCodeAt(0),
     DOWN: 'S'.charCodeAt(0),
     K: 'K'.charCodeAt(0),
-    P: 80
+    P: 'P'.charCodeAt(0),
+    ONE: '1'.charCodeAt(0)
 };
 
 //Key Listeners
@@ -55,6 +56,11 @@ function doKeyDown(evt) {
             break;
         case KEYS.DOWN:
             DownDown = true;
+            break;
+        case KEYS.ONE:
+            if (Game.pointerLock != undefined) {
+                Game.pointerLock();
+            }
             break;
     }
 }
