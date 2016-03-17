@@ -193,7 +193,8 @@ Game.CreateGameScene = function() {
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.b.js");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-Normal.b.js");
     scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.b.js");
-	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-01.b.js");
+	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-04.b.js");
+	// scene.tree2ModelTask = scene.assetsManager.addMeshTask("tree2ModelTask", "", "./Assets/", "tree-02.b.js");
 	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.b.js");
 	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.b.js");
 	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.b.js");
@@ -272,7 +273,7 @@ Game.CreateGameScene = function() {
 				scene.bowMesh.animatable.stop();
 			}
 			scene.bowMesh.animatable = {};
-			scene.arrowMeshes[scene.activeArrow].speed = 2*completionRatio;
+			scene.arrowMeshes[scene.activeArrow].speed = 60*3*completionRatio;
 			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {
 				scene.arrowMeshes[scene.activeArrow].isVisible = true;
 				scene.bowArrowMesh.isVisible = false;
@@ -318,33 +319,26 @@ Game.CreateGameScene = function() {
     // Environment Meshes
 	scene.treeModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
-		scene.treeMesh = task.loadedMeshes[3];
+		scene.treeMesh = task.loadedMeshes[4];
 		scene.treeLeavesMesh = [];
-		scene.treeLeavesMesh.push(task.loadedMeshes[0]);
-		scene.treeLeavesMesh[0].parent = scene.treeMesh;
-		scene.treeLeavesMesh.push(task.loadedMeshes[1]);
-		scene.treeLeavesMesh[1].parent = scene.treeMesh;
-		scene.treeLeavesMesh.push(task.loadedMeshes[2]);
-		scene.treeLeavesMesh[2].parent = scene.treeMesh;
+        for (var i_tree = 0; i_tree < 4; i_tree++) {
+            scene.treeLeavesMesh.push(task.loadedMeshes[i_tree]);
+            scene.treeLeavesMesh[i_tree].parent = scene.treeMesh;
+            scene.applyOutline(scene.treeLeavesMesh[i_tree], .5);
+        }
         
-		// scene.treeLeavesMesh[0].backFaceCulling = false;
-		// scene.treeLeavesMesh[1].backFaceCulling = false;
-		// scene.treeLeavesMesh[2].backFaceCulling = false;
-        scene.imposterTrunk = BABYLON.Mesh.CreateCylinder("imposterTrunk", 10, 1.5, 1.5, 6, 1, scene, false);
+        scene.imposterTrunk = BABYLON.Mesh.CreateCylinder("imposterTrunk", 10, 0.5, 0.5, 6, 1, scene, false);
 		scene.imposterTrunk.parent = scene.treeMesh;
-        scene.imposterTrunk.isVisible = true;
+        scene.imposterTrunk.isVisible = false;
         scene.imposterTrunk.position.y = 3;
 		
 		scene.treeMesh.material.diffuseColor.r*=1;
 		scene.treeMesh.material.diffuseColor.g*=1.6;
 		scene.treeMesh.material.diffuseColor.b*=1.8;
-		scene.treeLeavesMesh[0].material.diffuseColor.r*=2;
-		scene.treeLeavesMesh[0].material.diffuseColor.g*=2;
-		scene.treeLeavesMesh[0].material.diffuseColor.b*=2;
 		
 		//-- Manipulate model --/
 		scene.treeMesh.scaling = new BABYLON.Vector3(3, 3, 3);
-		scene.treeMesh.position = new BABYLON.Vector3(20, 2, 40);
+		scene.treeMesh.position = new BABYLON.Vector3(20, 0, 40);
 		scene.applyOutline(scene.treeMesh);
 	}
     scene.fenceModelTask.onSuccess = function(task) {
@@ -447,7 +441,7 @@ Game.CreateGameScene = function() {
 		scene.bowMesh.parent = scene.camera;
 		// scene.bowMesh.position = new BABYLON.Vector3(.125, -.3, 3.1);
 		// scene.bowMesh.rotation = new BABYLON.Vector3(-Math.PI/16, .05, -Math.PI/16);
-		scene.bowMesh.position = new BABYLON.Vector3(.15, -.3, 3.1);
+		scene.bowMesh.position = new BABYLON.Vector3(.05, -.3, 3.1);
 		scene.bowMesh.rotation = new BABYLON.Vector3(.02, 0, -Math.PI/16);
 		
 		scene.arrowMeshes = [];
@@ -558,61 +552,100 @@ Game.CreateGameScene = function() {
 		// scene.ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, scene);
         scene.imposterTrunk.checkCollisions = true;
 		
+        // Helper functions for creating Environment
+        // Use instances instead of clones, since material does not change, but only position, scaling and rotation
+        scene.instanceWithChildren = function(parentMesh, baseName, scene, index) {
+            index === undefined ? index = 0 : index;
+            var childMeshes = parentMesh.getChildren();
+            var parentInstance = parentMesh.createInstance(baseName + '-' + index);
+            var childInstances = [];
+            for (var i_child = 0; i_child < childMeshes.length; i_child++){
+                var childMesh = scene.getMeshByName(childMeshes[i_child].name);
+                var newChildIndex = childInstances.push(childMesh.createInstance(baseName + '-' + index + '.' + childMeshes[i_child].name)) - 1;
+                // Link instance to parent instance and keep the properties of the child mesh
+                childInstances[newChildIndex].parent = parentInstance;
+                childInstances[newChildIndex].checkCollisions = childMesh.checkCollisions;
+                childInstances[newChildIndex].isVisible = childMesh.isVisible;
+            }
+            return parentInstance;
+        }
 		// Generate some random trees
 		scene.treeMeshes = [];
-		var newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + 0)) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-40, 2, -100);
+        var baseTreeY = scene.treeMesh.position.y;
+		var newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene)) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-40, baseTreeY, -100);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/1.5, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(70, 2, 110);
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(70, baseTreeY, 110);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, 2*Math.PI/3, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, 2, 90);
+        
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, baseTreeY, 90);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/4, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-50, 3, -150);
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-50, baseTreeY + 1, -135);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/.5, 0);
 		scene.treeMeshes[newTreeIndex].scaling = new BABYLON.Vector3(4.6, 4.6, 4.6);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-42, 2, 100);
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-42, baseTreeY, 100);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/1.9, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, 2.6, -100);
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, baseTreeY + 0.6, -100);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/3, 0);
 		scene.treeMeshes[newTreeIndex].scaling = new BABYLON.Vector3(4, 4, 4);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
-		newTreeIndex = scene.treeMeshes.push(scene.treeMesh.clone("treeClone-" + (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-80, 4, 80);
+		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-80, baseTreeY + 2, 80);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/1.5, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
+        
+        // Create random forest behind player, commented out for performance for now
+        // for (var i_trees=0; i_trees < 20; i_trees++) {
+        //     newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+        //     scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-120 + i_trees*12 + Math.random()*4, baseTreeY, -160 + Math.random()*12 );
+        //     scene.treeMeshes[newTreeIndex].rotation.y = Math.random()*2*Math.PI;
+        //     scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');   
+        // }
+        // for (var i_trees=0; i_trees < 20; i_trees++) {
+        //     newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+        //     scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-120 + i_trees*12 + Math.random()*4, baseTreeY, -190 + Math.random()*12 );
+        //     scene.treeMeshes[newTreeIndex].rotation.y = Math.random()*2*Math.PI;
+        //     scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');   
+        // }
+        // for (var i_trees=0; i_trees < 20; i_trees++) {
+        //     newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
+        //     scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-120 + i_trees*12 + Math.random()*4, baseTreeY, -240 + Math.random()*12 );
+        //     scene.treeMeshes[newTreeIndex].rotation.y = Math.random()*2*Math.PI;
+        //     scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');   
+        // }
         
         // Set up the fence
 		scene.fenceMeshes = [];
         var xMult = 9;
         var xOffset = xMult/2;
         scene.fenceMesh.position = new BABYLON.Vector3(xOffset, 0, -40);
-		var newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone("fenceClone-" + 0)) - 1;
+        var newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, 0)) - 1; // create new Fence
 		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
         for (var i=0; i < 10; i++) {
-            newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone("fenceClone-" + (newFenceIndex + 1))) - 1;
+            newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
             scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
         }
         
-		newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone("fenceClone-" + (newFenceIndex + 1))) - 1;
+		newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
         var rightStart = newFenceIndex;
 		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
         for (var i=0; i < 14; i++) {
-            newFenceIndex = scene.fenceMeshes.push(scene.fenceMesh.clone("fenceClone-" + (newFenceIndex + 1))) - 1;
+            newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
             scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
         }
 		
@@ -658,7 +691,7 @@ Game.CreateGameScene = function() {
 				Game.engine.loopCounter++;
 				break;
 		}
-		$('#lps').text('LPS: ' + timedLoop.getLoopTime().toFixed());
+		// $('#lps').text('LPS: ' + timedLoop.getLoopTime().toFixed());
 		$('#fps').text('FPS: ' + Game.engine.getFps().toFixed());
 		//Game.processEnemies(self);
 		// processInput(self.player, self.player.speed);
@@ -737,23 +770,10 @@ Game.CreateGameScene = function() {
 				}, 5000); // drop arrow after 5 seconds
 			}
 		}
-		if (activeArrowMesh.arrowDrawing) {
-			// Handles the arrow getting drawn back
-			// if (activeArrowMesh.position.z > 1) {
-			// 	activeArrowMesh.position.z -= 3.2*Math.sin(scene.easingCounter)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
-			// }
-			// if (activeArrowMesh.position.y < -0.21) {
-			// 	activeArrowMesh.position.y += .09*Math.sin(scene.easingCounter)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
-			// }
-			// scene.easingCounter += .00009;
-			
-			// scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.16, -.2, 6.3); //4.1
-			// scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(0, Math.PI/2, .019);
-			// activeArrowMesh.position.z -= ((6.5-4.1)/160)*animationRatio; //starting: 6.5, ending: 4.1, 40 frames
-		}
-		else if (activeArrowMesh.arrowFiring) {
+		if (activeArrowMesh.arrowFiring) {
 			// Handles the arrow firing
-			var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
+            var deltaTime = 1.0/Game.engine.getFps();
+			var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, deltaTime, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
 			// var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.rotation.y - Math.PI/1.999, activeArrowMesh.rotation.z - .02);
 			activeArrowMesh.position.x = motion.x;
 			activeArrowMesh.position.y = motion.y;
@@ -761,14 +781,16 @@ Game.CreateGameScene = function() {
 			activeArrowMesh.speed = motion.v;
 		}
 		
-		$('#debugInfo').html('Camera<br />rY: ' + scene.camera.rotation.y + '<br />rX: ' + scene.camera.rotation.x + '<br />X: ' + scene.camera.position.x + '<br />Y: ' + scene.camera.position.y + '<br />Z: ' + scene.camera.position.z +
-		'<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
-		'<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
+        if (Game.debug) {
+            $('#debugInfo').html('Camera<br />rY: ' + scene.camera.rotation.y + '<br />rX: ' + scene.camera.rotation.x + '<br />X: ' + scene.camera.position.x + '<br />Y: ' + scene.camera.position.y + '<br />Z: ' + scene.camera.position.z +
+            '<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
+            '<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
+        }
 		
 		// Move camera up and down to simulate breathing
 		scene.cameraCounter += .01;
-		scene.bowMesh.position.y += .000025*Math.cos(scene.cameraCounter);
-		scene.arrowMeshes[scene.activeArrow].position.y += .000025*Math.cos(scene.cameraCounter);
+		scene.bowMesh.position.y += .0001*Math.cos(scene.cameraCounter);
+		// scene.arrowMeshes[scene.activeArrow].position.y += .000025*Math.cos(scene.cameraCounter);
 		// scene.arrowMeshes[scene.activeArrow].rotation.z += .000015*Math.sin(scene.cameraCounter - .4);
         
         if (scene.isfloatingScoreActive) {
