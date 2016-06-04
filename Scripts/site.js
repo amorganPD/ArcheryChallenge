@@ -26,12 +26,8 @@ $(document).ready(function () {
 		Game.initGameScene();
 		// Resize
 		window.addEventListener("resize", function () {
-			// Game.scene[Game.activeScene].camera.aspectRatio = $( window ).width()/$( window ).height();
-			// Game.scene[Game.activeScene].camera.orthoTop = Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
-			// Game.scene[Game.activeScene].camera.orthoBottom = -Math.abs(1 - 1/scene.camera.aspectRatio)*scene.camera.magnification;
-			// Game.scene[Game.activeScene].camera.orthoLeft = -Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
-			// Game.scene[Game.activeScene].camera.orthoRight = Math.abs(1 - scene.camera.aspectRatio)*scene.camera.magnification;
 			Game.engine.resize();
+			Game.scene[Game.activeScene].render(); // in case scene is "paused"
 		});
 		Game.runRenderLoop();
 	};
@@ -46,16 +42,36 @@ $(document).ready(function () {
 			$('#modalDiv').fadeIn(200);
 		});
 	});
+	// fullscreenClick = function () {
+	// 	// Launch fullscreen for browsers that support it!
+	// 	launchIntoFullscreen(document.documentElement); // the whole page
+	// 	$(window).unbind( "click", fullscreenClick );
+	// };
+	// $(window).click(fullscreenClick);
 });
 
-function pad(n, width, z) {
+var pad = function(n, width, z) {
 	z = z || '0';
 	n = n + '';
 	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
 
+// Launch fullscreen mode
+var launchIntoFullscreen = function(element) {
+	// Get correct command per browser
+	if(element.requestFullscreen) {
+		element.requestFullscreen();
+	} else if(element.mozRequestFullScreen) {
+		element.mozRequestFullScreen();
+	} else if(element.webkitRequestFullscreen) {
+		element.webkitRequestFullscreen();
+	} else if(element.msRequestFullscreen) {
+		element.msRequestFullscreen();
+	}
+}
+
 //function for modal pop-up
-function modal(Html,okFunction,data) {
+var modal = function(Html,okFunction,data) {
 
 	alertBoxDefault = function () {
         var htmlTemplate = "<div class=\"btn-group\"> \

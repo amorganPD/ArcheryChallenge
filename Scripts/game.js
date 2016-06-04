@@ -1,5 +1,6 @@
 
 var Game = new function () {
+    var self = this;
 	this.debug = false;
 	this.enableJoystick = false;
 	this.mapSize=2;
@@ -17,9 +18,16 @@ var Game = new function () {
 	this.ltArray = lookupTableATan2();
 	this.difficultyLevel = 1;
     this.round = 1;
+    
+	this.cameraType = {
+		Normal: 0,
+		Touch: 1,
+		VR: 2,
+        Debug: 3
+	};
     this.preferences = new function () {
         this.isCameraInverted = false;
-        this.touchEnabled = false;
+        this.cameraType = self.cameraType.Normal;
     }
 	
 	this.performance = new function () {
@@ -57,6 +65,82 @@ Game.stageInformation = new function() {
     
     // Round 6 - 4 OneShot Targets - 1 Normal Target - 200 Points - 12 Arrows
     
+}
+
+Game.allowStart = function() {
+    $('#startGame').click(function () {
+        clearTimeout(Game.pauseId);
+        Game.runRenderLoop(); // resume game
+        $('.logo').fadeOut(200);
+        $('#modal').fadeOut(200, function () {
+            Game.activeScene=Game.sceneType.Game;
+            Game.runRenderLoop();
+            
+            window.addEventListener('pointerdown', pointerDown, true);
+            window.addEventListener('pointerup', pointerUp, true);
+            
+            // Preference menu click events
+            $('#prefMenu').fadeIn(200, function () {
+                $('#prefMenu').click(function () {
+                    Game.engine.stopRenderLoop(); // pause game
+                    $('.logo').fadeIn(50);
+                    $('#modalDiv').css({'display':'none'});
+                    $('#modal').fadeIn(50);
+                    $('#preferenceModal').fadeIn(200);
+                });
+                $('#exitButton').click(function () {
+                    Game.runRenderLoop(); // resume game
+                    $('.logo').fadeOut(50);
+                    $('#modal').fadeOut(50);
+                    $('#preferenceModal').fadeOut(200);
+                });
+                $('#cameraInverted').click(function () {
+                    var activeCamera = Game.scene[Game.activeScene].activeCamera;
+                    if (!Game.preferences.isCameraInverted) {
+                        $('#cameraInverted').html('On');
+                        activeCamera.angularSensibility = -activeCamera.angularSensibility;
+                    }
+                    else {
+                        $('#cameraInverted').html('Off');
+                        activeCamera.angularSensibility = Math.abs(activeCamera.angularSensibility);
+                    }
+                    Game.preferences.isCameraInverted = !Game.preferences.isCameraInverted;
+                });
+                $('#cameraMode').click(function () {
+                    var activeScene = Game.scene[Game.activeScene];
+                    var CameraType = Game.cameraType.Normal;
+                    if (Game.preferences.cameraType == Game.cameraType.Normal) {
+                        $('#cameraMode').html('Touch');
+                        CameraType = Game.cameraType.Touch;
+                    }
+                    else if (Game.preferences.cameraType == Game.cameraType.Touch) {
+                        $('#cameraMode').html('VR');
+                        CameraType = Game.cameraType.VR;
+                        // Initiate Full Screen
+                        launchIntoFullscreen(document.documentElement);
+                    }
+                    else {
+                        $('#cameraMode').html('Normal');
+                        CameraType = Game.cameraType.Normal;
+                    }
+                    Game.cameras.switch(CameraType);
+                    Game.scene[Game.activeScene].render(); // in case scene is "paused"
+                });
+            });
+            // Fade In Round 1 Alert
+            $('.sceneAlert').fadeIn(500, function () {
+                setTimeout(function () {
+                    $('.sceneAlert').fadeOut(500, function () {});
+                    $('.infoRight').fadeIn(500, function () {});
+                },1000);
+            });
+            if (Game.debug) {
+                $('#debugMenu').fadeIn(200, function () {	});
+            }
+        });
+    });
+    $('#startGame').html("Start Game");
+    $('#startGame').removeClass("loadingGame");
 }
 
 Game.startNextRound = function(player, scene) {

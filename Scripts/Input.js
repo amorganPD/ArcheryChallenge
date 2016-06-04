@@ -70,7 +70,7 @@ function mouseDown(evt) {
     }
 }
 function pointerDown(evt) {
-    if (Game.preferences.touchEnabled) {
+    if (Game.preferences.cameraType == Game.cameraType.Touch || Game.preferences.cameraType == Game.cameraType.VR) {
         SpacebarState = KeyState.Down;
     }
 }
@@ -104,7 +104,7 @@ function mouseUp(evt) {
     }
 }
 function pointerUp(evt) {
-    if (Game.preferences.touchEnabled) {
+    if (Game.preferences.cameraType == Game.cameraType.Touch || Game.preferences.cameraType == Game.cameraType.VR) {
         SpacebarState = KeyState.Up;
     }
 }

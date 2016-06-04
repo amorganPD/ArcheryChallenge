@@ -5,6 +5,12 @@
 	font-family: Helsinki;
     overflow-x: hidden;
     overflow-y: hidden;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Chrome/Safari/Opera */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently not supported by any browser */
 }
 .container {
     position: absolute;
@@ -29,7 +35,7 @@
     left: calc(50% - 29em);
     width: 60em;
     height: 14em;
-    background-image: url('../Assets/archerychallenge-logo-01.png');
+    background-image: url('../Assets/archerychallenge-logo-07.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     z-index: 70;
@@ -47,21 +53,22 @@
 }
 
 .menu {
-    /*display: none;*/
 	position: absolute;
+    background-image: linear-gradient(180deg, #1C81A0, #053F63);
 	left: .2em;
 	top: .2em;
 	width: 1.4em;
 	height: 1.3em;
 	border-radius: .7em;
 	padding-top: .1em;
-	/* background-color: rgba(.2, .2, .2, .8); */
 	text-align: center;
 	vertical-align: middle;
-	color: #EFEFEF;
+	color: #DDDDDD;
+	text-shadow: 1px 1px 3px #020202;
 	font-size: 3em;
-	font-family: Helsinki;
-	box-shadow: .025em .025em .2em #020202;
+	border: 3px solid;
+    border-color: #002637; 
+	box-shadow: 2px 2px 4px #020202;
 }
 .menu:hover {
 	cursor: pointer;
@@ -171,10 +178,10 @@
     height: auto;
     min-height: 8em;
 	padding: 1.2em 2em 1.2em 2em;
-    background-color: rgba(80,80,80,.7);
-    /* border: 1px solid;
-    border-radius: 1em; */
+    border: 1px none;
+    border-radius: .5em; 
     border-color: #EEEEEE;
+    background-color: rgba(80,80,80,.7);
 	box-shadow: 3px 3px 6px #020202;
     overflow: hidden;
     z-index: 80;
@@ -182,18 +189,20 @@
 .modalButton {
 	display: inline-block;
 	cursor: pointer;
-    /* background-image: linear-gradient(180deg, #888888, #444444 .2em); */
+    background-image: linear-gradient(180deg, #1C81A0, #053F63);
 	font-size: 3em;
 	color: #DDDDDD;
 	text-shadow: 1px 1px 3px #020202;
 	text-align: center;
-	background-color: #1188AA;
+	/*background-color: #1188AA;*/
 	margin-top: .3em;
 	margin-bottom: .3em;
 	padding: .1em .4em .1em .4em;
-	/* border-bottom: 2px solid;
-    border-radius: .1em;
-    border-color: #282828; */
+	border: 3px solid;
+	/*border-top: .1em solid;*/
+    /*border-color: #22BBDD; */
+    border-radius: .2em;
+    border-color: #002637; 
 	box-shadow: 2px 2px 4px #020202;
 }
 .modalButton:hover {
@@ -292,6 +301,23 @@
     display: none;
     z-index: 999;
 }
+
+
+/*BEGIN Media Queries*/
+
+@media (max-width: 62em) {
+    .logo {
+        top: 1em;
+        left: 5%;
+        width: 90%;
+        height: 23vw;
+    }
+    .modalForeground {
+        top: 20%;
+    }
+}
+
+/*END Media Queries*/
 
 
 @font-face {

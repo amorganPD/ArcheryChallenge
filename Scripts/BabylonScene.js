@@ -104,64 +104,11 @@ Game.CreateGameScene = function() {
 	scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
 	scene.collisionsEnabled = true;
 	scene.isErrthingReady = false;
-    
-    //Adding an Arc Rotate Camera
-    var Alpha = 0;
-    var Beta = 0.00000001;
-    // scene.camera = new BABYLON.ArcRotateCamera("Camera", Alpha, Math.PI/2, 5, new BABYLON.Vector3(0,0,0), scene);
-	// scene.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-	// scene.camera.aspectRatio = $( window ).width()/$( window ).height();
-	// scene.camera.magnification = 30;
-	// scene.camera.attachControl(Game.canvas, true);
-    if (Modernizr.touchevents) {
-        scene.camera = new BABYLON.VirtualJoysticksCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
-        scene.camera.angularSensibility *= .75;
-        scene.camera.inertia = .1;
-        Game.preferences.touchEnabled = true;
-    }
-    else {
-        scene.camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
-    }
-	scene.camera.position.z = -60;
-	scene.camera.rotation.y = .03;
-	scene.camera.keysUp.push(87);// W
-	scene.camera.keysLeft.push(65); // A 
-	scene.camera.keysDown.push(83); // S 
-	scene.camera.keysRight.push(68); // D
 	
-    // Set up Mobile Camera
-	// scene.mobileCamera = new BABYLON.VirtualJoysticksCamera("MobileCamera", new BABYLON.Vector3(0, 8, 0), scene);
-	// scene.mobileCamera.rotation.y = Math.PI;
-	// scene.mobileCamera.keysUp.push(87);// W
-	// scene.mobileCamera.keysLeft.push(65); // A 
-	// scene.mobileCamera.keysDown.push(83); // S 
-	// scene.mobileCamera.keysRight.push(68); // D
-	
-	scene.debugCamera = new BABYLON.FreeCamera("DebugFreeCamera", new BABYLON.Vector3(0, 8, 0), scene);
-	scene.debugCamera.rotation.y = Math.PI;
-	scene.debugCamera.keysUp.push(87);// W
-	scene.debugCamera.keysLeft.push(65); // A 
-	scene.debugCamera.keysDown.push(83); // S 
-	scene.debugCamera.keysRight.push(68); // D
-	
-	scene.activeCamera = scene.camera;
-	// scene.activeCamera = scene.debugCamera;
-	scene.activeCamera.attachControl(Game.canvas);
+	// Create Cameras
+	Game.cameras(scene);
+	Game.cameras.init();
     Game.initPointerLock(scene.activeCamera);
-	
-	// scene.camera.target = new BABYLON.Vector3(0,0,0);
-    // //set camera to not move
-    // scene.camera.lowerAlphaLimit = Alpha;
-    // scene.camera.upperAlphaLimit = Alpha;
-    // scene.camera.lowerBetaLimit = Beta;
-    // scene.camera.upperBetaLimit = Beta;
-	
-    // var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);
-	// scene.camera.attachControl(Game.canvas, true);
-	// camera.keysUp = null;
-	// camera.keysDown = null;
-	// camera.keysLeft = null;
-	// camera.keysRight = null;
 	
 	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 20, 0), scene);
 	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .98, .98);
@@ -173,6 +120,8 @@ Game.CreateGameScene = function() {
 	scene.ambientLight2.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight2.specular = new BABYLON.Color3(0, 0, 0);
 	scene.ambientLight2.intensity = .15;
+    
+    // scene.sunlight = new BABYLON.DirectionalLight("sunlight", new BABYLON.Vector3(-100, -100, -100), scene);
 	
 	// scene.light = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(5, 0, 0), scene);
 	// scene.light.diffuse = new BABYLON.Color3(.98, .98, .98);
@@ -438,7 +387,7 @@ Game.CreateGameScene = function() {
 		scene.skybox.infiniteDistance = true;
 		
 		// Bind Bow Mesh to camera
-		scene.bowMesh.parent = scene.camera;
+		scene.bowMesh.parent = scene.activeCamera;
 		// scene.bowMesh.position = new BABYLON.Vector3(.125, -.3, 3.1);
 		// scene.bowMesh.rotation = new BABYLON.Vector3(-Math.PI/16, .05, -Math.PI/16);
 		scene.bowMesh.position = new BABYLON.Vector3(.05, -.3, 3.1);
@@ -450,7 +399,7 @@ Game.CreateGameScene = function() {
 			var newIndex = scene.arrowMeshes.push(scene.arrowMesh.clone('arrowClone-' + cloneIndex)) - 1;
 			scene.arrowMeshes[newIndex].imposterArrowTip = scene.getMeshByName('arrowClone-' + newIndex + '.imposterTip');
             
-			scene.arrowMeshes[newIndex].parent = scene.camera;
+			scene.arrowMeshes[newIndex].parent = scene.activeCamera;
 			scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.17, -.2, 3.05);
 			scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(.02, 0, -0.19);
 			scene.arrowMeshes[newIndex].arrowFiring = false;
@@ -467,7 +416,9 @@ Game.CreateGameScene = function() {
             scene.audio.targetHit.play();
             if (isTarget) {
                 // get screen coords
-                var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.camera.viewport.toGlobal(Game.engine));
+                var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport);
+				// var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight()));
+				
                 scene.isfloatingScoreActive = true;
                 scene.floatingTextCounter = 0;
                 // get points
@@ -546,8 +497,8 @@ Game.CreateGameScene = function() {
 			scene.ground.material.diffuseTexture.vScale=16;
 			// scene.ground.material.diffuseColor = new BABYLON.Color3(.01, .1, .01);
 			scene.ground.checkCollisions = true;
-			scene.camera.checkCollisions = true;
-			scene.camera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
+			scene.activeCamera.checkCollisions = true;
+			scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
 		});
 		// scene.ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, scene);
         scene.imposterTrunk.checkCollisions = true;
@@ -664,6 +615,20 @@ Game.CreateGameScene = function() {
 		// scene.player.mesh.playerAnimations = new Game.importedAnimations(scene.player);
 		// scene.player.mesh.playerAnimations.init(scene);
 		
+        // Apply Gravity and shadows
+		// scene.enablePhysics();
+		// scene.setGravity(new BABYLON.Vector3(0, -10, 0));
+		scene.activeCamera.applyGravity = true;
+		
+        // scene.shadowGenerator = new BABYLON.ShadowGenerator(1024, scene.sunlight);
+        // scene.shadowGenerator.useVarianceShadowMap = true;
+        // for (var i_shadows=0; i_shadows < scene.meshes.length; i_shadows++) {
+        //     if (scene.meshes[i_shadows].isVisible) {
+        //         scene.shadowGenerator.getShadowMap().renderList.push(scene.meshes[i_shadows]);
+        //     }
+        // }
+        // scene.ground.receiveShadows = true;
+		
 		scene.isLoaded=true;
 	};
 	
@@ -719,8 +684,8 @@ Game.CreateGameScene = function() {
 			}
 			else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false && activeArrowMesh.arrowDrawing) {
 				// This gets called once for shooting the arrow
-				activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.camera.position);
-				activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.camera.rotation);
+				activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.position);
+				activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.rotation);
 				var arrowPos = activeArrowMesh.position;
 				
 				SpacebarState = KeyState.Clear;
@@ -782,7 +747,7 @@ Game.CreateGameScene = function() {
 		}
 		
         if (Game.debug) {
-            $('#debugInfo').html('Camera<br />rY: ' + scene.camera.rotation.y + '<br />rX: ' + scene.camera.rotation.x + '<br />X: ' + scene.camera.position.x + '<br />Y: ' + scene.camera.position.y + '<br />Z: ' + scene.camera.position.z +
+            $('#debugInfo').html('Camera<br />rY: ' + scene.activeCamera.rotation.y + '<br />rX: ' + scene.activeCamera.rotation.x + '<br />X: ' + scene.activeCamera.position.x + '<br />Y: ' + scene.activeCamera.position.y + '<br />Z: ' + scene.activeCamera.position.z +
             '<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
             '<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
         }
@@ -795,7 +760,7 @@ Game.CreateGameScene = function() {
         
         if (scene.isfloatingScoreActive) {
             // keep score at previous arrow
-            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.camera.viewport.toGlobal(Game.engine));
+            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport.toGlobal(Game.engine));
             $('.floatingHitScore').css({'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px'});
             scene.floatingTextCounter += 1;
         }
@@ -810,14 +775,15 @@ Game.CreateGameScene = function() {
 		// self.player.mesh.moveWithCollisions(tempVal);
 		
 		if (KDown == true) {
-			if (scene.activeCamera === scene.camera) {
-				scene.activeCamera = scene.debugCamera;
+			if (Game.preferences.cameraType != Game.cameraType.Normal) {
+				Game.preferences.cameraType = Game.cameraType.Debug;
+				// Game.cameras.switch(Game.cameraType.Debug);
 			}
 			else {
-				scene.activeCamera = scene.camera;
+				Game.preferences.cameraType = Game.cameraType.Normal;
+				// Game.cameras.switch(Game.cameraType.Normal);
 			}
 		}
-		scene.camera.applyGravity=true;
 	}
 	
     scene.registerBeforeRender(function(){
