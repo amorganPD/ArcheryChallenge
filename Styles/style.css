@@ -1,10 +1,10 @@
 ﻿body {
-    height: 100%;
+    height: 100vh;
     width: 100%;
     margin: auto;
 	font-family: Helsinki;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    /*overflow-x: hidden;
+    overflow-y: hidden;*/
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none;   /* Chrome/Safari/Opera */
     -khtml-user-select: none;    /* Konqueror */
@@ -13,17 +13,23 @@
     user-select: none;           /* Non-prefixed version, currently not supported by any browser */
 }
 .container {
-    position: absolute;
+    position: fixed;
     /* background-image: linear-gradient(0deg, #888888, #EEEEEE); */
     background-image: linear-gradient(0deg, #FFFFFF, #99BBFF, #2266AA);
 	width: 100%;
 	height: 100%;
 	margin: 0em;
 	padding: 0em;
+    top: 0em;
+    left: 0em;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .renderCanvas {
     position: absolute;
+    top: 0em;
+    left: 0em;
 	width: 100%;
 	height: 100%;
 }
@@ -35,7 +41,7 @@
     left: calc(50% - 29em);
     width: 60em;
     height: 14em;
-    background-image: url('../Assets/archerychallenge-logo-07.png');
+    background-image: url('../Assets/archerychallenge-logo-medium.png');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     z-index: 70;
@@ -55,17 +61,16 @@
 .menu {
 	position: absolute;
     background-image: linear-gradient(180deg, #1C81A0, #053F63);
-	left: .2em;
-	top: .2em;
-	width: 1.4em;
-	height: 1.3em;
-	border-radius: .7em;
-	padding-top: .1em;
+	left: .6em;
+	top: .6em;
+	width: 4.2em;
+	height: 3.9em;
+	border-radius: 2.1em;
+	padding-top: .3em;
 	text-align: center;
-	vertical-align: middle;
+	/*vertical-align: middle;*/
 	color: #DDDDDD;
 	text-shadow: 1px 1px 3px #020202;
-	font-size: 3em;
 	border: 3px solid;
     border-color: #002637; 
 	box-shadow: 2px 2px 4px #020202;
@@ -74,6 +79,29 @@
 	cursor: pointer;
 	color: #888888;
 }
+.menuExpanded {
+	display: absolute;
+    position: relative;
+    text-align: center;
+    top: 35%;
+    left: calc(25% - 2em);
+	width: 50%;
+    height: 25em;
+    max-height: 30em;
+	padding: 1.2em 2em 1.2em 2em;
+    border: .4em solid;
+    border-radius: .5em;
+    border-color: #002637;
+    background-image: linear-gradient(180deg, rgba(28,129,160,.8), rgba(5,63,99,.8)); 
+	text-shadow: none;
+    cursor: auto;
+}
+#prefMenu {
+    opacity: 0;
+    z-index: 999;
+    transition: all 1s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
 
 .infoRight {
     display: none;
@@ -107,7 +135,7 @@
     margin: -.2em 0em -.1em 0em;
 }
 
-.sceneAlert{
+.sceneAlert {
     display: none;
     position: absolute;
     font-size: 4em;
@@ -117,6 +145,9 @@
 	color: #EFEFEF;
     text-align: center;
     text-shadow: .08em .08em 2px #282828;
+}
+.leaderboard {
+    font-size: .5em;
 }
 
 .topMenu {
@@ -154,9 +185,8 @@
 }
 
 .modal {
-	font-family: Helsinki;
-    /* display: none; */
     position: absolute;
+	font-family: Helsinki;
     width: 100%;
     height: 100%;
 	text-align: center;
@@ -169,44 +199,83 @@
 	color: white;	
 }
 
-.modalForeground {
+.modalContainer {
 	display: inline-block;
     position: relative;
-    top: 40%;
+    top: 35%;
     text-align: center;
-	width: auto;
-    height: auto;
+	width: 46%;
+    height: 50%;
     min-height: 8em;
-	padding: 1.2em 2em 1.2em 2em;
-    border: 1px none;
-    border-radius: .5em; 
-    border-color: #EEEEEE;
-    background-color: rgba(80,80,80,.7);
-	box-shadow: 3px 3px 6px #020202;
-    overflow: hidden;
+	padding: 0em;
+    z-index: 60;
+}
+.modalContainer-full {
+    width: 10em;
+    height: 10em;
+    top: 0em;
+    left: 0em;
+}
+.modalDiv {
+    padding-top: 0em;
+}
+.modalCloseButton {
+    display: none;
+    position: absolute;
+    color: #EEEEEE;
+    font-size: 2em;
+    text-align: center;
+    top: -.9em;
+    right: -.9em;
+    width: 1.6em;
+    height: 1.35em;
+    padding-top: .25em;
+    border-radius: 1.6em;
+    border: .2em solid;
+    border-color: #002637;
+    background-color: rgba(28,129,160,1);
     z-index: 80;
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.80);
+    transition: box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
 }
 .modalButton {
+    position: relative;
 	display: inline-block;
-	cursor: pointer;
-    background-image: linear-gradient(180deg, #1C81A0, #053F63);
-	font-size: 3em;
-	color: #DDDDDD;
+    height: 3.6em;
+    top: 0em;
+    width: 20em;
+    min-width: 15em;
 	text-shadow: 1px 1px 3px #020202;
 	text-align: center;
-	/*background-color: #1188AA;*/
-	margin-top: .3em;
-	margin-bottom: .3em;
-	padding: .1em .4em .1em .4em;
+	margin-top: .9em;
+	margin-bottom: .9em;
+	padding: .3em 1.2em .3em 1.2em;
 	border: 3px solid;
-	/*border-top: .1em solid;*/
-    /*border-color: #22BBDD; */
-    border-radius: .2em;
-    border-color: #002637; 
-	box-shadow: 2px 2px 4px #020202;
+    border-radius: .6em;
+    border-color: #002637;
+    background-image: linear-gradient(180deg, #1C81A0, #053F63);    
+	cursor: pointer;
+	box-shadow: 0 3px 6px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.80);
+    transition: box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
 }
-.modalButton:hover {
+.modalButton:hover, .modalCloseButton:hover {
+	box-shadow: 0 12px 20px rgba(0,0,0,0.40), 0 8px 12px rgba(0,0,0,0.40);
 	color: #888888;
+}
+.modalButton:active, .modalCloseButton:active {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.80);
+}
+.buttonText {
+	color: #DDDDDD;
+	font-size: 3em;
+    width: 100%;
+    height: 100%;
+}
+
+.linbreak {
+    display:block;
+    height: 0em;
 }
 
 .loadingGame {
@@ -214,13 +283,57 @@
 	color: #282828;
 }
 
+#about {
+    transition: all 1s cubic-bezier(.25,.8,.25,1), box-shadow 0.3s cubic-bezier(.25,.8,.25,1);
+}
+.aboutExpanded {
+    position: relative;
+    top: -6em;
+	width: calc(100% - 4.8em);
+    height: calc(100% - 6em);
+    max-height: 30em;
+	padding: 1.2em 2em 1.2em 2em;
+    border: .4em solid;
+    border-radius: .5em;
+    border-color: #002637;
+    background-image: linear-gradient(180deg, rgba(28,129,160,.8), rgba(5,63,99,.8)); 
+	text-shadow: none;
+    cursor: auto;
+}
+.aboutExpanded:hover {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.80);
+}
+.aboutExpanded:active {
+	box-shadow: 0 3px 6px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.80);
+}
 #aboutModal {
 	display: none;
+    max-height: 100%;
+}
+.aboutGameplay {
+    display: inline-block;
+    width: 40%;
+    height: 12em;
+    margin: 1em;
+    margin-top: 2em;
+    background-color: #686868;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.40), 0 2px 4px rgba(0,0,0,0.80);
+}
+#gameplay-1 {
+    background-image: url('../Assets/gameplay_1_small.png');
+}
+#gameplay-2 {
+    background-image: url('../Assets/gameplay_1_small.png');
+    background-size: 150% 150%;
+    background-position: center;
 }
 .aboutText {
 	font-family: OpenSans;
 	font-size: 2em;
 	color: #DDDDDD;
+    padding: .3em;
 }
 .aboutText a {
 	color: #22AAAA;
@@ -229,13 +342,11 @@
 	color: #226666;
 	text-decoration: none;
 }
+
 .descriptionText {
     display: inline-block;
     height: 1.8em;
     width: 6em;
-    /*padding-top: 1.4em;*/
-    /*text-align: center;*/
-    /*vertical-align: middle;*/
     padding-right: .4em;
 }
 .keys {
@@ -297,11 +408,6 @@
 	cursor: default;
 	color: #888888;
 }
-#prefMenu {
-    display: none;
-    z-index: 999;
-}
-
 
 /*BEGIN Media Queries*/
 
@@ -312,7 +418,7 @@
         width: 90%;
         height: 23vw;
     }
-    .modalForeground {
+    .modalContainer {
         top: 20%;
     }
 }

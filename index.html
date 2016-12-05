@@ -11,14 +11,25 @@
     </div>
 	<div class='logo'></div>
 	<div id="modal" class="modal">
-        <div id="modalUnderlay" class="modalUnderlay">
-        </div>
-        <div class="modalForeground">
-            <div id="modalDiv" class="modalDiv">
-				<div class="modalButton loadingGame" id="startGame">Loading...</div><br />
-				<div class="modalButton" id="about">About</div>
-			</div>
-			<div id="aboutModal" class="modalDiv">
+        <div id="modalUnderlay" class="modalUnderlay"></div>
+        <div class="modalContainer" id="startMenu">
+            <div class="modalButton" id="startButton"><div class="buttonText loadingGame" id="startGame">Loading...</div></div>
+            <div class="linbreak"></div>
+
+            <div class="modalButton" id="about">
+                <div class="buttonText" id="aboutText">About</div>
+                <div class="modalCloseButton" id="aboutCloseButton">X</div>
+                <div id="aboutModal" class="modalDiv">
+                    <div class="aboutGameplay" id="gameplay-1"></div>
+                    <div class="aboutGameplay" id="gameplay-2"></div>
+                    <div class="aboutText">Developers - <a href='http://antonmorgan.com' title="A. Morgan" target="_blank">A. Morgan</a>, J. Morris</div>
+                    <div class="aboutText">3D Framework - <a href="http://babylonjs.com/" title="Visit Babylon JS" target="_blank"> Babylon JS v2.4</a></div>
+                </div>
+            </div>
+
+			<!--<div id="aboutModal" class="modalDiv">
+                <div class="aboutGameplay" id="gameplay-1"></div>
+                <div class="aboutGameplay" id="gameplay-1"></div>
 				<div class="aboutText">Developers - <a href='http://antonmorgan.com' title="A. Morgan" target="_blank">A. Morgan</a>, J. Morris</div>
 				<div class="aboutText">3D Framework - <a href="http://babylonjs.com/" title="Visit Babylon JS" target="_blank"> Babylon JS v2.4</a></div>
 				<div class="aboutText">
@@ -39,19 +50,22 @@
                     <div class='keys' id='OneKey'>1</div>
                 </div>
 				<div class="modalButton" id="MainMenu">Main Menu</div>
-			</div>
-			<div id="preferenceModal" class="modalDiv">
-				<div class="menuTitle">User Preferences Menu</div>
+			</div>-->
+        </div>
+        <div class='menu' id='prefMenu'>
+            <div class="buttonText" id="menuText">M</div>
+            <div class="modalCloseButton" id="prefCloseButton">X</div>
+            <div id="preferenceModal" class="modalDiv">
+                <div class="menuTitle">User Preferences Menu</div>
                 <div class="prefOption">Camera Mode: </div><div class="optionButton" id="cameraMode">Regular</div><p></p>
                 <div class="prefOption">Camera Inverted: </div><div class="optionButton" id="cameraInverted">Off</div><p></p>
-				<div class="modalButton" id="exitButton">Return to Game</div>
-			</div>
+                <!--<div class="modalButton" id="exitButton"><div class="buttonText" id="exitText">Return to Game</div></div>-->
+            </div>
         </div>
     </div>
-	<div class='menu' id='prefMenu'>M</div>
     <div class='infoRight'>
         <div class='fps' id="fps">FPS:</div>
-        <div class='roundInfo' id='roundInfo'>ROUND 1</div>
+        <div class='roundInfo' id='roundInfo'>Challenge 1</div>
         <div class='scoreInfo' id='scoreInfo'>000</div>
         <div class='arrowInfo' id='arrowInfo'>x 05</div>
     </div>
@@ -60,7 +74,7 @@
 		<div class='lps' id="debugInfo">LPS:</div>
 	</div>
     <div class="floatingHitScore"></div>
-    <div class='sceneAlert'>Round 1</div>
+    <div class='sceneAlert'>Challenge 1</div>
 	<!--Script references. -->
 	<script type="text/javascript" src="Scripts/lib/jquery-1.11.3.min.js"></script>
 	<script type="text/javascript" src="Scripts/lib/modernizr-custom.js"></script>
@@ -76,8 +90,12 @@
 	<script type="text/javascript" src="Scripts/input.js"></script>
 	<script type="text/javascript" src="Scripts/ballistics.js"></script>
 	<script type="text/javascript" src="Scripts/game.js"></script>
+	<script type="text/javascript" src="Scripts/stages.js"></script>
+	<script type="text/javascript" src="Scripts/assetHelper.js"></script>
+	<script type="text/javascript" src="Scripts/arrow.js"></script>
 	<script type="text/javascript" src="Scripts/cameras.js"></script>
     <script type="text/javascript" src="Scripts/site.js"></script>
+	<script type="text/javascript" src="Scripts/stages.js"></script>
     <script type="text/javascript" src="Scripts/player.js"></script>
     <script type="text/javascript" src="Scripts/BabylonScene.js"></script>
     <script type="text/javascript" src="Scripts/BabylonMechanics.js"></script>

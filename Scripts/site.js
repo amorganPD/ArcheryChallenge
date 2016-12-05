@@ -32,15 +32,29 @@ $(document).ready(function () {
 		Game.runRenderLoop();
 	};
 	// Show About information
-	$('#about').click(function () 
-		{$('#modalDiv').fadeOut(200, function () {
-			$('#aboutModal').fadeIn(200);
+	$('#aboutText').click( function () {
+		$('#startButton').animate({
+			opacity: 0,
+		}, 200, function () {
+			$('#about').addClass("aboutExpanded");
+			setTimeout(function () {
+				$('#aboutModal').fadeIn(1000);
+			}, 500);
+			$('#aboutCloseButton').fadeIn(200);
 		});
+		$('#aboutText').fadeOut(200);
+		$(".modalButton").unbind('mouseenter mouseleave');
 	});
-	$('#MainMenu').click(function () 
-		{$('#aboutModal').fadeOut(200, function () {
-			$('#modalDiv').fadeIn(200);
+	$('#aboutCloseButton').click(function () {
+		$('#aboutModal').stop().fadeOut(250, function () {
+			$('#aboutCloseButton').fadeOut(250);
+			$('#about').removeClass("aboutExpanded");
+			$('#startButton').animate({ opacity: 1 }, 200);
+			setTimeout(function () {
+				$('#aboutText').fadeIn(500);
+			}, 500);
 		});
+		
 	});
 	// fullscreenClick = function () {
 	// 	// Launch fullscreen for browsers that support it!

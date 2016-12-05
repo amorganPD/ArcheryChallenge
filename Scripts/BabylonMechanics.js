@@ -80,12 +80,12 @@ Game.initGameScene = function() {
 				// }, function() {
 				//    // FPS target not reached
 				// });
-				BABYLON.SceneOptimizer.OptimizeAsync(Game.scene[Game.activeScene], BABYLON.SceneOptimizerOptions.HighDegradationAllowed(),
-					function() {
-					// On success
-					}, function() {
-					alert("Not Reached");
-				});
+				// BABYLON.SceneOptimizer.OptimizeAsync(Game.scene[Game.activeScene], BABYLON.SceneOptimizerOptions.HighDegradationAllowed(),
+				// 	function() {
+				// 	// On success
+				// 	}, function() {
+				// 	alert("Not Reached");
+				// });
 				
 				// Allow Game to be started
 				Game.allowStart();
