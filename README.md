@@ -1,5 +1,9 @@
-# ArcheryChallenge
-Archery Target Challenge
+# ArcheryChallenge - WIP
+<a href="http://thearcherychallenge.com">thearcherychallenge.com</a>
+
+Archery Web GL game using <a href="http://babylonjs.com/">BabylonJS</a> Framework for the 3D engine, <a href="https://www.blender.org/">Blender</a> for creating the 3D models, and Adobe tools for the textures and artwork.
+
+Still a work in progress.
 
 <h1>TO DO List</h1>
 <ul>
