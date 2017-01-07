@@ -51,6 +51,7 @@ Game.allowStart = function () {
             window.addEventListener('pointerdown', pointerDown, true);
             window.addEventListener('pointerup', pointerUp, true);
 
+            $('#modal').addClass("modalSmall");
             // Preference menu click events
             $('#prefMenu').animate({
                 opacity: 1,
@@ -58,7 +59,8 @@ Game.allowStart = function () {
                 // $('#prefMenu').fadeIn(200, function () {
                 $('#menuText').click(function () {
                     Game.engine.stopRenderLoop(); // pause game
-
+                    
+                    $('#modal').removeClass("modalSmall");
                     $('#menuText').fadeOut(200);
                     $('#prefMenu').addClass("menuExpanded");
                     setTimeout(function () {
@@ -76,7 +78,9 @@ Game.allowStart = function () {
                         $('#prefMenu').removeClass("menuExpanded");
                         // $('#prefMenu').animate({ opacity: 1 }, 200);
                         setTimeout(function () {
-                            $('#menuText').fadeIn(500);
+                            $('#menuText').fadeIn(500, function () {
+                                $('#modal').addClass("modalSmall");
+                            });
                         }, 500);
                     });
                 });
