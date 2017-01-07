@@ -95,4 +95,9 @@ Game.initArrows = function(scene) {
         }
         scene.arrowMeshes = [];
     }
+    scene.hideArrows = function () {
+        for (var i = 0; i < scene.arrowMeshes.length; i++) {
+            scene.arrowMeshes[i].isVisible = false;
+        }
+    }
 } 

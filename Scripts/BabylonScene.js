@@ -364,65 +364,8 @@ Game.CreateGameScene = function() {
 			});
 		}
 		
-		// Create Skybox
-		scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
-		scene.skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
-		scene.skyboxMaterial.backFaceCulling = false;
-		scene.skyboxMaterial.disableLighting = true;
-		scene.skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-		// scene.skyboxMaterial.diffuseColor = new BABYLON.Color3(.2, .6, 1);
-		scene.skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-		scene.skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./Textures/TropicalSunnyDay/TropicalSunnyDay", scene);
-		scene.skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-		scene.skybox.material = scene.skyboxMaterial;
-		scene.skybox.infiniteDistance = true;
-		
-		// Bind Bow Mesh to camera
-		scene.bowMesh.parent = scene.activeCamera;
-		// scene.bowMesh.position = new BABYLON.Vector3(.125, -.3, 3.1);
-		// scene.bowMesh.rotation = new BABYLON.Vector3(-Math.PI/16, .05, -Math.PI/16);
-		scene.bowMesh.position = new BABYLON.Vector3(.05, -.3, 3.1);
-		scene.bowMesh.rotation = new BABYLON.Vector3(.02, 0, -Math.PI/16);
-		
-		Game.initArrows(scene);
-		// Create First arrow
-		scene.activeArrow = scene.createNewArrow();
-
-		scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 30, 0, 100, scene, false, function (mesh) {
-			scene.ground.material = new BABYLON.StandardMaterial("textureGround", scene);
-			scene.ground.material.diffuseTexture = new BABYLON.Texture('./Textures/texture_Grass-03.jpg', scene);
-			scene.ground.material.diffuseTexture.uScale=16;
-			scene.ground.material.diffuseTexture.vScale=16;
-			// scene.ground.material.diffuseColor = new BABYLON.Color3(.01, .1, .01);
-			scene.ground.checkCollisions = true;
-			scene.activeCamera.checkCollisions = true;
-			scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
-		});
-		// scene.ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, scene);
-        scene.imposterTrunk.checkCollisions = true;
-		
-		// Generate some random trees
-		scene.generateTrees();
-        
-        // Set up the fence
-		scene.fenceMeshes = [];
-        var xMult = 9;
-        var xOffset = xMult/2;
-        scene.fenceMesh.position = new BABYLON.Vector3(xOffset, 0, -40);
-        var newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, 0)) - 1; // create new Fence
-		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
-        for (var i=0; i < 10; i++) {
-            newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
-            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
-        }
-        
-		newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
-        var rightStart = newFenceIndex;
-		scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
-        for (var i=0; i < 14; i++) {
-            newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1))) - 1; // create new Fence
-            scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
-        }
+		Game.createStage(scene, 0);
+		Game.createChallenge(scene, Game.challengeCount);
 		
 		// // Set up Collisions
 		// scene.player.mesh.checkCollisions = true;

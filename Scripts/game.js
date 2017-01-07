@@ -17,7 +17,7 @@ var Game = new function () {
     this.activeScene = this.sceneType.Game;
     this.ltArray = lookupTableATan2();
     this.difficultyLevel = 1;
-    this.challengeCount = 1;
+    this.challengeCount = 0;
 
     this.cameraType = {
         Normal: 0,
@@ -114,11 +114,10 @@ Game.allowStart = function () {
                 });
             });
             // Fade In Round 1 Alert
-            $('.sceneAlert').fadeIn(500, function () {
-                setTimeout(function () {
-                    $('.sceneAlert').fadeOut(500, function () { });
-                    $('.infoRight').fadeIn(500, function () { });
-                }, 1000);
+            Game.sceneAlert("Stage 1<br/>The Forest", function () {
+                Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get " + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + " points", function () {
+                    $('.infoRight').fadeIn(500, function () { })
+                });
             });
             if (Game.debug) {
                 $('#debugMenu').fadeIn(200, function () { });
