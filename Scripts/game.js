@@ -50,6 +50,8 @@ Game.allowStart = function () {
 
             window.addEventListener('pointerdown', pointerDown, true);
             window.addEventListener('pointerup', pointerUp, true);
+            
+		    document.getElementById("renderCanvas").focus();
 
             $('#modal').addClass("modalSmall");
             // Preference menu click events
@@ -119,7 +121,7 @@ Game.allowStart = function () {
             });
             // Fade In Round 1 Alert
             Game.sceneAlert("Stage 1<br/>The Forest", function () {
-                Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get " + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + " points", function () {
+                Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class=\"points\">" + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
                     $('.infoRight').fadeIn(500, function () { })
                 });
             });

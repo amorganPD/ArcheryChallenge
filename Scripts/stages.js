@@ -5,7 +5,7 @@ Game.targetType = {
 
 Game.createStage = function(scene, whichStage) {
     // Create Skybox
-    scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
+    scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 2000.0, scene);
     scene.skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     scene.skyboxMaterial.backFaceCulling = false;
     scene.skyboxMaterial.disableLighting = true;
@@ -14,26 +14,27 @@ Game.createStage = function(scene, whichStage) {
     scene.skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("./Textures/TropicalSunnyDay/TropicalSunnyDay", scene);
     scene.skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     scene.skybox.material = scene.skyboxMaterial;
+    scene.skybox.position = new BABYLON.Vector3(0, -10, 0);
     scene.skybox.infiniteDistance = true;
 
     // Bind Bow Mesh to camera
     scene.bowMesh.parent = scene.activeCamera;
-    scene.bowMesh.position = new BABYLON.Vector3(.05, -.3, 3.1);
+    scene.bowMesh.position = new BABYLON.Vector3(.05, -.3, 3.57);
     scene.bowMesh.rotation = new BABYLON.Vector3(.02, 0, -Math.PI/16);
 
     Game.initArrows(scene);
     // Create First arrow
     scene.activeArrow = scene.createNewArrow();
 
-    scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 30, 0, 100, scene, false, function (mesh) {
-        scene.ground.material = new BABYLON.StandardMaterial("textureGround", scene);
-        scene.ground.material.diffuseTexture = new BABYLON.Texture('./Textures/texture_Grass-03.jpg', scene);
-        scene.ground.material.diffuseTexture.uScale=16;
-        scene.ground.material.diffuseTexture.vScale=16;
-        scene.ground.checkCollisions = true;
-        scene.activeCamera.checkCollisions = true;
-        scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
-    });
+    // scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 30, 0, 100, scene, false, function (mesh) {
+    //     scene.ground.material = new BABYLON.StandardMaterial("textureGround", scene);
+    //     scene.ground.material.diffuseTexture = new BABYLON.Texture('./Textures/texture_Grass-03.jpg', scene);
+    //     scene.ground.material.diffuseTexture.uScale=16;
+    //     scene.ground.material.diffuseTexture.vScale=16;
+    //     scene.ground.checkCollisions = true;
+    //     scene.activeCamera.checkCollisions = true;
+    //     scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
+    // });
     scene.imposterTrunk.checkCollisions = true;
 
     // Generate some random trees
@@ -42,7 +43,7 @@ Game.createStage = function(scene, whichStage) {
     // Set up the fence
     scene.fenceMeshes = [];
     var xMult = 9;
-    var xOffset = xMult/2;
+    var xOffset = xMult/2 - 25;
     scene.fenceMesh.position = new BABYLON.Vector3(xOffset, 0, -40);
     var newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, 0)) - 1; // create new Fence
     scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3(-(newFenceIndex + 1)*xMult + xOffset, 0, -40);
@@ -180,15 +181,15 @@ Game.startNextRound = function (player, scene) {
     if (player.points >= thisChallenge.requiredPoints) {
         Game.challengeCount++;
         
-        Game.sceneAlert("Great Job!<br/>Score: " + player.points + "<br/>Challenge Complete!", function () {
+        Game.sceneAlert("Great Job!<br/>Score: <div class='points'>" + player.points + "</div><br/>Challenge Complete!", function () {
             scene.hideArrows();
             Game.createChallenge(scene, Game.challengeCount);
-            Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get " + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + " points", function () {
+            Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class='points'>" + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
                 player.points = 0;
                 player.arrows = 5;
                 $('.roundInfo').html("Challenge " + (Game.challengeCount + 1));
                 $('.scoreInfo').html(pad(player.points, 3));
-                $('.arrowInfo').html("x " + pad(player.arrows, 2));
+                $('.arrowInfo').html(pad(player.arrows, 2));
                 scene.disposeOfArrows();
                 scene.activeArrow = scene.createNewArrow();
             });
@@ -200,7 +201,7 @@ Game.startNextRound = function (player, scene) {
             player.arrows = 5;
             $('.roundInfo').html("Challenge " + (Game.challengeCount + 1));
             $('.scoreInfo').html(pad(player.points, 3));
-            $('.arrowInfo').html("x " + pad(player.arrows, 2));
+            $('.arrowInfo').html(pad(player.arrows, 2));
             scene.disposeOfArrows();
             scene.activeArrow = scene.createNewArrow();
         });

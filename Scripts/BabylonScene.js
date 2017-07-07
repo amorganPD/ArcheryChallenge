@@ -51,7 +51,7 @@ Game.CreateStartScene = function() {
 	scene.assetsManager.useDefaultLoadingScreen=false;
 	
 	//create Asset Tasks
-	scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.b.js");
+	scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.babylon");
 		
 	//Set functions to assign loaded meshes
 	scene.playerTask.onSuccess = function (task) {
@@ -110,18 +110,27 @@ Game.CreateGameScene = function() {
 	Game.cameras.init();
     Game.initPointerLock(scene.activeCamera);
 	
-	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 20, 0), scene);
+	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
 	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight.specular = new BABYLON.Color3(0, 0, 0);
-	// scene.ambientLight.groundColor = new BABYLON.Color3(.2, .2, .2);
-	scene.ambientLight.intensity = 1.75;
-	
-	scene.ambientLight2 = new BABYLON.HemisphericLight("ambientLight2", new BABYLON.Vector3(0, -20, 0), scene);
+	scene.ambientLight.groundColor = new BABYLON.Color3(.5, .5, .5);
+	scene.ambientLight.intensity = .65;
+
+	scene.ambientLight2 = new BABYLON.HemisphericLight("ambientLight2", new BABYLON.Vector3(0, -1, 0), scene);
 	scene.ambientLight2.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight2.specular = new BABYLON.Color3(0, 0, 0);
-	scene.ambientLight2.intensity = .15;
+	scene.ambientLight2.intensity = .45;
     
-    // scene.sunlight = new BABYLON.DirectionalLight("sunlight", new BABYLON.Vector3(-100, -100, -100), scene);
+    scene.sunlight = new BABYLON.DirectionalLight("sunlight", new BABYLON.Vector3(2, -4, 3), scene);
+	scene.sunlight.position = new BABYLON.Vector3(-20, 200, -400);
+	scene.sunlight.intensity = 2;
+	scene.sunlight.specular = new BABYLON.Color3(0, 0, 0);
+	scene.shadowGenerator = new BABYLON.ShadowGenerator(1024, scene.sunlight);
+
+	// var lightSphere2 = BABYLON.Mesh.CreateSphere("sphere", 60, 2, scene);
+	// lightSphere2.position = scene.sunlight.position;
+	// lightSphere2.material = new BABYLON.StandardMaterial("light", scene);
+	// lightSphere2.material.emissiveColor = new BABYLON.Color3(1, 1, 0);
 	
 	// scene.light = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(5, 0, 0), scene);
 	// scene.light.diffuse = new BABYLON.Color3(.98, .98, .98);
@@ -143,6 +152,7 @@ Game.CreateGameScene = function() {
 		index === undefined ? index = 0 : index;
 		var childMeshes = parentMesh.getChildren();
 		var parentInstance = parentMesh.createInstance(baseName + '-' + index);
+		scene.shadowGenerator.getShadowMap().renderList.push(parentInstance);
 		var childInstances = [];
 		for (var i_child = 0; i_child < childMeshes.length; i_child++){
 			var childMesh = scene.getMeshByName(childMeshes[i_child].name);
@@ -151,6 +161,7 @@ Game.CreateGameScene = function() {
 			childInstances[newChildIndex].parent = parentInstance;
 			childInstances[newChildIndex].checkCollisions = childMesh.checkCollisions;
 			childInstances[newChildIndex].isVisible = childMesh.isVisible;
+        	scene.shadowGenerator.getShadowMap().renderList.push(childInstances[newChildIndex]);
 		}
 		return parentInstance;
 	}
@@ -165,16 +176,18 @@ Game.CreateGameScene = function() {
 	
 	//create Asset Tasks
     // Meshes
-	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCenteredwArrow.b.js");
-	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.b.js");
-	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-Normal.b.js");
-    scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.b.js");
-	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-04.b.js");
-	// scene.tree2ModelTask = scene.assetsManager.addMeshTask("tree2ModelTask", "", "./Assets/", "tree-02.b.js");
-	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.b.js");
-	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.b.js");
-	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.b.js");
-	scene.rock04ModelTask = scene.assetsManager.addMeshTask("rock04ModelTask", "", "./Assets/", "rock-04.b.js");
+	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCenteredwArrow.babylon");
+	scene.stage01Task = scene.assetsManager.addMeshTask("stage01Task", "", "./Assets/", "stage-01_TheForest.babylon");
+	scene.landscapeCliffsideTask = scene.assetsManager.addMeshTask("landscapeCliffsideTask", "", "./Assets/", "landscape_cliffside.babylon");
+	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.babylon");
+	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-Normal.babylon");
+    scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.babylon");
+	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-04.babylon");
+	// scene.tree2ModelTask = scene.assetsManager.addMeshTask("tree2ModelTask", "", "./Assets/", "tree-02.babylon");
+	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.babylon");
+	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.babylon");
+	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.babylon");
+	scene.rock04ModelTask = scene.assetsManager.addMeshTask("rock04ModelTask", "", "./Assets/", "rock-04.babylon");
     // Sounds
 	scene.bowShotTask = scene.assetsManager.addBinaryFileTask("bowShotTask", "./Audio/Bow_Shot_Sound.wav");
 	scene.arrowHitTask = scene.assetsManager.addBinaryFileTask("arrowHitTask", "./Audio/Target_Hit-03.wav");
@@ -234,6 +247,34 @@ Game.CreateGameScene = function() {
 		scene.arrowMesh.isVisible = false;
 		scene.applyOutline(scene.arrowMesh, .1);
 	}
+	scene.stage01Task.onSuccess = function(task) {
+		scene.stage01Mesh = task.loadedMeshes[0];
+		scene.stage01Mesh.material = new BABYLON.StandardMaterial("textureGround", scene);
+		scene.stage01Mesh.material.diffuseTexture = new BABYLON.Texture('./Assets/stage_01_TheForest_Grid_TEXTURE.jpg', scene);
+		scene.stage01Mesh.scaling = new BABYLON.Vector3(20, 20, 20);
+		scene.stage01Mesh.rotation = new BABYLON.Vector3(0, 0, 0);
+		scene.stage01Mesh.position = new BABYLON.Vector3(0, -1, -180);
+        scene.stage01Mesh.checkCollisions = true;
+		
+		// var terrainMaterial = new BABYLON.TerrainMaterial("terrainMaterial", scene);
+		// terrainMaterial.mixTexture = new BABYLON.Texture("./Assets/stencil_stonePath.png", scene);
+		// terrainMaterial.diffuseTexture1 = new BABYLON.Texture("./Assets/texture_Stone-Path-01.jpg", scene);
+		// terrainMaterial.diffuseTexture2 = new BABYLON.Texture("./Assets/texture_Grass-03.jpg", scene);
+
+		// scene.stage01Mesh.material = terrainMaterial;
+
+        scene.activeCamera.checkCollisions = true;
+        scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
+	}
+	scene.landscapeCliffsideTask.onSuccess = function(task) {
+		scene.landscapeCliffsideMesh = task.loadedMeshes[0];
+		scene.landscapeCliffsideMesh.scaling = new BABYLON.Vector3(20, 20, 20);
+		scene.landscapeCliffsideMesh.rotation = new BABYLON.Vector3(0, 0, 0);
+		scene.landscapeCliffsideMesh.position = new BABYLON.Vector3(0, 50, 400);
+		scene.landscapeCliffsideMesh.material = new BABYLON.StandardMaterial("textureGround", scene);
+		scene.landscapeCliffsideMesh.material.diffuseTexture = new BABYLON.Texture('./Assets/texture_Grass-03.jpg', scene);
+	}
+
 	
 	scene.targetModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -244,6 +285,7 @@ Game.CreateGameScene = function() {
 		scene.targetMesh.rotation = new BABYLON.Vector3(0, 0, 0);
 		scene.targetMesh.position = new BABYLON.Vector3(0, 6, -15);
 		scene.applyOutline(scene.targetMesh);
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.targetMesh);
 	}
 	scene.targetOneShotModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -255,17 +297,20 @@ Game.CreateGameScene = function() {
 		scene.targetOneShotMesh.position = new BABYLON.Vector3(0, 6, 20);
 		scene.applyOutline(scene.targetOneShotMesh);
         scene.targetOneShotMesh.isVisible = false;
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.targetOneShotMesh);
 	}
 	
     // Environment Meshes
 	scene.treeModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
 		scene.treeMesh = task.loadedMeshes[4];
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.treeMesh);
 		scene.treeLeavesMesh = [];
         for (var i_tree = 0; i_tree < 4; i_tree++) {
             scene.treeLeavesMesh.push(task.loadedMeshes[i_tree]);
             scene.treeLeavesMesh[i_tree].parent = scene.treeMesh;
             scene.applyOutline(scene.treeLeavesMesh[i_tree], .5);
+			scene.shadowGenerator.getShadowMap().renderList.push(scene.treeLeavesMesh[i_tree]);
         }
         
         scene.imposterTrunk = BABYLON.Mesh.CreateCylinder("imposterTrunk", 10, 0.5, 0.5, 6, 1, scene, false);
@@ -285,11 +330,14 @@ Game.CreateGameScene = function() {
     scene.fenceModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
 		scene.fenceMesh = task.loadedMeshes[3];
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMesh);
 		scene.fenceMeshes = [];
-		scene.fenceMeshes.push(task.loadedMeshes[1]);
+		var fenceIndex = scene.fenceMeshes.push(task.loadedMeshes[1]) - 1;
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMeshes[fenceIndex]);
 		scene.fenceMeshes[0].parent = scene.fenceMesh;
 		scene.applyOutline(scene.fenceMeshes[0]);
-		scene.fenceMeshes.push(task.loadedMeshes[2]);
+		fenceIndex = scene.fenceMeshes.push(task.loadedMeshes[2]) - 1;
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMeshes[fenceIndex]);
 		scene.fenceMeshes[1].parent = scene.fenceMesh;
 		scene.applyOutline(scene.fenceMeshes[1]);
         
@@ -316,6 +364,7 @@ Game.CreateGameScene = function() {
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(-20, 0, 10);
 		scene.applyOutline(scene.rockMesh[index]);
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
     }
     scene.rock03ModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -325,6 +374,7 @@ Game.CreateGameScene = function() {
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(0, 0, 40);
 		scene.applyOutline(scene.rockMesh[index]);
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
     }
     scene.rock04ModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -334,6 +384,7 @@ Game.CreateGameScene = function() {
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(30, 0, 30);
 		scene.applyOutline(scene.rockMesh[index]);
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
     }
 	
 	// On success Audio Tasks
@@ -385,16 +436,18 @@ Game.CreateGameScene = function() {
         // Apply Gravity and shadows
 		// scene.enablePhysics();
 		// scene.setGravity(new BABYLON.Vector3(0, -10, 0));
+		// scene.activeCamera.position.y = 8;
 		scene.activeCamera.applyGravity = true;
 		
-        // scene.shadowGenerator = new BABYLON.ShadowGenerator(1024, scene.sunlight);
         // scene.shadowGenerator.useVarianceShadowMap = true;
-        // for (var i_shadows=0; i_shadows < scene.meshes.length; i_shadows++) {
-        //     if (scene.meshes[i_shadows].isVisible) {
-        //         scene.shadowGenerator.getShadowMap().renderList.push(scene.meshes[i_shadows]);
-        //     }
-        // }
-        // scene.ground.receiveShadows = true;
+		// for (var i_shadows=0; i_shadows < scene.meshes.length; i_shadows++) {
+		// 	if (scene.meshes[i_shadows].isVisible && scene.meshes[i_shadows] != scene.stage01Mesh) {
+		// 		scene.shadowGenerator.getShadowMap().renderList.push(scene.meshes[i_shadows]);
+		// 	}
+		// }
+		
+		scene.shadowGenerator.useExponentialShadowMap  = true;
+        scene.stage01Mesh.receiveShadows = true;
 		
 		scene.isLoaded=true;
 	};
@@ -458,7 +511,7 @@ Game.CreateGameScene = function() {
 				SpacebarState = KeyState.Clear;
 				activeArrowMesh.arrowDrawing = false;
 				scene.Players[scene.activePlayer].arrowFired();
-				$('#arrowInfo').html('x ' + pad(scene.Players[scene.activePlayer].arrows,2));
+				$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows,2));
 				
 				scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
 				scene.audio.bowShot.play(); // Play Shooting sound
@@ -527,7 +580,8 @@ Game.CreateGameScene = function() {
         
         if (scene.isfloatingScoreActive) {
             // keep score at previous arrow
-            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport.toGlobal(Game.engine));
+    		var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
+            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
             $('.floatingHitScore').css({'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px'});
             scene.floatingTextCounter += 1;
         }
@@ -551,6 +605,8 @@ Game.CreateGameScene = function() {
 				// Game.cameras.switch(Game.cameraType.Normal);
 			}
 		}
+
+		scene.skybox.rotation.y += Math.PI*.00003;
 	}
 	
     scene.registerBeforeRender(function(){

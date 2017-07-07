@@ -125,14 +125,20 @@
 .scoreInfo {
 	position: relative;
 	font-size: 3em;
-	color: #EFEFEF;
+	color: #22AAFF;
     margin: -.2em 0em -.1em 0em;
 }
 .arrowInfo {
 	position: relative;
+    float: right;
 	font-size: 3em;
 	color: #EFEFEF;
     margin: -.2em 0em -.1em 0em;
+    width: 2.2em;
+    background-image: url('../Assets/arrow_icon.png');
+    background-size: auto 65%;
+    background-position: left;
+    background-repeat: no-repeat;
 }
 
 .sceneAlert {
@@ -410,6 +416,11 @@
 .startGame {
 	cursor: default;
 	color: #888888;
+}
+
+.points {
+    display: inline-block;
+    color: #22AAFF;
 }
 
 /*BEGIN Media Queries*/
