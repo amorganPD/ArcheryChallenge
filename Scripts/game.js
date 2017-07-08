@@ -3,8 +3,6 @@ var Game = new function () {
     var self = this;
     this.debug = false;
     this.enableJoystick = false;
-    this.mapSize = 2;
-    this.map = {};
     this.canvas = document.getElementById("renderCanvas");
     this.engine = new BABYLON.Engine(this.canvas, true);
     //this.engine.renderEvenInBackground = false;
@@ -119,12 +117,9 @@ Game.allowStart = function () {
                     Game.scene[Game.activeScene].render(); // in case scene is "paused"
                 });
             });
-            // Fade In Round 1 Alert
-            Game.sceneAlert("Stage 1<br/>The Forest", function () {
-                Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class=\"points\">" + Game.stageInformation.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
-                    $('.infoRight').fadeIn(500, function () { })
-                });
-            });
+            var thisScene = Game.scene[Game.activeScene];
+            Game.startStage(thisScene.Players[thisScene.activePlayer], thisScene);
+
             if (Game.debug) {
                 $('#debugMenu').fadeIn(200, function () { });
             }

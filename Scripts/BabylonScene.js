@@ -148,8 +148,9 @@ Game.CreateGameScene = function() {
 	}
 	 // Helper functions for creating Environment
 	// Use instances instead of clones, since material does not change, but only position, scaling and rotation
-	scene.instanceWithChildren = function(parentMesh, baseName, scene, index) {
+	scene.instanceWithChildren = function(parentMesh, baseName, scene, index, hasCollisions) {
 		index === undefined ? index = 0 : index;
+		hasCollisions === undefined ? hasCollisions = true : hasCollisions;
 		var childMeshes = parentMesh.getChildren();
 		var parentInstance = parentMesh.createInstance(baseName + '-' + index);
 		scene.shadowGenerator.getShadowMap().renderList.push(parentInstance);
@@ -159,11 +160,17 @@ Game.CreateGameScene = function() {
 			var newChildIndex = childInstances.push(childMesh.createInstance(baseName + '-' + index + '.' + childMeshes[i_child].name)) - 1;
 			// Link instance to parent instance and keep the properties of the child mesh
 			childInstances[newChildIndex].parent = parentInstance;
-			childInstances[newChildIndex].checkCollisions = childMesh.checkCollisions;
+			childInstances[newChildIndex].checkCollisions = childMesh.checkCollisions && hasCollisions;
 			childInstances[newChildIndex].isVisible = childMesh.isVisible;
         	scene.shadowGenerator.getShadowMap().renderList.push(childInstances[newChildIndex]);
 		}
 		return parentInstance;
+	}
+	scene.createChild = function(parentMesh, childrenMeshes, task, whichOne) {
+		var childrenIndex = childrenMeshes.push(task.loadedMeshes[whichOne]) - 1;
+		scene.shadowGenerator.getShadowMap().renderList.push(childrenMeshes[childrenIndex]);
+		childrenMeshes[childrenIndex].parent = parentMesh;
+		scene.applyOutline(childrenMeshes[childrenIndex]);
 	}
 	
 	/******************************************************/
@@ -185,6 +192,7 @@ Game.CreateGameScene = function() {
 	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-04.babylon");
 	// scene.tree2ModelTask = scene.assetsManager.addMeshTask("tree2ModelTask", "", "./Assets/", "tree-02.babylon");
 	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.babylon");
+	scene.gateModelTask = scene.assetsManager.addMeshTask("gateModelTask", "", "./Assets/", "gate.babylon");
 	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.babylon");
 	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.babylon");
 	scene.rock04ModelTask = scene.assetsManager.addMeshTask("rock04ModelTask", "", "./Assets/", "rock-04.babylon");
@@ -231,7 +239,9 @@ Game.CreateGameScene = function() {
 			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {
 				scene.arrowMeshes[scene.activeArrow].isVisible = true;
 				scene.bowArrowMesh.isVisible = false;
-                scene.activeCamera.rotation.y += (Math.random() > 0.5) ? (0.01 + Math.random()*.02) : (-Math.random()*.02 - 0.01);
+				if (!Game.debug) {
+                	scene.activeCamera.rotation.y += (Math.random() > 0.5) ? (0.01 + Math.random()*.02) : (-Math.random()*.02 - 0.01);
+				}
 			});
 		}
 	}
@@ -264,7 +274,7 @@ Game.CreateGameScene = function() {
 		// scene.stage01Mesh.material = terrainMaterial;
 
         scene.activeCamera.checkCollisions = true;
-        scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
+        scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
 	}
 	scene.landscapeCliffsideTask.onSuccess = function(task) {
 		scene.landscapeCliffsideMesh = task.loadedMeshes[0];
@@ -332,6 +342,9 @@ Game.CreateGameScene = function() {
 		scene.fenceMesh = task.loadedMeshes[3];
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMesh);
 		scene.fenceMeshes = [];
+		
+		// scene.createChild(scene.fenceMesh, scene.fenceMeshes, task, 1);
+		// scene.createChild(scene.fenceMesh, scene.fenceMeshes, task, 2);
 		var fenceIndex = scene.fenceMeshes.push(task.loadedMeshes[1]) - 1;
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMeshes[fenceIndex]);
 		scene.fenceMeshes[0].parent = scene.fenceMesh;
@@ -354,6 +367,45 @@ Game.CreateGameScene = function() {
         scene.fenceMeshes[0].checkCollisions = true;
         scene.fenceMeshes[1].checkCollisions = true;
 		scene.applyOutline(scene.fenceMesh);
+		scene.fenceMesh.isVisible = false;
+    }
+    scene.gateModelTask.onSuccess = function(task) {
+		//-- Load known meshes from model --//
+		scene.gateMesh = task.loadedMeshes[7];
+		scene.shadowGenerator.getShadowMap().renderList.push(scene.gateMesh);
+		scene.gateMesh.skeletons = task.loadedSkeletons[0];
+		scene.gateMeshes = [];
+
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 0);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 1);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 2);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 3);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 4);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 5);
+		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 6);
+        
+		scene.gateMesh.openGate = function () {
+			if (scene.gateMesh.animatable) {
+				scene.gateMesh.animatable.stop();
+			}
+			scene.gateMesh.animatable = {};
+			scene.gateMesh.animatable = scene.beginAnimation(scene.gateMesh.skeletons, 0, 40, false, 1, function () {
+				scene.gateMesh.checkCollisions = false;
+				scene.gateMeshes[1].checkCollisions = false;
+				scene.gateMeshes[4].checkCollisions = false;
+			});
+		}
+        
+		//-- Manipulate model --/
+		scene.gateMesh.material.diffuseColor.r*=1.4;
+		scene.gateMesh.material.diffuseColor.g*=1.8;
+		scene.gateMesh.material.diffuseColor.b*=2;
+		scene.gateMesh.scaling = new BABYLON.Vector3(5, 4, 5);
+		scene.gateMesh.position = new BABYLON.Vector3(-14, 0, -40);
+        scene.gateMesh.checkCollisions = true;
+        scene.gateMeshes[1].checkCollisions = true;
+        scene.gateMeshes[4].checkCollisions = true;
+		scene.applyOutline(scene.gateMesh);
     }
     scene.rockMesh = [];
     scene.rock01ModelTask.onSuccess = function(task) {
