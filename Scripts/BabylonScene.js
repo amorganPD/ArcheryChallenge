@@ -165,13 +165,78 @@ Game.CreateGameScene = function() {
         	scene.shadowGenerator.getShadowMap().renderList.push(childInstances[newChildIndex]);
 		}
 		return parentInstance;
-	}
+	};
 	scene.createChild = function(parentMesh, childrenMeshes, task, whichOne) {
 		var childrenIndex = childrenMeshes.push(task.loadedMeshes[whichOne]) - 1;
 		scene.shadowGenerator.getShadowMap().renderList.push(childrenMeshes[childrenIndex]);
 		childrenMeshes[childrenIndex].parent = parentMesh;
 		scene.applyOutline(childrenMeshes[childrenIndex]);
+	};
+	scene.parentMesh = function (child, parent) {
+	
+	var rotation = BABYLON.Quaternion.Identity();
+	var position = BABYLON.Vector3.Zero();
+	var m1 = BABYLON.Matrix.Identity();
+	var m2 = BABYLON.Matrix.Identity();
+	
+	parent.getWorldMatrix().decompose(BABYLON.Vector3.Zero(), rotation, position);
+	
+	rotation.toRotationMatrix(m1);
+	m2.setTranslation(position);
+	
+	m2.multiplyToRef(m1, m1);
+	
+	var invParentMatrix = BABYLON.Matrix.Invert(m1);
+	
+	var m = child.getWorldMatrix().multiply(invParentMatrix);
+
+	m.decompose(BABYLON.Vector3.Zero(), child.rotationQuaternion, position);
+	
+	invParentMatrix = BABYLON.Matrix.Invert(parent.getWorldMatrix());
+	
+	var m = child.getWorldMatrix().multiply(invParentMatrix);
+	
+	m.decompose(BABYLON.Vector3.Zero(), BABYLON.Quaternion.Identity(), position);
+
+	child.scaling.x = child.scaling.x * (1 / parent.scaling.x);
+	child.scaling.y = child.scaling.y * (1 / parent.scaling.y);
+	child.scaling.z = child.scaling.z * (1 / parent.scaling.z);
+	
+	child.position.x = position.x
+	child.position.y = position.y;
+	child.position.z = position.z;
+	
+	if (parent.scaling.x != 1 || parent.scaling.y != 1 || parent.scaling.z != 1) {
+
+		var children = parent.getChildren();
+		var scaleFixMesh;
+
+		for (var i = 0; i < children.length; i++) {
+			if (children[i].name == 'scaleFixMesh') {
+				scaleFixMesh = children[i];
+				//alert("found");
+				break;
+			}
+		}
+
+		if (scaleFixMesh == undefined) {
+			scaleFixMesh = new BABYLON.Mesh('scaleFixMesh', parent.getScene());
+			scaleFixMesh.parent = parent;
+		}
+
+		scaleFixMesh.scaling.x = 1 / parent.scaling.x;
+		scaleFixMesh.scaling.y = 1 / parent.scaling.y;
+		scaleFixMesh.scaling.z = 1 / parent.scaling.z;
+
+		child.parent = scaleFixMesh;
+		
+	} else {
+		
+		child.parent = parent;
+		
 	}
+	
+};
 	
 	/******************************************************/
 	/*START - STUB CODE*/
@@ -565,9 +630,6 @@ Game.CreateGameScene = function() {
 				scene.Players[scene.activePlayer].arrowFired();
 				$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows,2));
 				
-				scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
-				scene.audio.bowShot.play(); // Play Shooting sound
-				
 				arrowRot = activeArrowMesh.rotation;
                 var worldMat = activeArrowMesh.getWorldMatrix();
                 var newTranslation = new BABYLON.Vector3();
@@ -575,14 +637,13 @@ Game.CreateGameScene = function() {
                 var newScale = new BABYLON.Vector3();
                 worldMat.decompose(newScale, newQuaterion, newTranslation);
 				activeArrowMesh.parent = null;
-				
-				// Translate from local to global
-				// activeArrowMesh.rotation = new BABYLON.Vector3(0, arrowRot.y + activeArrowMesh.currentCameraRot.y, arrowRot.z + activeArrowMesh.currentCameraRot.x);
-				// var newPos = translateAlongVector(activeArrowMesh.currentCameraPos, arrowPos, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
-                
+
                 activeArrowMesh.rotationQuaternion = newQuaterion;
                 activeArrowMesh.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrowMesh.rotation);
 				activeArrowMesh.position = newTranslation;
+
+				scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
+				scene.audio.bowShot.play(); // Play Shooting sound
 				
 				activeArrowMesh.arrowFiring = true;
 				scene.bowMesh.shootArrow();

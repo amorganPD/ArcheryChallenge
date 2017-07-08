@@ -97,6 +97,37 @@ Game.createChallenge = function(scene, whichChallenge) {
 
                 //set position and movement
                 scene.targetMesh.position = Game.Data.activeStage.positionOrigin.add(thisChallenge.targetData[i].positionOffset);
+                if (thisChallenge.targetData[i].startPositionOffset != undefined) {
+                    scene.targetMesh.animation = new BABYLON.Animation(
+                        "targetAnimation",
+                        "position.x",
+                        30,
+                        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+                        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+                    );
+                    scene.targetMesh.keys = []; 
+                    scene.targetMesh.keys.push({
+                        frame: 0 / thisChallenge.targetData[i].speed,
+                        value: thisChallenge.targetData[i].startPositionOffset.x
+                    });
+                    scene.targetMesh.keys.push({
+                        frame: 60 / thisChallenge.targetData[i].speed,
+                        value: thisChallenge.targetData[i].endPositionOffset.x
+                    });
+                    scene.targetMesh.keys.push({
+                        frame: 120 / thisChallenge.targetData[i].speed,
+                        value: thisChallenge.targetData[i].startPositionOffset.x
+                    });
+                    scene.targetMesh.animation.setKeys(scene.targetMesh.keys);
+                    scene.targetMesh.animations.push(scene.targetMesh.animation);
+                    scene.targetAnimation = scene.beginAnimation(scene.targetMesh, 0, 120 / thisChallenge.targetData[i].speed, true);
+                }
+                else {
+                    if (scene.targetAnimation != undefined) {
+                        scene.targetAnimation.stop();
+                    }
+                }
+                
                 break;
             case Game.targetType.ONESHOT:
                 // clone target of this type
@@ -151,18 +182,18 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 3
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 350,
+		requiredPoints: 300,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 20),
             type: Game.targetType.NORMAL,
             speed: 1,
-            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(0, 15, 0)
+            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
         }]
     }));
     //Challenge 4
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 375,
+		requiredPoints: 325,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(10, 6, 30),
             type: Game.targetType.NORMAL,
@@ -173,13 +204,13 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 5
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 400,
+		requiredPoints: 250,
 		targetData: [{
-            positionOffset: new BABYLON.Vector3(15, 6, 40),
+            positionOffset: new BABYLON.Vector3(15, 6, 50),
             type: Game.targetType.NORMAL,
-            speed: 2,
-            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
+            speed: .7,
+            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
         }]
     }));
 });
@@ -187,7 +218,7 @@ Game.Data.stages.push(new function () {
     var MaxChallenges = 0;
     this.challenges = [];
     this.name = "The Cliff";
-    this.positionOrigin = new BABYLON.Vector3(0,0,525);
+    this.positionOrigin = new BABYLON.Vector3(0,0,500);
     this.allowNextStage = function (scene) {
         Game.challengeCount = 0;
         Game.Data.activeStage = Game.Data.stages[Game.Data.stageCount++];
@@ -211,18 +242,18 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 3
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 350,
+		requiredPoints: 300,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 20),
             type: Game.targetType.NORMAL,
             speed: 1,
-            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(0, 15, 0)
+            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
         }]
     }));
     //Challenge 4
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 375,
+		requiredPoints: 325,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(10, 6, 30),
             type: Game.targetType.NORMAL,
@@ -233,13 +264,13 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 5
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 400,
+		requiredPoints: 250,
 		targetData: [{
-            positionOffset: new BABYLON.Vector3(15, 6, 40),
+            positionOffset: new BABYLON.Vector3(15, 6, 50),
             type: Game.targetType.NORMAL,
-            speed: 2,
-            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
+            speed: .7,
+            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
         }]
     }));
 });
@@ -269,18 +300,18 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 3
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 350,
+		requiredPoints: 300,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 20),
             type: Game.targetType.NORMAL,
             speed: 1,
-            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(0, 15, 0)
+            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
         }]
     }));
     //Challenge 4
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 375,
+		requiredPoints: 325,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(10, 6, 30),
             type: Game.targetType.NORMAL,
@@ -291,13 +322,13 @@ Game.Data.stages.push(new function () {
     }));
     //Challenge 5
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 400,
+		requiredPoints: 250,
 		targetData: [{
-            positionOffset: new BABYLON.Vector3(15, 6, 40),
+            positionOffset: new BABYLON.Vector3(15, 6, 50),
             type: Game.targetType.NORMAL,
-            speed: 2,
-            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
+            speed: .7,
+            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
         }]
     }));
 });

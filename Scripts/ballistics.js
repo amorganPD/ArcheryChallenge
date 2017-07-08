@@ -70,7 +70,7 @@ function calcProjectileMotion(x0, y0, z0, v0, t, theta0, phi0) {
 function getDistance(fromPosition, toPosition, unitVectors, toOffset, fromOffset) {
 	var diffX = (toPosition.x - fromPosition.x)*unitVectors[0];
 	var diffY = (toPosition.y - fromPosition.y)*unitVectors[1];
-	var diffZ = (toPosition.z - fromPosition.z)*unitVectors[2];;
+	var diffZ = (toPosition.z - fromPosition.z)*unitVectors[2];
 	
 	return Math.sqrt(Math.pow(diffX,2) + Math.pow(diffY,2) + Math.pow(diffZ,2));
 }

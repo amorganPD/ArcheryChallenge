@@ -9,7 +9,8 @@ Game.initArrows = function(scene) {
         scene.arrowMeshes[newIndex].imposterArrowTip = scene.getMeshByName('arrowClone-' + newIndex + '.imposterTip');
         
         scene.arrowMeshes[newIndex].parent = scene.activeCamera;
-        scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.17, -.2, 3.05);
+        // scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.17, -.2, 3.05);
+        scene.arrowMeshes[newIndex].position = new BABYLON.Vector3(.07, -.2, 3.57);
         scene.arrowMeshes[newIndex].rotation = new BABYLON.Vector3(.02, 0, -0.19);
         scene.arrowMeshes[newIndex].arrowFiring = false;
         scene.arrowMeshes[newIndex].arrowDrawing = false;
@@ -20,13 +21,13 @@ Game.initArrows = function(scene) {
         
         return newIndex;
     };
-    scene.arrowCollision = function (activeArrow, scene, isTarget) {
+    scene.arrowCollision = function (activeArrow, scene, isTarget, parentMesh) {
         activeArrow.arrowFiring = false;
         scene.audio.targetHit.play();
         if (isTarget) {
             // get screen coords
-            var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport);
-            // var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight()));
+    		var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
+            var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
             
             scene.isfloatingScoreActive = true;
             scene.floatingTextCounter = 0;
@@ -34,8 +35,20 @@ Game.initArrows = function(scene) {
             var arrowTipWorldMat = activeArrow.imposterArrowTip.getWorldMatrix(); // get world matrix since it is parented
             var arrowTipPos = new BABYLON.Vector3();
             arrowTipWorldMat.decompose(new BABYLON.Vector3(), new BABYLON.Quaternion(), arrowTipPos);
-            var distance = getDistance(scene.targetMesh.position, arrowTipPos, [1, 1, 0], new BABYLON.Vector3(0, .5, .5));
+            var distance = getDistance(parentMesh.position, arrowTipPos, [1, 1, 0], new BABYLON.Vector3(0, .5, .5));
             var hitScore = scene.Players[scene.activePlayer].updatePoints(distance, 3);
+
+            // attach arrow to mesh
+            scene.parentMesh(activeArrow, parentMesh);
+            activeArrow.parent = parentMesh;
+            // activeArrow.scaling = activeArrow.scaling.multiply(new BABYLON.Vector3(.5, .5, .5));
+            // var newPosition = arrowTipPos.multiply(new BABYLON.Vector3(.5, .5, .5));
+            // activeArrow.position = arrowTipPos.subtract(parentMesh.position);
+            // activeArrow.position.z = arrowTipPos.z;
+                        
+            // activeArrow.rotationQuaternion = newQuaterion;
+            // activeArrow.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrow.rotation);
+            // activeArrow.position = newTranslation;
             
             // Manipulate DOM
             $('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3));
@@ -48,7 +61,7 @@ Game.initArrows = function(scene) {
             });
             $('.floatingHitScore').css({'left': ((screenCoords.x - 30) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y + 30) / window.devicePixelRatio) + 'px'})
         }
-        // activeArrow.parent = scene.targetMesh;
+        
         // Clear Timeout
         if (scene.timerId) {
             clearTimeout(scene.timerId);
@@ -71,7 +84,7 @@ Game.initArrows = function(scene) {
         scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
         { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.targetMesh, usePreciseIntersection: true} }, 
             function (data) {
-                scene.arrowCollision(scene.arrowMeshes[index], scene, true);
+                scene.arrowCollision(scene.arrowMeshes[index], scene, true, scene.targetMesh);
             }
         ));
         scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
