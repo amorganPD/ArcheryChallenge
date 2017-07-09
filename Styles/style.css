@@ -422,6 +422,10 @@
     display: inline-block;
     color: #22AAFF;
 }
+.targets {
+    display: inline-block;
+    color: #DDAA44;
+}
 
 /*BEGIN Media Queries*/
 

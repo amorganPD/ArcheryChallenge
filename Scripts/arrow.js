@@ -21,7 +21,8 @@ Game.initArrows = function(scene) {
         
         return newIndex;
     };
-    scene.arrowCollision = function (activeArrow, scene, isTarget, parentMesh) {
+    scene.arrowCollision = function (activeArrow, scene, isTarget, parentData) {
+        var parentMesh = parentData.mesh;
         activeArrow.arrowFiring = false;
         scene.audio.targetHit.play();
         if (isTarget) {
@@ -39,16 +40,18 @@ Game.initArrows = function(scene) {
             var hitScore = scene.Players[scene.activePlayer].updatePoints(distance, 3);
 
             // attach arrow to mesh
-            scene.parentMesh(activeArrow, parentMesh);
-            activeArrow.parent = parentMesh;
-            // activeArrow.scaling = activeArrow.scaling.multiply(new BABYLON.Vector3(.5, .5, .5));
-            // var newPosition = arrowTipPos.multiply(new BABYLON.Vector3(.5, .5, .5));
-            // activeArrow.position = arrowTipPos.subtract(parentMesh.position);
-            // activeArrow.position.z = arrowTipPos.z;
-                        
-            // activeArrow.rotationQuaternion = newQuaterion;
-            // activeArrow.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrow.rotation);
-            // activeArrow.position = newTranslation;
+            if (parentData.type == Game.targetType.ONESHOT) {
+                activeArrow.isVisible = false;
+                parentData.mesh.isVisible = false;
+                parentData.isHit = true;
+                if (parentData.targetAnimation != undefined) {
+                    parentData.targetAnimation.stop();
+                }
+            }
+            else {
+                scene.parentMesh(activeArrow, parentMesh);
+                activeArrow.parent = parentMesh;
+            }
             
             // Manipulate DOM
             $('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3));
@@ -80,22 +83,33 @@ Game.initArrows = function(scene) {
     scene.bindActionToArrow = function(index) {
         // create BJS Action Manger
         scene.arrowMeshes[index].actionManager = new BABYLON.ActionManager(scene);
-        // detect collision between arrow and the target
-        scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
-        { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.targetMesh, usePreciseIntersection: true} }, 
-            function (data) {
-                scene.arrowCollision(scene.arrowMeshes[index], scene, true, scene.targetMesh);
+        // detect collision between arrow and the targets
+        var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
+        for (var i_targets = 0; i_targets < thisChallenge.targetData.length; i_targets++) {
+            var targetData = thisChallenge.targetData[i_targets];
+            if (targetData.isHit == undefined ? true : !targetData.isHit) {
+                scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+                { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: targetData.mesh, usePreciseIntersection: true} }, 
+                    function (data) {
+                        var i_loop = 0;
+                        while (thisChallenge.targetData[i_loop].mesh != data.additionalData && i_loop < thisChallenge.targetData.length) {
+                            i_loop++;
+                        }
+                        scene.arrowCollision(scene.arrowMeshes[index], scene, true, thisChallenge.targetData[i_loop]);
+                        scene.arrowMeshes[index].actionManager.dispose();
+                    }
+                ));
             }
-        ));
+        }
         scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
         { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.imposterTrunk, usePreciseIntersection: true} }, 
             function (data) {
                 scene.arrowCollision(scene.arrowMeshes[index], scene, false);
             }
         ));
-        for (var i=0; i < scene.treeMeshes.length; i++) {
+        for (var i_trees = 0; i_trees < scene.treeMeshes.length; i_trees++) {
             scene.arrowMeshes[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(
-            { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.treeMeshes[i].imposterTrunk, usePreciseIntersection: true} }, 
+            { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: scene.treeMeshes[i_trees].imposterTrunk, usePreciseIntersection: true} }, 
                 function (data) {
                     scene.arrowCollision(scene.arrowMeshes[index], scene, false);
                 }

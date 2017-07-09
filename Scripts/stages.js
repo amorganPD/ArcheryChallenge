@@ -65,15 +65,10 @@ Game.createStage = function(scene, whichStage) {
         newFenceIndex = scene.fenceMeshes.push(scene.instanceWithChildren(scene.fenceMesh, 'fenceClone', scene, (newFenceIndex + 1), true)) - 1; // create new Fence
         scene.fenceMeshes[newFenceIndex].position = new BABYLON.Vector3((newFenceIndex - rightStart + 1)*xMult + xOffset, 0, -40);
     }
+
+    Game.Data.activeStage = Game.Data.stages[whichStage];
 }
 
-Game.startStage = function () {
-    Game.sceneAlert("Stage " + Game.Data.stageCount + "<br/>" + Game.Data.activeStage.name, function () {
-        Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class=\"points\">" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
-            $('.infoRight').fadeIn(500, function () { })
-        });
-    });
-}
 Game.creatRandomChallenge = function (scene, whichChallenge) {
     if (whichChallenge >= Game.Data.activeStage.challenges.length) {
         // Generate random until more stages and challenges exist
@@ -93,48 +88,45 @@ Game.createChallenge = function(scene, whichChallenge) {
         var thisTarget = thisChallenge.targetData[i];
         switch (thisTarget.type) {
             case Game.targetType.NORMAL:
-                // clone target of this type
-
-                //set position and movement
-                scene.targetMesh.position = Game.Data.activeStage.positionOrigin.add(thisChallenge.targetData[i].positionOffset);
-                if (thisChallenge.targetData[i].startPositionOffset != undefined) {
-                    scene.targetMesh.animation = new BABYLON.Animation(
-                        "targetAnimation",
-                        "position.x",
-                        30,
-                        BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-                        BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-                    );
-                    scene.targetMesh.keys = []; 
-                    scene.targetMesh.keys.push({
-                        frame: 0 / thisChallenge.targetData[i].speed,
-                        value: thisChallenge.targetData[i].startPositionOffset.x
-                    });
-                    scene.targetMesh.keys.push({
-                        frame: 60 / thisChallenge.targetData[i].speed,
-                        value: thisChallenge.targetData[i].endPositionOffset.x
-                    });
-                    scene.targetMesh.keys.push({
-                        frame: 120 / thisChallenge.targetData[i].speed,
-                        value: thisChallenge.targetData[i].startPositionOffset.x
-                    });
-                    scene.targetMesh.animation.setKeys(scene.targetMesh.keys);
-                    scene.targetMesh.animations.push(scene.targetMesh.animation);
-                    scene.targetAnimation = scene.beginAnimation(scene.targetMesh, 0, 120 / thisChallenge.targetData[i].speed, true);
-                }
-                else {
-                    if (scene.targetAnimation != undefined) {
-                        scene.targetAnimation.stop();
-                    }
-                }
-                
+                thisChallenge.targetData[i].mesh = scene.targetMesh;                
                 break;
             case Game.targetType.ONESHOT:
                 // clone target of this type
-
-                //set position and movement
-                scene.targetOneShotMesh.position = thisChallenge.targetData[i].positionOffset;
+                thisChallenge.targetData[i].mesh = scene.instanceWithChildren(scene.targetOneShotMesh, 'targetOneShotClone', scene);
+                thisChallenge.targetData[i].mesh.isVisible = true;
                 break;
+        }
+        //set position and movement
+        thisChallenge.targetData[i].mesh.position = Game.Data.activeStage.positionOrigin.add(thisChallenge.targetData[i].positionOffset);
+        if (thisChallenge.targetData[i].startPositionOffset != undefined) {
+            thisChallenge.targetData[i].mesh.animation = new BABYLON.Animation(
+                "targetAnimation",
+                "position",
+                30,
+                BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+            );
+            thisChallenge.targetData[i].mesh.keys = []; 
+            thisChallenge.targetData[i].mesh.keys.push({
+                frame: 0 / thisChallenge.targetData[i].speed,
+                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].startPositionOffset)
+            });
+            thisChallenge.targetData[i].mesh.keys.push({
+                frame: 60 / thisChallenge.targetData[i].speed,
+                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].endPositionOffset)
+            });
+            thisChallenge.targetData[i].mesh.keys.push({
+                frame: 120 / thisChallenge.targetData[i].speed,
+                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].startPositionOffset)
+            });
+            thisChallenge.targetData[i].mesh.animation.setKeys(thisChallenge.targetData[i].mesh.keys);
+            thisChallenge.targetData[i].mesh.animations.push(thisChallenge.targetData[i].mesh.animation);
+            thisChallenge.targetData[i].targetAnimation = scene.beginAnimation(thisChallenge.targetData[i].mesh, 0, 120 / thisChallenge.targetData[i].speed, true);
+        }
+        else {
+            if (thisChallenge.targetData[i].targetAnimation != undefined) {
+                thisChallenge.targetData[i].targetAnimation.stop();
+            }
         }
     }
 	
@@ -152,6 +144,23 @@ Game.challenge = function(options) {
         }]
 	},options||{});
 };
+Game.hasOneShot = function (targetData) {
+    for (var i=0; i < targetData.length; i++ ) {
+        if (targetData[i].type == Game.targetType.ONESHOT) {
+            return true;
+        }
+    }
+    return false;
+}
+Game.areAllOneShotsHit = function (targetData) {
+    var result = true;
+    for (var i=0; i < targetData.length; i++ ) {
+        if (targetData[i].type == Game.targetType.ONESHOT) {
+            result = result && targetData[i].isHit;
+        }
+    }
+    return result;
+}
 
 Game.Data.stages.push(new function () {
     var MaxChallenges = 0;
@@ -186,7 +195,7 @@ Game.Data.stages.push(new function () {
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 20),
             type: Game.targetType.NORMAL,
-            speed: 1,
+            speed: .5,
             startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
             endPositionOffset: new BABYLON.Vector3(15, 0, 0)
         }]
@@ -197,7 +206,7 @@ Game.Data.stages.push(new function () {
 		targetData: [{
             positionOffset: new BABYLON.Vector3(10, 6, 30),
             type: Game.targetType.NORMAL,
-            speed: 1,
+            speed: .75,
             startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
             endPositionOffset: new BABYLON.Vector3(15, 0, 0)
         }]
@@ -226,40 +235,87 @@ Game.Data.stages.push(new function () {
     
     //Challenge 1
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 300,
+		requiredPoints: 200,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, -15),
             type: Game.targetType.NORMAL
+        },
+        {
+            positionOffset: new BABYLON.Vector3(-10, 16, -15),
+            type: Game.targetType.ONESHOT,
+            isHit: false
         }]
     }));
     //Challenge 2
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 325,
+		requiredPoints: 250,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 15),
             type: Game.targetType.NORMAL
+        },
+        {
+            positionOffset: new BABYLON.Vector3(-10, 0, -30),
+            type: Game.targetType.ONESHOT,
+            isHit: false
+        },
+        {
+            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            type: Game.targetType.ONESHOT,
+            isHit: false
         }]
     }));
     //Challenge 3
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 300,
+		requiredPoints: 200,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, 20),
             type: Game.targetType.NORMAL,
-            speed: 1,
-            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
+            speed: .5,
+            startPositionOffset: new BABYLON.Vector3(0, 20, 0),
+            endPositionOffset: new BABYLON.Vector3(0, -10, 0)
+        },
+        {
+            positionOffset: new BABYLON.Vector3(-10, 0, -30),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .5,
+            startPositionOffset: new BABYLON.Vector3(-20, 6, 0),
+            endPositionOffset: new BABYLON.Vector3(10, 6, 0)
+        },
+        {
+            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .5,
+            startPositionOffset: new BABYLON.Vector3(0, 6, -40),
+            endPositionOffset: new BABYLON.Vector3(0, 6, 0)
         }]
     }));
     //Challenge 4
     MaxChallenges = this.challenges.push(new Game.challenge( {
-		requiredPoints: 325,
+		requiredPoints: 300,
 		targetData: [{
             positionOffset: new BABYLON.Vector3(10, 6, 30),
             type: Game.targetType.NORMAL,
-            speed: 1,
-            startPositionOffset: new BABYLON.Vector3(-15, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(15, 0, 0)
+            speed: .35,
+            startPositionOffset: new BABYLON.Vector3(0, 6, -80),
+            endPositionOffset: new BABYLON.Vector3(0, 6, 0)
+        },
+        {
+            positionOffset: new BABYLON.Vector3(-10, 0, -30),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .5,
+            startPositionOffset: new BABYLON.Vector3(-20, 6, 0),
+            endPositionOffset: new BABYLON.Vector3(10, 6, 0)
+        },
+        {
+            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .5,
+            startPositionOffset: new BABYLON.Vector3(0, 6, -40),
+            endPositionOffset: new BABYLON.Vector3(0, 6, 0)
         }]
     }));
     //Challenge 5
@@ -332,7 +388,6 @@ Game.Data.stages.push(new function () {
         }]
     }));
 });
-Game.Data.activeStage = Game.Data.stages[0];
 
 Game.sceneAlert = function(text, callback, cbData) {
     var readFactor = (text.length / 20) * 1000;
@@ -355,8 +410,13 @@ Game.resetChallengeInfo = function (player, scene) {
     scene.activeArrow = scene.createNewArrow();
 }
 Game.startStage = function (player, scene) {
+    var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
     Game.sceneAlert("Stage " + Game.Data.stageCount + "<br/>" + Game.Data.activeStage.name, function () {
-        Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class=\"points\">" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
+        var challengeText = "Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class='points'>" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points";
+        if (Game.hasOneShot(thisChallenge.targetData)) {
+            challengeText += "<br/>Eliminate All <div class='targets' >Yellow</div> Targets";
+        }
+        Game.sceneAlert(challengeText, function () {
             Game.resetChallengeInfo(player, scene);
             $('.infoRight').fadeIn(500, function () { });
         });
@@ -365,7 +425,7 @@ Game.startStage = function (player, scene) {
 Game.startNextRound = function (player, scene) {
 
     var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
-    if (player.points >= thisChallenge.requiredPoints) {
+    if (player.points >= thisChallenge.requiredPoints && Game.areAllOneShotsHit(thisChallenge.targetData)) {
         Game.challengeCount++;
         
         Game.sceneAlert("Great Job!<br/>Score: <div class='points'>" + player.points + "</div><br/>Challenge Complete!", function () {
@@ -377,7 +437,11 @@ Game.startNextRound = function (player, scene) {
             }
             else {
                 Game.createChallenge(scene, Game.challengeCount);
-                Game.sceneAlert("Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class='points'>" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points", function () {
+                var challengeText = "Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class='points'>" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points";
+                if (Game.hasOneShot(thisChallenge.targetData)) {
+                    challengeText += "<br/>Eliminate All <div class='targets' >Yellow</div> Targets";
+                }
+                Game.sceneAlert(challengeText, function () {
                     Game.resetChallengeInfo(player, scene);
                 });
             }

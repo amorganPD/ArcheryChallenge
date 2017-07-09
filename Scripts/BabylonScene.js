@@ -535,33 +535,11 @@ Game.CreateGameScene = function() {
 		Game.createStage(scene, 0);
 		Game.createChallenge(scene, Game.challengeCount);
 		
-		// // Set up Collisions
-		// scene.player.mesh.checkCollisions = true;
-		// scene.player.mesh.isVisible = true;
-		// scene.player.mesh.ellipsoid = new BABYLON.Vector3(3, .1, 3);
-		// scene.player.mesh.ellipsoidOffset = new BABYLON.Vector3(0, .2, 0);
-		
-		// //Set the ellipsoid around the camera (e.g. your player's size)
-		// scene.player.weaponMesh.parent = scene.player.mesh;
-		// // Assign Rotation Offset
-		// scene.player.mesh.rotationOffset = new BABYLON.Vector3(0,0,0);
-		// scene.player.mesh.previousRotation = scene.player.mesh.rotation.y;
-		
-		// scene.player.mesh.playerAnimations = new Game.importedAnimations(scene.player);
-		// scene.player.mesh.playerAnimations.init(scene);
-		
         // Apply Gravity and shadows
 		// scene.enablePhysics();
 		// scene.setGravity(new BABYLON.Vector3(0, -10, 0));
 		// scene.activeCamera.position.y = 8;
 		scene.activeCamera.applyGravity = true;
-		
-        // scene.shadowGenerator.useVarianceShadowMap = true;
-		// for (var i_shadows=0; i_shadows < scene.meshes.length; i_shadows++) {
-		// 	if (scene.meshes[i_shadows].isVisible && scene.meshes[i_shadows] != scene.stage01Mesh) {
-		// 		scene.shadowGenerator.getShadowMap().renderList.push(scene.meshes[i_shadows]);
-		// 	}
-		// }
 		
 		scene.shadowGenerator.useExponentialShadowMap  = true;
         scene.stage01Mesh.receiveShadows = true;
