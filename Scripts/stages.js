@@ -94,9 +94,13 @@ Game.createChallenge = function(scene, whichChallenge) {
                 // clone target of this type
                 thisChallenge.targetData[i].mesh = scene.instanceWithChildren(scene.targetOneShotMesh, 'targetOneShotClone', scene);
                 thisChallenge.targetData[i].mesh.isVisible = true;
+                thisChallenge.targetData[i].isHit = false;
                 break;
         }
         //set position and movement
+        if (thisChallenge.targetData[i].mesh.targetAnimation != undefined) {
+            thisChallenge.targetData[i].mesh.targetAnimation.stop();
+        }
         thisChallenge.targetData[i].mesh.position = Game.Data.activeStage.positionOrigin.add(thisChallenge.targetData[i].positionOffset);
         if (thisChallenge.targetData[i].startPositionOffset != undefined) {
             thisChallenge.targetData[i].mesh.animation = new BABYLON.Animation(
@@ -121,12 +125,7 @@ Game.createChallenge = function(scene, whichChallenge) {
             });
             thisChallenge.targetData[i].mesh.animation.setKeys(thisChallenge.targetData[i].mesh.keys);
             thisChallenge.targetData[i].mesh.animations.push(thisChallenge.targetData[i].mesh.animation);
-            thisChallenge.targetData[i].targetAnimation = scene.beginAnimation(thisChallenge.targetData[i].mesh, 0, 120 / thisChallenge.targetData[i].speed, true);
-        }
-        else {
-            if (thisChallenge.targetData[i].targetAnimation != undefined) {
-                thisChallenge.targetData[i].targetAnimation.stop();
-            }
+            thisChallenge.targetData[i].mesh.targetAnimation = scene.beginAnimation(thisChallenge.targetData[i].mesh, 0, 120 / thisChallenge.targetData[i].speed, true);
         }
     }
 	
@@ -259,7 +258,7 @@ Game.Data.stages.push(new function () {
             isHit: false
         },
         {
-            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            positionOffset: new BABYLON.Vector3(20, 16, -30),
             type: Game.targetType.ONESHOT,
             isHit: false
         }]
@@ -283,7 +282,7 @@ Game.Data.stages.push(new function () {
             endPositionOffset: new BABYLON.Vector3(10, 6, 0)
         },
         {
-            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            positionOffset: new BABYLON.Vector3(20, 16, -30),
             type: Game.targetType.ONESHOT,
             isHit: false,
             speed: .5,
@@ -295,7 +294,7 @@ Game.Data.stages.push(new function () {
     MaxChallenges = this.challenges.push(new Game.challenge( {
 		requiredPoints: 300,
 		targetData: [{
-            positionOffset: new BABYLON.Vector3(10, 6, 30),
+            positionOffset: new BABYLON.Vector3(0, 6, 30),
             type: Game.targetType.NORMAL,
             speed: .35,
             startPositionOffset: new BABYLON.Vector3(0, 6, -80),
@@ -306,27 +305,48 @@ Game.Data.stages.push(new function () {
             type: Game.targetType.ONESHOT,
             isHit: false,
             speed: .5,
-            startPositionOffset: new BABYLON.Vector3(-20, 6, 0),
-            endPositionOffset: new BABYLON.Vector3(10, 6, 0)
+            startPositionOffset: new BABYLON.Vector3(-20, 30, 0),
+            endPositionOffset: new BABYLON.Vector3(10, 0, 0)
         },
         {
-            positionOffset: new BABYLON.Vector3(20, 16, -40),
+            positionOffset: new BABYLON.Vector3(20, 16, -20),
             type: Game.targetType.ONESHOT,
             isHit: false,
             speed: .5,
-            startPositionOffset: new BABYLON.Vector3(0, 6, -40),
-            endPositionOffset: new BABYLON.Vector3(0, 6, 0)
+            startPositionOffset: new BABYLON.Vector3(10, 20, -30),
+            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
         }]
     }));
     //Challenge 5
     MaxChallenges = this.challenges.push(new Game.challenge( {
 		requiredPoints: 250,
 		targetData: [{
-            positionOffset: new BABYLON.Vector3(15, 6, 50),
-            type: Game.targetType.NORMAL,
-            speed: .7,
+            positionOffset: new BABYLON.Vector3(0, 0, 50),
+            type: Game.targetType.NORMAL
+        },
+        {
+            positionOffset: new BABYLON.Vector3(0, 20, 20),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .75,
             startPositionOffset: new BABYLON.Vector3(0, 0, 0),
-            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
+            endPositionOffset: new BABYLON.Vector3(0, 30, 0)
+        }   ,
+        {
+            positionOffset: new BABYLON.Vector3(-20, -10, 20),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .75,
+            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(-25, -30, 0)
+        },
+        {
+            positionOffset: new BABYLON.Vector3(20, -10, 20),
+            type: Game.targetType.ONESHOT,
+            isHit: false,
+            speed: .75,
+            startPositionOffset: new BABYLON.Vector3(0, 0, 0),
+            endPositionOffset: new BABYLON.Vector3(25, -30, 0)
         }]
     }));
 });
@@ -448,6 +468,7 @@ Game.startNextRound = function (player, scene) {
         });
     }
     else {
+        Game.createChallenge(scene, Game.challengeCount);
         Game.sceneAlert("Too bad<br/>Score: <div class='points'>" + player.points + "</div><br/>Try Again", function () {
             Game.resetChallengeInfo(player, scene);
         });

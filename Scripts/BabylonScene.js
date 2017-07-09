@@ -672,7 +672,7 @@ Game.CreateGameScene = function() {
         if (scene.isfloatingScoreActive) {
             // keep score at previous arrow
     		var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
-            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
+            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].absolutePosition, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
             $('.floatingHitScore').css({'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px'});
             scene.floatingTextCounter += 1;
         }

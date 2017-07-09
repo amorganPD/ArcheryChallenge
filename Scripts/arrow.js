@@ -28,7 +28,7 @@ Game.initArrows = function(scene) {
         if (isTarget) {
             // get screen coords
     		var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
-            var screenCoords = BABYLON.Vector3.Project(activeArrow.position, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
+            var screenCoords = BABYLON.Vector3.Project(activeArrow.absolutePosition, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
             
             scene.isfloatingScoreActive = true;
             scene.floatingTextCounter = 0;
