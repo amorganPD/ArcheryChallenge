@@ -543,14 +543,13 @@ Game.CreateGameScene = function() {
 		}
 		
 		Game.createStage(scene, 0);
-		Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
 		Game.skipRound = function () {
-			Game.Data.activeStage.allowNextStage(scene);
-    		// var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
-			// scene.Players[scene.activePlayer].points = 500;
-			// Game.setAllOneShotsHit(thisChallenge.targetData);
-			// Game.startNextRound(scene.Players[scene.activePlayer], scene);
+			// Game.Data.activeStage.allowNextStage(scene);
+    		var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
+			scene.Players[scene.activePlayer].points = 500;
+			Game.setAllOneShotsHit(thisChallenge.targetData);
+			Game.startNextRound(scene.Players[scene.activePlayer], scene);
 		}
 		
         // Apply Gravity and shadows

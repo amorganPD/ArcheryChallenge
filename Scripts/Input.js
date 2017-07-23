@@ -11,6 +11,7 @@ var UpDown = false;
 var DownDown = false;
 var KDown = false;
 var SpacebarState = KeyState.Clear;
+var ShiftDown = false;
 
 function getKeyState(keystate) {
 	var state = keystate;
@@ -20,6 +21,9 @@ function getKeyState(keystate) {
 
 //KEYS
 var KEYS = {
+    ENTER: 13,
+    SHIFT: 16,
+    ESCAPE: 27,
     SPACE: 32,
     LEFT: 'A'.charCodeAt(0),
     UP: 'W'.charCodeAt(0),
@@ -63,8 +67,11 @@ function doKeyDown(evt) {
                 Game.pointerLock();
             }
             break;
+        case KEYS.SHIFT:
+            ShiftDown = true;
+            break;   
         case KEYS.EIGHT:
-            if (Game.skipRound != undefined) {
+            if ((Game.skipRound != undefined) && ShiftDown) {
                 Game.skipRound();
             }
             break;            
@@ -98,6 +105,9 @@ function doKeyUp(evt) {
             break;
         case KEYS.UP:
             UpDown = false;
+            break;
+        case KEYS.SHIFT:
+            ShiftDown = false;
             break;
         case KEYS.DOWN:
             DownDown = false;
