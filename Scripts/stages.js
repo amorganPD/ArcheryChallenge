@@ -10,7 +10,7 @@ Game.Data = {
 
 Game.createStage = function(scene, whichStage) {
     // Create Skybox
-    scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 2000.0, scene);
+    scene.skybox = BABYLON.Mesh.CreateBox("skyBox", 2500.0, scene);
     scene.skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
     scene.skyboxMaterial.backFaceCulling = false;
     scene.skyboxMaterial.disableLighting = true;
@@ -29,7 +29,7 @@ Game.createStage = function(scene, whichStage) {
 
     Game.initArrows(scene);
     // Create First arrow
-    scene.activeArrow = scene.createNewArrow();
+    // scene.activeArrow = scene.createNewArrow();
 
     // scene.ground = BABYLON.Mesh.CreateGroundFromHeightMap("ground", "./Textures/heightmap_Valley.jpg", 800, 800, 30, 0, 100, scene, false, function (mesh) {
     //     scene.ground.material = new BABYLON.StandardMaterial("textureGround", scene);
@@ -160,6 +160,13 @@ Game.areAllOneShotsHit = function (targetData) {
     }
     return result;
 }
+Game.setAllOneShotsHit = function (targetData) {
+    for (var i=0; i < targetData.length; i++ ) {
+        if (targetData[i].type == Game.targetType.ONESHOT) {
+            targetData[i].isHit = true;
+        }
+    }
+}
 
 Game.Data.stages.push(new function () {
     var MaxChallenges = 0;
@@ -229,6 +236,12 @@ Game.Data.stages.push(new function () {
     this.positionOrigin = new BABYLON.Vector3(0,0,500);
     this.allowNextStage = function (scene) {
         Game.challengeCount = 0;
+		scene.islandMesh.checkCollisions = true;
+		scene.bridgeImposter.checkCollisions = true;
+        scene.islandMesh.isVisible = true;
+		for (var i=2; i < scene.bridgeMeshes.length; i++) {
+			scene.bridgeMeshes[i].isVisible = true;
+		}
         Game.Data.activeStage = Game.Data.stages[Game.Data.stageCount++];
     }
     
@@ -354,7 +367,7 @@ Game.Data.stages.push(new function () {
     var MaxChallenges = 0;
     this.challenges = [];
     this.name = "The Floating Island";
-    this.positionOrigin = new BABYLON.Vector3(0,0,0);
+    this.positionOrigin = new BABYLON.Vector3(0,0,1020);
     this.allowNextStage = function (scene) {
     }
     

@@ -1,6 +1,4 @@
 
-
-
 Game.initArrows = function(scene) {
     scene.arrowMeshes = [];
     scene.createNewArrow = function () {
@@ -54,7 +52,7 @@ Game.initArrows = function(scene) {
             }
             
             // Manipulate DOM
-            $('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3));
+            $('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3)); // + "/" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints);
             // Set up Floating text
             $('.floatingHitScore').html(hitScore);
             $('.floatingHitScore').fadeIn(50, function () {
@@ -96,7 +94,10 @@ Game.initArrows = function(scene) {
                             i_loop++;
                         }
                         scene.arrowCollision(scene.arrowMeshes[index], scene, true, thisChallenge.targetData[i_loop]);
-                        scene.arrowMeshes[index].actionManager.dispose();
+                        if (thisChallenge.targetData[i_loop].type == Game.targetType.ONESHOT) {
+                            scene.arrowMeshes[index].actionManager.dispose();
+                            thisChallenge.targetData[i_loop].mesh.dispose();
+                        }
                     }
                 ));
             }

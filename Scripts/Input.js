@@ -27,7 +27,8 @@ var KEYS = {
     DOWN: 'S'.charCodeAt(0),
     K: 'K'.charCodeAt(0),
     P: 'P'.charCodeAt(0),
-    ONE: '1'.charCodeAt(0)
+    ONE: '1'.charCodeAt(0),
+    EIGHT: '8'.charCodeAt(0)
 };
 
 //Key Listeners
@@ -62,6 +63,11 @@ function doKeyDown(evt) {
                 Game.pointerLock();
             }
             break;
+        case KEYS.EIGHT:
+            if (Game.skipRound != undefined) {
+                Game.skipRound();
+            }
+            break;            
     }
 }
 function mouseDown(evt) {

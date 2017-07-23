@@ -102,6 +102,7 @@ Game.allowStart = function () {
                     if (Game.preferences.cameraType == Game.cameraType.Normal) {
                         $('#cameraMode').html('Touch');
                         CameraType = Game.cameraType.Touch;
+                        launchIntoFullscreen(document.documentElement);
                     }
                     else if (Game.preferences.cameraType == Game.cameraType.Touch) {
                         $('#cameraMode').html('VR');

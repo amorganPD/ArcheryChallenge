@@ -101,7 +101,7 @@ Game.CreateGameScene = function() {
     //Creation of the scene 
     var scene = new BABYLON.Scene(Game.engine);
     scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
-	scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
+	scene.gravity = new BABYLON.Vector3(0, -8, 0);
 	scene.collisionsEnabled = true;
 	scene.isErrthingReady = false;
 	
@@ -249,8 +249,8 @@ Game.CreateGameScene = function() {
 	//create Asset Tasks
     // Meshes
 	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCenteredwArrow.babylon");
-	scene.stage01Task = scene.assetsManager.addMeshTask("stage01Task", "", "./Assets/", "stage-01_TheForest.babylon");
-	scene.landscapeCliffsideTask = scene.assetsManager.addMeshTask("landscapeCliffsideTask", "", "./Assets/", "landscape_cliffside.babylon");
+	scene.stage01Task = scene.assetsManager.addMeshTask("stage01Task", "", "./Assets/", "terrain_main.babylon");
+	// scene.landscapeCliffsideTask = scene.assetsManager.addMeshTask("landscapeCliffsideTask", "", "./Assets/", "landscape_cliffside.babylon");
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.babylon");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-Normal.babylon");
     scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.babylon");
@@ -272,7 +272,7 @@ Game.CreateGameScene = function() {
 		scene.bowArrowMesh = task.loadedMeshes[1];
 		scene.bowMesh.skeletons = task.loadedSkeletons[0];
 		scene.bowArrowMesh.parent = scene.bowMesh;
-		scene.bowArrowMesh.isVisible = true;
+		scene.bowArrowMesh.isVisible = false;
 		
 		//-- Manipulate model --/
 		scene.bowMesh.scaling = new BABYLON.Vector3(2, 2, 2);
@@ -323,33 +323,43 @@ Game.CreateGameScene = function() {
 		scene.applyOutline(scene.arrowMesh, .1);
 	}
 	scene.stage01Task.onSuccess = function(task) {
-		scene.stage01Mesh = task.loadedMeshes[0];
-		scene.stage01Mesh.material = new BABYLON.StandardMaterial("textureGround", scene);
-		scene.stage01Mesh.material.diffuseTexture = new BABYLON.Texture('./Assets/stage_01_TheForest_Grid_TEXTURE.jpg', scene);
+		scene.stage01Mesh = task.loadedMeshes[25];
+		scene.islandMesh = task.loadedMeshes[23];
+		scene.bridgeImposter = task.loadedMeshes[0];
+		scene.islandMesh.parent = scene.stage01Mesh;
+		task.loadedMeshes[24].parent = scene.stage01Mesh;
+		scene.bridgeMeshes = [];
+		for (var i=0; i < 23; i++) {
+			task.loadedMeshes[i].isVisible = false;
+			task.loadedMeshes[i].parent = scene.islandMesh;
+			scene.bridgeMeshes.push(task.loadedMeshes[i]);
+		}
+
+		scene.stage01Mesh.material = null;
 		scene.stage01Mesh.scaling = new BABYLON.Vector3(20, 20, 20);
 		scene.stage01Mesh.rotation = new BABYLON.Vector3(0, 0, 0);
-		scene.stage01Mesh.position = new BABYLON.Vector3(0, -1, -180);
+		scene.stage01Mesh.position = new BABYLON.Vector3(0, 1.25, -180);
         scene.stage01Mesh.checkCollisions = true;
 		
-		// var terrainMaterial = new BABYLON.TerrainMaterial("terrainMaterial", scene);
-		// terrainMaterial.mixTexture = new BABYLON.Texture("./Assets/stencil_stonePath.png", scene);
-		// terrainMaterial.diffuseTexture1 = new BABYLON.Texture("./Assets/texture_Stone-Path-01.jpg", scene);
-		// terrainMaterial.diffuseTexture2 = new BABYLON.Texture("./Assets/texture_Grass-03.jpg", scene);
+		var terrainMaterial = new BABYLON.TerrainMaterial("terrainMaterial", scene);
+		terrainMaterial.mixTexture = new BABYLON.Texture("./Assets/texture_mixmap_terrain.png", scene);
+		terrainMaterial.diffuseTexture1 = new BABYLON.Texture("./Assets/texture_Grass-03.jpg", scene);
+		terrainMaterial.diffuseTexture2 = new BABYLON.Texture("./Assets/texture_Stone-Path-01.jpg", scene);
+		terrainMaterial.diffuseTexture3 = new BABYLON.Texture("./Assets/texture_dirt_2.jpg", scene);
+		
+		terrainMaterial.diffuseTexture1.uScale = terrainMaterial.diffuseTexture1.vScale = 20;
+		terrainMaterial.diffuseColor = new BABYLON.Color3(.7, .7, .7);
+		terrainMaterial.diffuseTexture2.uScale = terrainMaterial.diffuseTexture2.vScale = 140;
+		terrainMaterial.diffuseTexture3.uScale = terrainMaterial.diffuseTexture3.vScale = 50;
 
-		// scene.stage01Mesh.material = terrainMaterial;
+		scene.stage01Mesh.material = terrainMaterial;
+		scene.islandMesh.isVisible = false;
+		task.loadedMeshes[0].isVisible = false;
+		task.loadedMeshes[1].isVisible = false;
 
-        scene.activeCamera.checkCollisions = true;
+		scene.activeCamera.checkCollisions = true;
         scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
 	}
-	scene.landscapeCliffsideTask.onSuccess = function(task) {
-		scene.landscapeCliffsideMesh = task.loadedMeshes[0];
-		scene.landscapeCliffsideMesh.scaling = new BABYLON.Vector3(20, 20, 20);
-		scene.landscapeCliffsideMesh.rotation = new BABYLON.Vector3(0, 0, 0);
-		scene.landscapeCliffsideMesh.position = new BABYLON.Vector3(0, 50, 400);
-		scene.landscapeCliffsideMesh.material = new BABYLON.StandardMaterial("textureGround", scene);
-		scene.landscapeCliffsideMesh.material.diffuseTexture = new BABYLON.Texture('./Assets/texture_Grass-03.jpg', scene);
-	}
-
 	
 	scene.targetModelTask.onSuccess = function(task) {
 		//-- Load known meshes from model --//
@@ -533,7 +543,15 @@ Game.CreateGameScene = function() {
 		}
 		
 		Game.createStage(scene, 0);
+		Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
+		Game.skipRound = function () {
+			Game.Data.activeStage.allowNextStage(scene);
+    		// var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
+			// scene.Players[scene.activePlayer].points = 500;
+			// Game.setAllOneShotsHit(thisChallenge.targetData);
+			// Game.startNextRound(scene.Players[scene.activePlayer], scene);
+		}
 		
         // Apply Gravity and shadows
 		// scene.enablePhysics();
@@ -589,79 +607,81 @@ Game.CreateGameScene = function() {
 		var arrowRot = new BABYLON.Vector3(0,0,0);
 		var activeArrowMesh = scene.arrowMeshes[scene.activeArrow];
 		
-		if (scene.Players[scene.activePlayer].arrows != 0) {
-			if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false && activeArrowMesh.arrowFiring == false) {
-				// This gets called once for drawing the arrow
-				scene.bowMesh.drawArrow();
-				SpacebarState = KeyState.Clear;
-				activeArrowMesh.arrowDrawing = true;
-				scene.easingCounter=0;
-			}
-			else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false && activeArrowMesh.arrowDrawing) {
-				// This gets called once for shooting the arrow
-				activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.position);
-				activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.rotation);
-				var arrowPos = activeArrowMesh.position;
-				
-				SpacebarState = KeyState.Clear;
-				activeArrowMesh.arrowDrawing = false;
-				scene.Players[scene.activePlayer].arrowFired();
-				$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows,2));
-				
-				arrowRot = activeArrowMesh.rotation;
-                var worldMat = activeArrowMesh.getWorldMatrix();
-                var newTranslation = new BABYLON.Vector3();
-                var newQuaterion = new BABYLON.Quaternion();
-                var newScale = new BABYLON.Vector3();
-                worldMat.decompose(newScale, newQuaterion, newTranslation);
-				activeArrowMesh.parent = null;
-
-                activeArrowMesh.rotationQuaternion = newQuaterion;
-                activeArrowMesh.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrowMesh.rotation);
-				activeArrowMesh.position = newTranslation;
-
-				scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
-				scene.audio.bowShot.play(); // Play Shooting sound
-				
-				activeArrowMesh.arrowFiring = true;
-				scene.bowMesh.shootArrow();
-				// Make sure timer is not active, if it is kill it
-				if (scene.timerId) {
-					clearTimeout(scene.timerId);
+		if (activeArrowMesh != undefined) {
+			if (scene.Players[scene.activePlayer].arrows != 0) {
+				if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false && activeArrowMesh.arrowFiring == false) {
+					// This gets called once for drawing the arrow
+					scene.bowMesh.drawArrow();
+					SpacebarState = KeyState.Clear;
+					activeArrowMesh.arrowDrawing = true;
+					scene.easingCounter=0;
 				}
-				scene.timerId = setTimeout(function () {
-					if (scene.arrowMeshes[scene.activeArrow].arrowFiring) {
-						scene.arrowMeshes[scene.activeArrow].arrowFiring = false;
-						scene.arrowMeshes[scene.activeArrow].position.y = 0.0;
-						// Create a new arrow
-						if (scene.Players[scene.activePlayer].arrows != 0) {
-							scene.activeArrow = scene.createNewArrow();
-						}
-                        else {
-                            setTimeout(function () {
-                                Game.startNextRound(scene.Players[scene.activePlayer], scene);
-                            }, 2000);
-                        }
+				else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false && activeArrowMesh.arrowDrawing) {
+					// This gets called once for shooting the arrow
+					activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.position);
+					activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.rotation);
+					var arrowPos = activeArrowMesh.position;
+					
+					SpacebarState = KeyState.Clear;
+					activeArrowMesh.arrowDrawing = false;
+					scene.Players[scene.activePlayer].arrowFired();
+					$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows,2));
+					
+					arrowRot = activeArrowMesh.rotation;
+					var worldMat = activeArrowMesh.getWorldMatrix();
+					var newTranslation = new BABYLON.Vector3();
+					var newQuaterion = new BABYLON.Quaternion();
+					var newScale = new BABYLON.Vector3();
+					worldMat.decompose(newScale, newQuaterion, newTranslation);
+					activeArrowMesh.parent = null;
+
+					activeArrowMesh.rotationQuaternion = newQuaterion;
+					activeArrowMesh.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrowMesh.rotation);
+					activeArrowMesh.position = newTranslation;
+
+					scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
+					scene.audio.bowShot.play(); // Play Shooting sound
+					
+					activeArrowMesh.arrowFiring = true;
+					scene.bowMesh.shootArrow();
+					// Make sure timer is not active, if it is kill it
+					if (scene.timerId) {
+						clearTimeout(scene.timerId);
 					}
-				}, 5000); // drop arrow after 5 seconds
+					scene.timerId = setTimeout(function () {
+						if (scene.arrowMeshes[scene.activeArrow].arrowFiring) {
+							scene.arrowMeshes[scene.activeArrow].arrowFiring = false;
+							scene.arrowMeshes[scene.activeArrow].position.y = 0.0;
+							// Create a new arrow
+							if (scene.Players[scene.activePlayer].arrows != 0) {
+								scene.activeArrow = scene.createNewArrow();
+							}
+							else {
+								setTimeout(function () {
+									Game.startNextRound(scene.Players[scene.activePlayer], scene);
+								}, 2000);
+							}
+						}
+					}, 5000); // drop arrow after 5 seconds
+				}
+			}
+			if (activeArrowMesh.arrowFiring) {
+				// Handles the arrow firing
+				var deltaTime = 1.0/Game.engine.getFps();
+				var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, deltaTime, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
+				// var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.rotation.y - Math.PI/1.999, activeArrowMesh.rotation.z - .02);
+				activeArrowMesh.position.x = motion.x;
+				activeArrowMesh.position.y = motion.y;
+				activeArrowMesh.position.z = motion.z;
+				activeArrowMesh.speed = motion.v;
+			}
+			
+			if (Game.debug) {
+				$('#debugInfo').html('Camera<br />rY: ' + scene.activeCamera.rotation.y + '<br />rX: ' + scene.activeCamera.rotation.x + '<br />X: ' + scene.activeCamera.position.x + '<br />Y: ' + scene.activeCamera.position.y + '<br />Z: ' + scene.activeCamera.position.z +
+				'<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
+				'<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
 			}
 		}
-		if (activeArrowMesh.arrowFiring) {
-			// Handles the arrow firing
-            var deltaTime = 1.0/Game.engine.getFps();
-			var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, deltaTime, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
-			// var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.rotation.y - Math.PI/1.999, activeArrowMesh.rotation.z - .02);
-			activeArrowMesh.position.x = motion.x;
-			activeArrowMesh.position.y = motion.y;
-			activeArrowMesh.position.z = motion.z;
-			activeArrowMesh.speed = motion.v;
-		}
-		
-        if (Game.debug) {
-            $('#debugInfo').html('Camera<br />rY: ' + scene.activeCamera.rotation.y + '<br />rX: ' + scene.activeCamera.rotation.x + '<br />X: ' + scene.activeCamera.position.x + '<br />Y: ' + scene.activeCamera.position.y + '<br />Z: ' + scene.activeCamera.position.z +
-            '<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
-            '<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
-        }
 		
 		// Move camera up and down to simulate breathing
 		scene.cameraCounter += .01;
