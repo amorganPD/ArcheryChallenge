@@ -328,8 +328,8 @@ Game.Data.stages.push(new function () {
             type: Game.targetType.ONESHOT,
             isHit: false,
             speed: .5,
-            startPositionOffset: new BABYLON.Vector3(10, 20, -30),
-            endPositionOffset: new BABYLON.Vector3(40, 0, 0)
+            startPositionOffset: new BABYLON.Vector3(20, 20, -30),
+            endPositionOffset: new BABYLON.Vector3(-20, 0, 0)
         }]
     }));
     //Challenge 5

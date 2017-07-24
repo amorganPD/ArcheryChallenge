@@ -16,7 +16,7 @@ Game.initAssetHelper = function(scene) {
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
         
 		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, baseTreeY, 90);
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(100, baseTreeY + 4, 90);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/4, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
@@ -38,7 +38,7 @@ Game.initAssetHelper = function(scene) {
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
 		
 		newTreeIndex = scene.treeMeshes.push(scene.instanceWithChildren(scene.treeMesh, 'treeClone', scene, (newTreeIndex + 1))) - 1;
-		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-80, baseTreeY + 2, 80);
+		scene.treeMeshes[newTreeIndex].position = new BABYLON.Vector3(-80, baseTreeY, 80);
 		scene.treeMeshes[newTreeIndex].rotation = new BABYLON.Vector3(0, Math.PI/1.5, 0);
         scene.treeMeshes[newTreeIndex].imposterTrunk = scene.getMeshByName('treeClone-' + newTreeIndex + '.imposterTrunk');
         

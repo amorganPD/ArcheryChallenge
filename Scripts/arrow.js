@@ -20,7 +20,7 @@ Game.initArrows = function(scene) {
         return newIndex;
     };
     scene.arrowCollision = function (activeArrow, scene, isTarget, parentData) {
-        var parentMesh = parentData.mesh;
+        var parentMesh = parentData == undefined ? {} : parentData.mesh;
         activeArrow.arrowFiring = false;
         scene.audio.targetHit.play();
         if (isTarget) {
@@ -119,6 +119,7 @@ Game.initArrows = function(scene) {
     }
     scene.disposeOfActiveArrow = function () {
         scene.arrowMeshes[scene.activeArrow].dispose();
+        scene.bowArrowMesh.isVisible = false;
     }
     scene.disposeOfArrows = function () {
         for (var i = 0; i < scene.arrowMeshes.length; i++) {

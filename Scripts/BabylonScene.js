@@ -546,7 +546,6 @@ Game.CreateGameScene = function() {
 		Game.bindPlayerReset(scene.cloudMesh, scene.bowMesh, scene);
 		
 		Game.createStage(scene, 0);
-		Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
 		Game.skipRound = function () {
 			// Game.Data.activeStage.allowNextStage(scene);
@@ -612,7 +611,7 @@ Game.CreateGameScene = function() {
 		
 		if (activeArrowMesh != undefined) {
 			if (scene.Players[scene.activePlayer].arrows != 0) {
-				if ((SpacebarState == KeyState.Down) && activeArrowMesh.arrowDrawing == false && activeArrowMesh.arrowFiring == false) {
+				if ((SpacebarState == KeyState.Down) && (activeArrowMesh.arrowDrawing == false) && (activeArrowMesh.arrowFiring == false) && (scene.bowArrowMesh.isVisible)) {
 					// This gets called once for drawing the arrow
 					scene.bowMesh.drawArrow();
 					SpacebarState = KeyState.Clear;
@@ -687,7 +686,7 @@ Game.CreateGameScene = function() {
 		}
 		
 		// Move camera up and down to simulate breathing
-		scene.cameraCounter += .01;
+		scene.cameraCounter += .04;
 		scene.bowMesh.position.y += .0001*Math.cos(scene.cameraCounter);
 		// scene.arrowMeshes[scene.activeArrow].position.y += .000025*Math.cos(scene.cameraCounter);
 		// scene.arrowMeshes[scene.activeArrow].rotation.z += .000015*Math.sin(scene.cameraCounter - .4);
