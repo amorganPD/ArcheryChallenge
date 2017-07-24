@@ -74,7 +74,15 @@ function doKeyDown(evt) {
             if ((Game.skipRound != undefined) && ShiftDown) {
                 Game.skipRound();
             }
-            break;            
+            break;     
+        case KEYS.ESCAPE:
+            if (Game.isMenuOpen) {
+                Game.closeMenu();
+            }
+            else {
+                Game.openMenu();
+            }
+            break;          
     }
 }
 function mouseDown(evt) {

@@ -173,6 +173,7 @@ Game.Data.stages.push(new function () {
     this.challenges = [];
     this.name = "The Forest";
     this.positionOrigin = new BABYLON.Vector3(0,0,0);
+    this.playerOrigin = new BABYLON.Vector3(0,10,0);
     this.allowNextStage = function (scene) {
         scene.gateMesh.openGate();
         Game.challengeCount = 0;
@@ -234,6 +235,7 @@ Game.Data.stages.push(new function () {
     this.challenges = [];
     this.name = "The Cliff";
     this.positionOrigin = new BABYLON.Vector3(0,0,500);
+    this.playerOrigin = new BABYLON.Vector3(0,10,300);
     this.allowNextStage = function (scene) {
         Game.challengeCount = 0;
 		scene.islandMesh.checkCollisions = true;
@@ -368,6 +370,7 @@ Game.Data.stages.push(new function () {
     this.challenges = [];
     this.name = "The Floating Island";
     this.positionOrigin = new BABYLON.Vector3(0,0,1020);
+    this.playerOrigin = new BABYLON.Vector3(0,10,800);
     this.allowNextStage = function (scene) {
     }
     
@@ -442,6 +445,35 @@ Game.resetChallengeInfo = function (player, scene) {
     scene.disposeOfArrows();
     scene.activeArrow = scene.createNewArrow();
 }
+Game.dispoaseOfTargetMeshes = function (targetData) {
+    for (var i=0; i < targetData.length; i++ ) {
+        if (targetData[i].type == Game.targetType.ONESHOT) {
+            targetData[i].mesh.dispose();
+        }
+    }
+}
+Game.disposeOfMeshes = function (ThisChallenge, scene) {
+    Game.dispoaseOfTargetMeshes(ThisChallenge.targetData);
+    scene.disposeOfActiveArrow();
+}
+
+Game.resetPlayerPosition = function (scene) {
+    var player = scene.Players[scene.activePlayer];
+    player.points = 0;
+    Game.startNextRound(player, scene);
+    scene.activeCamera.position = new BABYLON.Vector3(Game.Data.activeStage.playerOrigin.x, Game.Data.activeStage.playerOrigin.y, Game.Data.activeStage.playerOrigin.z);
+};
+Game.bindPlayerReset = function (collisionMesh, playerMesh, scene) {
+    collisionMesh.actionManager = new BABYLON.ActionManager(scene);
+    collisionMesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction(
+    { trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger, parameter: { mesh: playerMesh } }, 
+        function (data) {
+            Game.resetPlayerPosition(scene);
+        }
+    ));
+
+};
+
 Game.startStage = function (player, scene) {
     var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
     Game.sceneAlert("Stage " + Game.Data.stageCount + "<br/>" + Game.Data.activeStage.name, function () {
@@ -456,8 +488,9 @@ Game.startStage = function (player, scene) {
     });
 }
 Game.startNextRound = function (player, scene) {
-
     var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
+
+    Game.disposeOfMeshes(thisChallenge, scene);
     if (player.points >= thisChallenge.requiredPoints && Game.areAllOneShotsHit(thisChallenge.targetData)) {
         Game.challengeCount++;
         

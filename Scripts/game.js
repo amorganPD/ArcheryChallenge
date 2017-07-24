@@ -16,6 +16,7 @@ var Game = new function () {
     this.ltArray = lookupTableATan2();
     this.difficultyLevel = 1;
     this.challengeCount = 0;
+    this.isMenuOpen = false;
 
     this.cameraType = {
         Normal: 0,
@@ -33,6 +34,36 @@ var Game = new function () {
         this.particleDensity;
         this.viewDistance = 200;
     }
+}
+
+Game.openMenu = function () {
+    Game.isMenuOpen = true;
+    Game.engine.stopRenderLoop(); // pause game
+
+    $('#modal').removeClass("modalSmall");
+    $('#menuText').fadeOut(200);
+    $('#prefMenu').addClass("menuExpanded");
+    setTimeout(function () {
+        $('#preferenceModal').fadeIn(1000);
+    }, 500);
+    $('#prefCloseButton').fadeIn(200);
+    $('.logo').fadeIn(150);
+};
+Game.closeMenu = function () {
+    Game.isMenuOpen = false;
+    Game.runRenderLoop(); // resume game
+
+    $('.logo').fadeOut(150);
+    $('#preferenceModal').stop().fadeOut(250, function () {
+        $('#prefCloseButton').fadeOut(250);
+        $('#prefMenu').removeClass("menuExpanded");
+        // $('#prefMenu').animate({ opacity: 1 }, 200);
+        setTimeout(function () {
+            $('#menuText').fadeIn(500, function () {
+                $('#modal').addClass("modalSmall");
+            });
+        }, 500);
+    });
 }
 
 Game.allowStart = function () {
@@ -58,31 +89,10 @@ Game.allowStart = function () {
             }, 200, function () {
                 // $('#prefMenu').fadeIn(200, function () {
                 $('#menuText').click(function () {
-                    Game.engine.stopRenderLoop(); // pause game
-                    
-                    $('#modal').removeClass("modalSmall");
-                    $('#menuText').fadeOut(200);
-                    $('#prefMenu').addClass("menuExpanded");
-                    setTimeout(function () {
-                        $('#preferenceModal').fadeIn(1000);
-                    }, 500);
-                    $('#prefCloseButton').fadeIn(200);
-                    $('.logo').fadeIn(150);
+                    Game.openMenu();
                 });
                 $('#prefCloseButton').click(function () {
-                    Game.runRenderLoop(); // resume game
-
-                    $('.logo').fadeOut(150);
-                    $('#preferenceModal').stop().fadeOut(250, function () {
-                        $('#prefCloseButton').fadeOut(250);
-                        $('#prefMenu').removeClass("menuExpanded");
-                        // $('#prefMenu').animate({ opacity: 1 }, 200);
-                        setTimeout(function () {
-                            $('#menuText').fadeIn(500, function () {
-                                $('#modal').addClass("modalSmall");
-                            });
-                        }, 500);
-                    });
+                    Game.closeMenu();
                 });
                 $('#cameraInverted').click(function () {
                     var activeCamera = Game.scene[Game.activeScene].activeCamera;

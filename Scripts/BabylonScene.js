@@ -324,6 +324,7 @@ Game.CreateGameScene = function() {
 	}
 	scene.stage01Task.onSuccess = function(task) {
 		scene.stage01Mesh = task.loadedMeshes[25];
+		scene.cloudMesh = task.loadedMeshes[24];
 		scene.islandMesh = task.loadedMeshes[23];
 		scene.bridgeImposter = task.loadedMeshes[0];
 		scene.islandMesh.parent = scene.stage01Mesh;
@@ -541,8 +542,11 @@ Game.CreateGameScene = function() {
 				urls: ['./Audio/Target_Hit-03.wav']
 			});
 		}
+
+		Game.bindPlayerReset(scene.cloudMesh, scene.bowMesh, scene);
 		
 		Game.createStage(scene, 0);
+		Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
 		Game.skipRound = function () {
 			// Game.Data.activeStage.allowNextStage(scene);

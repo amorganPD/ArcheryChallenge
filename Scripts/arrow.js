@@ -117,6 +117,9 @@ Game.initArrows = function(scene) {
             ));
         }
     }
+    scene.disposeOfActiveArrow = function () {
+        scene.arrowMeshes[scene.activeArrow].dispose();
+    }
     scene.disposeOfArrows = function () {
         for (var i = 0; i < scene.arrowMeshes.length; i++) {
             scene.arrowMeshes[i].dispose();
