@@ -16,8 +16,8 @@ Game.cameras = function (scene) {
         scene.touchCamera = new BABYLON.VirtualJoysticksCamera("TouchCamera", new BABYLON.Vector3(0, 8, 0), scene);
         scene.touchCamera.position.z = -60;
         scene.touchCamera.rotation.y = .03;
-        scene.touchCamera.angularSensibility *= .75;
-        scene.touchCamera.inertia = .1;
+        // scene.touchCamera.angularSensibility *= .75;
+        // scene.touchCamera.inertia = .1;
         scene.touchCamera.keysUp.push(87);// W
         scene.touchCamera.keysLeft.push(65); // A 
         scene.touchCamera.keysDown.push(83); // S 
@@ -100,7 +100,7 @@ Game.cameras = function (scene) {
         scene.arrowMeshes[scene.activeArrow].parent = scene.activeCamera;
         // Make sure Gravity and Collisions are active
         scene.activeCamera.checkCollisions = true;
-        scene.activeCamera.ellipsoid = new BABYLON.Vector3(10, 4, 10);
+        scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
 		scene.activeCamera.applyGravity = true;
         Game.initPointerLock(scene.activeCamera);
     }

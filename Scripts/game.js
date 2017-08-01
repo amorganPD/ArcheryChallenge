@@ -25,6 +25,12 @@ var Game = new function () {
         Debug: 3
     };
     this.preferences = new function () {
+        this.pageType = {
+            Control: 0,
+            Camera: 1,
+            About: 2
+        };
+        this.activePage = this.pageType.Control;
         this.isCameraInverted = false;
         this.cameraType = self.cameraType.Normal;
     }
@@ -65,6 +71,44 @@ Game.closeMenu = function () {
         }, 500);
     });
 }
+Game.menuRight = function () {
+    switch(Game.preferences.activePage) {
+        case Game.preferences.pageType.Control:
+            $("#menuControls").fadeOut(500);
+            $("#menuCamera").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.Camera;
+            break;
+        case Game.preferences.pageType.Camera:
+            $("#menuCamera").fadeOut(500);
+            $("#menuAbout").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.About;
+            break;
+        case Game.preferences.pageType.About:
+            $("#menuAbout").fadeOut(500);
+            $("#menuControls").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.Control;
+            break;
+    }
+}
+Game.menuLeft = function () {
+    switch(Game.preferences.activePage) {
+        case Game.preferences.pageType.Control:
+            $("#menuControls").fadeOut(500);
+            $("#menuAbout").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.About;
+            break;
+        case Game.preferences.pageType.Camera:
+            $("#menuCamera").fadeOut(500);
+            $("#menuControls").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.Control;
+            break;
+        case Game.preferences.pageType.About:
+            $("#menuAbout").fadeOut(500);
+            $("#menuCamera").fadeIn(500);
+            Game.preferences.activePage = Game.preferences.pageType.Camera;
+            break;
+    }
+}
 
 Game.allowStart = function () {
     $('#startGame').click(function () {
@@ -93,6 +137,12 @@ Game.allowStart = function () {
                 });
                 $('#prefCloseButton').click(function () {
                     Game.closeMenu();
+                });
+                $('#rightArrow').click(function () {
+                    Game.menuRight();
+                });
+                $('#leftArrow').click(function () {
+                    Game.menuLeft();
                 });
                 $('#cameraInverted').click(function () {
                     var activeCamera = Game.scene[Game.activeScene].activeCamera;

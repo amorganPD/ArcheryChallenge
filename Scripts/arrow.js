@@ -52,7 +52,8 @@ Game.initArrows = function(scene) {
             }
             
             // Manipulate DOM
-            $('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3)); // + "/" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints);
+            scene.Players[scene.activePlayer].updatePlayerScore();
+            //$('#scoreInfo').html(pad(scene.Players[scene.activePlayer].points,3)); // + "/" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints);
             // Set up Floating text
             $('.floatingHitScore').html(hitScore);
             $('.floatingHitScore').fadeIn(50, function () {

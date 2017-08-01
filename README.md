@@ -9,16 +9,16 @@ Still a work in progress.
 - [x] Make Readme with TO DOs 
 - [x] Implement Stage 1 Challenges 
 - [x] Implement new transition screens from Challenge to Challenge 
-- [ ] Make targets fade out / fade in from Challenage to Challenge
+- [-] Make targets fade out / fade in from Challenage to Challenge
 - [x] Implement moving targets using targetData
 - [x] Clone targets and create / dispose per Challenge. Only load 1 of each model at the beginning and keep at origin and hide
 - [ ] Add physics engine (sounds easier than it is)
 ### User Interface
-- [ ] Game Menu - Add screen arrows
-- [ ] Game Menu - Add controls screen
-- [ ] Game Menu - Add option to go back to home screen
-- [ ] Game Menu - Add user info screen and store player name
-- [ ] Info Right - Change Points to points / requiredpoints (ie 100/350)
+- [x] Game Menu - Add screen arrows
+- [x] Game Menu - Add controls screen
+- [-] Game Menu - Add option to go back to home screen
+- [-] Game Menu - Add user info screen and store player name
+- [x] Info Right - Change Points to points / requiredpoints (ie 100/350)
 - [x] Info Right - Create Arrow Icon Asset and replace X for arrow count indication
 ### Asset Creation
 - [x] Make new Stage 1 Scene - The Forest 
@@ -27,6 +27,6 @@ Still a work in progress.
 - [ ] Create 2 more bow models
 - [ ] Create 2 more arrow models
 ### Functional
-- Either make arrow only available once challenge is ready, or let challenge be "ready" before message fades
-- Correct issue with moving one-shot targets after being shot
+- [x] Either make arrow only available once challenge is ready, or let challenge be "ready" before message fades
+- [x] Correct issue with moving one-shot targets after being shot
 

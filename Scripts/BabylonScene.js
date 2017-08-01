@@ -359,7 +359,7 @@ Game.CreateGameScene = function() {
 		task.loadedMeshes[1].isVisible = false;
 
 		scene.activeCamera.checkCollisions = true;
-        scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
+		scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
 	}
 	
 	scene.targetModelTask.onSuccess = function(task) {

@@ -440,7 +440,7 @@ Game.resetChallengeInfo = function (player, scene) {
     player.points = 0;
     player.arrows = 5;
     $('.roundInfo').html("Challenge " + (Game.challengeCount + 1));
-    $('.scoreInfo').html(pad(player.points, 3));
+    player.updatePlayerScore();
     $('.arrowInfo').html(pad(player.arrows, 2));
     scene.disposeOfArrows();
     scene.activeArrow = scene.createNewArrow();

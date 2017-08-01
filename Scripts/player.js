@@ -1,7 +1,7 @@
 
 
 function Player(options) {
-
+	var _self = this;
 	$.extend(this,{
 		points: 0,
 		arrows: 5
@@ -9,6 +9,9 @@ function Player(options) {
 	
 	this.arrowFired = function () {
 		this.arrows -= 1;
+	}
+	this.updatePlayerScore = function () {
+    $('.scoreInfo').html(pad(_self.points, 3) + " <div id='scoreInfoSlash'>/</div> <div id='scoreInfoRequiredPoints'>" +  Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div>");
 	}
 	
 	this.updatePoints = function (distance, maxDistance) {
