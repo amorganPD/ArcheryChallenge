@@ -38,7 +38,7 @@ Game.initArrows = function(scene) {
             var hitScore = scene.Players[scene.activePlayer].updatePoints(distance, 3);
 
             // attach arrow to mesh
-            if (parentData.type == Game.targetType.ONESHOT) {
+            if (parentData.type == Game.targetType.ONESHOT || parentData.type == Game.targetType.SKEETSHOT) {
                 activeArrow.isVisible = false;
                 parentData.mesh.isVisible = false;
                 parentData.isHit = true;
@@ -95,7 +95,7 @@ Game.initArrows = function(scene) {
                             i_loop++;
                         }
                         scene.arrowCollision(scene.arrowMeshes[index], scene, true, thisChallenge.targetData[i_loop]);
-                        if (thisChallenge.targetData[i_loop].type == Game.targetType.ONESHOT) {
+                        if (thisChallenge.targetData[i_loop].type == Game.targetType.ONESHOT || thisChallenge.targetData[i_loop].type == Game.targetType.SKEETSHOT) {
                             scene.arrowMeshes[index].actionManager.dispose();
                             thisChallenge.targetData[i_loop].mesh.dispose();
                         }

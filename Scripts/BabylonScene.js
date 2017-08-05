@@ -546,6 +546,7 @@ Game.CreateGameScene = function() {
 		Game.bindPlayerReset(scene.cloudMesh, scene.bowMesh, scene);
 		
 		Game.createStage(scene, 0);
+		// Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
 		Game.skipRound = function () {
 			// Game.Data.activeStage.allowNextStage(scene);

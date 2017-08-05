@@ -1,6 +1,7 @@
 Game.targetType = {
     NORMAL: 0,
-    ONESHOT: 1
+    ONESHOT: 1,
+    SKEETSHOT: 2
 };
 Game.Data = {
     activeStage: {},
@@ -86,49 +87,111 @@ Game.createChallenge = function(scene, whichChallenge) {
     var thisChallenge = Game.Data.activeStage.challenges[whichChallenge];
     for (var i=0; i < thisChallenge.targetData.length; i++) {
         var thisTarget = thisChallenge.targetData[i];
+        thisTarget.index = i;
         switch (thisTarget.type) {
             case Game.targetType.NORMAL:
-                thisChallenge.targetData[i].mesh = scene.targetMesh;                
+                thisTarget.mesh = scene.targetMesh;                
                 break;
             case Game.targetType.ONESHOT:
                 // clone target of this type
-                thisChallenge.targetData[i].mesh = scene.instanceWithChildren(scene.targetOneShotMesh, 'targetOneShotClone', scene);
-                thisChallenge.targetData[i].mesh.isVisible = true;
-                thisChallenge.targetData[i].isHit = false;
+                thisTarget.mesh = scene.instanceWithChildren(scene.targetOneShotMesh, 'targetOneShotClone', scene);
+                thisTarget.mesh.isVisible = true;
+                thisTarget.isHit = false;
+                break;
+            case Game.targetType.SKEETSHOT:
+                // clone target of this type
+                thisTarget.mesh = scene.instanceWithChildren(scene.targetOneShotMesh, 'targetOneShotClone', scene);
+                thisTarget.mesh.isVisible = true;
+                thisTarget.isHit = false;
                 break;
         }
         //set position and movement
-        if (thisChallenge.targetData[i].mesh.targetAnimation != undefined) {
-            thisChallenge.targetData[i].mesh.targetAnimation.stop();
+        if (thisTarget.mesh.targetAnimation != undefined) {
+            thisTarget.mesh.targetAnimation.stop();
         }
-        thisChallenge.targetData[i].mesh.position = Game.Data.activeStage.positionOrigin.add(thisChallenge.targetData[i].positionOffset);
-        if (thisChallenge.targetData[i].startPositionOffset != undefined) {
-            thisChallenge.targetData[i].mesh.animation = new BABYLON.Animation(
+        thisTarget.mesh.position = Game.Data.activeStage.positionOrigin.add(thisTarget.positionOffset);
+        if (thisTarget.startPositionOffset != undefined) {
+            thisTarget.mesh.animation = new BABYLON.Animation(
                 "targetAnimation",
                 "position",
                 30,
                 BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
                 BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
             );
-            thisChallenge.targetData[i].mesh.keys = []; 
-            thisChallenge.targetData[i].mesh.keys.push({
-                frame: 0 / thisChallenge.targetData[i].speed,
-                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].startPositionOffset)
+            thisTarget.mesh.keys = []; 
+            thisTarget.mesh.keys.push({
+                frame: 0 / thisTarget.speed,
+                value: thisTarget.mesh.position.add(thisTarget.startPositionOffset)
             });
-            thisChallenge.targetData[i].mesh.keys.push({
-                frame: 60 / thisChallenge.targetData[i].speed,
-                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].endPositionOffset)
+            thisTarget.mesh.keys.push({
+                frame: 60 / thisTarget.speed,
+                value: thisTarget.mesh.position.add(thisTarget.endPositionOffset)
             });
-            thisChallenge.targetData[i].mesh.keys.push({
-                frame: 120 / thisChallenge.targetData[i].speed,
-                value: thisChallenge.targetData[i].mesh.position.add(thisChallenge.targetData[i].startPositionOffset)
+            thisTarget.mesh.keys.push({
+                frame: 120 / thisTarget.speed,
+                value: thisTarget.mesh.position.add(thisTarget.startPositionOffset)
             });
-            thisChallenge.targetData[i].mesh.animation.setKeys(thisChallenge.targetData[i].mesh.keys);
-            thisChallenge.targetData[i].mesh.animations.push(thisChallenge.targetData[i].mesh.animation);
-            thisChallenge.targetData[i].mesh.targetAnimation = scene.beginAnimation(thisChallenge.targetData[i].mesh, 0, 120 / thisChallenge.targetData[i].speed, true);
+            // http://www.babylonjs-playground.com/#FCGXH7
+            // var tangetWeight = 1 - .707;
+            // var keys = [];
+            // keys.push({
+            //     frame: 0,
+            //     inTangent: new BABYLON.Vector3(0, 0, tangetWeight),
+            //     value: new BABYLON.Vector3(-10, 0, 0),
+            //     outTangent: new BABYLON.Vector3(0, 0, tangetWeight),
+            // });
+            // keys.push({
+            //     frame: 60,
+            //     inTangent: new BABYLON.Vector3(tangetWeight, 0, 0),
+            //     value: new BABYLON.Vector3(0, 0, 10),
+            //     outTangent: new BABYLON.Vector3(tangetWeight, 0, 0),
+            // });
+            // keys.push({
+            //     frame: 120,
+            //     inTangent: new BABYLON.Vector3(0, 0, -tangetWeight),
+            //     value: new BABYLON.Vector3(10, 0, 0),
+            //     outTangent: new BABYLON.Vector3(0, 0, -tangetWeight),
+            // });
+            // keys.push({
+            //     frame: 180,
+            //     inTangent: new BABYLON.Vector3(-tangetWeight, 0, 0),
+            //     value: new BABYLON.Vector3(0, 0, -10),
+            //     outTangent: new BABYLON.Vector3(-tangetWeight, 0, 0),
+            // });
+            // keys.push({
+            //     frame: 240,
+            //     inTangent: new BABYLON.Vector3(0, 0, tangetWeight),
+            //     value: new BABYLON.Vector3(-10, 0, 0),
+            //     outTangent: new BABYLON.Vector3(0, 0, tangetWeight),
+            // });
+            thisTarget.mesh.animation.setKeys(thisTarget.mesh.keys);
+            thisTarget.mesh.animations.push(thisTarget.mesh.animation);
+            thisTarget.setAnimatable = function (ThisTarget, scene) {
+                ThisTarget.mesh.targetAnimation = scene.beginAnimation(ThisTarget.mesh, 0, (120 / ThisTarget.speed) / (ThisTarget.type != Game.targetType.SKEETSHOT ? 1 : 2), ThisTarget.type != Game.targetType.SKEETSHOT, 1.0, function () {
+                    if (ThisTarget.type == Game.targetType.SKEETSHOT) {
+                        ThisTarget.mesh.isVisible = false;
+                        ThisTarget.isHit = false;
+                        if (ThisTarget.mesh.targetAnimation != undefined) {
+                            ThisTarget.mesh.targetAnimation.stop();
+                        }
+                        // scene.arrowMeshes[index].actionManager.dispose();
+                        ThisTarget.mesh.dispose();
+                    }
+                });
+            };
+            // Add offest after animation is created
+            thisTarget.mesh.position = thisTarget.mesh.position.add(thisTarget.startPositionOffset);
+        }
+        else {
+            thisTarget.setAnimatable = function () { };
         }
     }
-	
+}
+Game.startTargetAnimations = function (ThisChallenge, scene) {
+    for (var i=0; i < ThisChallenge.targetData.length; i++) {
+        var thisTarget = ThisChallenge.targetData[i];
+        thisTarget.setAnimatable(thisTarget, scene);
+    }
 }
 
 Game.challenge = function(options) {
@@ -380,6 +443,22 @@ Game.Data.stages.push(new function () {
 		targetData: [{
             positionOffset: new BABYLON.Vector3(0, 6, -15),
             type: Game.targetType.NORMAL
+        },
+        {
+            positionOffset: new BABYLON.Vector3(0, 0, -15),
+            type: Game.targetType.SKEETSHOT,
+            speed: 1,
+            startPositionOffset: new BABYLON.Vector3(-30, -20, 0),
+            endPositionOffset: new BABYLON.Vector3(30, -20, 0),
+            isPathCircular: true
+        },
+        {
+            positionOffset: new BABYLON.Vector3(0, 0, -15),
+            type: Game.targetType.SKEETSHOT,
+            speed: .25,
+            startPositionOffset: new BABYLON.Vector3(-30, 10, 0),
+            endPositionOffset: new BABYLON.Vector3(30, 10, 0),
+            isPathCircular: true
         }]
     }));
     //Challenge 2
@@ -482,6 +561,7 @@ Game.startStage = function (player, scene) {
             challengeText += "<br/>Eliminate All <div class='targets' >Yellow</div> Targets";
         }
         Game.sceneAlert(challengeText, function () {
+            Game.startTargetAnimations(thisChallenge, scene);
             Game.resetChallengeInfo(player, scene);
             $('.infoRight').fadeIn(500, function () { });
         });
@@ -493,6 +573,7 @@ Game.startNextRound = function (player, scene) {
     Game.disposeOfMeshes(thisChallenge, scene);
     if (player.points >= thisChallenge.requiredPoints && Game.areAllOneShotsHit(thisChallenge.targetData)) {
         Game.challengeCount++;
+        var newChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
         
         Game.sceneAlert("Great Job!<br/>Score: <div class='points'>" + player.points + "</div><br/>Challenge Complete!", function () {
             scene.hideArrows();
@@ -504,10 +585,11 @@ Game.startNextRound = function (player, scene) {
             else {
                 Game.createChallenge(scene, Game.challengeCount);
                 var challengeText = "Challenge " + (Game.challengeCount + 1) + "<br/>Get <div class='points'>" + Game.Data.activeStage.challenges[Game.challengeCount].requiredPoints + "</div> points";
-                if (Game.hasOneShot(thisChallenge.targetData)) {
+                if (Game.hasOneShot(newChallenge.targetData)) {
                     challengeText += "<br/>Eliminate All <div class='targets' >Yellow</div> Targets";
                 }
                 Game.sceneAlert(challengeText, function () {
+                    Game.startTargetAnimations(newChallenge, scene);
                     Game.resetChallengeInfo(player, scene);
                 });
             }
@@ -516,6 +598,7 @@ Game.startNextRound = function (player, scene) {
     else {
         Game.createChallenge(scene, Game.challengeCount);
         Game.sceneAlert("Too bad<br/>Score: <div class='points'>" + player.points + "</div><br/>Try Again", function () {
+            Game.startTargetAnimations(newChallenge, scene);
             Game.resetChallengeInfo(player, scene);
         });
     }
