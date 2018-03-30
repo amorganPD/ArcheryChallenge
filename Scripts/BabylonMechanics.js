@@ -66,10 +66,10 @@ Game.initGameScene = function() {
 				timedLoop.registerFunction(this.logicLoop);
 				timedLoop.start();
                 
-                // Give the scene a chance to render, but pause renderLoop until player press start
-                Game.pauseId = setTimeout(function () {
-                    Game.engine.stopRenderLoop(); // pause game
-                }, 1000);
+				// Give the scene a chance to render, but pause renderLoop until player press start
+				Game.pauseId = setTimeout(function () {
+						Game.engine.stopRenderLoop(); // pause game
+				}, 1000);
 				
 				// TO DO: Implement optimization (only available in BJS v2+)
 				// BABYLON.SceneOptimizer.OptimizeAsync(Game.scene[Game.activeScene]);

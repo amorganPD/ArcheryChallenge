@@ -11,66 +11,66 @@
 /// 'input.js'
 /// 'timeLoop.js'
 
-Game.CreateStartScene = function() {
-    //Creation of the scene 
-    var scene = new BABYLON.Scene(Game.engine);
-    scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+Game.CreateStartScene = function () {
+	//Creation of the scene 
+	var scene = new BABYLON.Scene(Game.engine);
+	scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 	scene.gravity = new BABYLON.Vector3(0, -9.81, 0);
 	scene.collisionsEnabled = true;
 	scene.isErrthingReady = false;
-    
-    //Adding an Arc Rotate Camera
-    //var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);
-    var Alpha = 3*Math.PI/2;
-    var Beta = 0.00000001;
-    scene.camera = new BABYLON.ArcRotateCamera("Camera", Alpha, Beta, 40, new BABYLON.Vector3.Zero(), scene);
+
+	//Adding an Arc Rotate Camera
+	//var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 1, -15), scene);
+	var Alpha = 3 * Math.PI / 2;
+	var Beta = 0.00000001;
+	scene.camera = new BABYLON.ArcRotateCamera("Camera", Alpha, Beta, 40, new BABYLON.Vector3.Zero(), scene);
 	scene.camera.attachControl(Game.canvas, true);
-    // //set camera to not move
-    scene.camera.lowerAlphaLimit = Alpha;
-    scene.camera.upperAlphaLimit = Alpha;
-    scene.camera.lowerBetaLimit = Beta;
-    scene.camera.upperBetaLimit = Beta;
-    
+	// //set camera to not move
+	scene.camera.lowerAlphaLimit = Alpha;
+	scene.camera.upperAlphaLimit = Alpha;
+	scene.camera.lowerBetaLimit = Beta;
+	scene.camera.upperBetaLimit = Beta;
+
 	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
 	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .95, .9);
 	scene.ambientLight.specular = new BABYLON.Color3(.1, .1, .1);
 	scene.ambientLight.groundColor = new BABYLON.Color3(.1, .1, .1);
 	scene.ambientLight.intensity = .1;
-	
-	scene.light= new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 20, 0), scene);
+
+	scene.light = new BABYLON.PointLight("Omni", new BABYLON.Vector3(0, 20, 0), scene);
 	scene.light.diffuse = new BABYLON.Color3(.18, .15, .1);
 	scene.light.specular = new BABYLON.Color3(0, 0, 0);
-	
-	scene.isLoaded=false;
-	
+
+	scene.isLoaded = false;
+
 	/******************************************************/
 	/*START - STUB CODE*/
-	
+
 	//create Asset Manager
 	scene.assetsManager = new BABYLON.AssetsManager(scene);
-	scene.assetsManager.useDefaultLoadingScreen=false;
-	
+	scene.assetsManager.useDefaultLoadingScreen = false;
+
 	//create Asset Tasks
 	scene.playerTask = scene.assetsManager.addMeshTask("playerTask", "", "./Assets/", "target-01.babylon");
-		
+
 	//Set functions to assign loaded meshes
 	scene.playerTask.onSuccess = function (task) {
 		//stub function
 	}
-	
+
 	//Set up Scene after all Tasks are complete
 	scene.assetsManager.onFinish = function (tasks) {
-		scene.isLoaded=true;
+		scene.isLoaded = true;
 	};
-	
+
 	//Load all tasks
 	scene.assetsManager.load();
 
 	scene.logicLoop = function () {
 		var self = scene;
-		switch (Game.engine.loopCounter) {   
+		switch (Game.engine.loopCounter) {
 			case 500:
-				Game.engine.loopCounter=0;
+				Game.engine.loopCounter = 0;
 				break;
 			default:
 				Game.engine.loopCounter++;
@@ -81,35 +81,35 @@ Game.CreateStartScene = function() {
 		//Game.processEnemies(self);
 		//processInput(self.player, self.player.speed);
 	};
-	
+
 	scene.moveMeshes = function () {
 		//stub function
 	}
-	
-    scene.registerBeforeRender(function(){
+
+	scene.registerBeforeRender(function () {
 		scene.moveMeshes();
 	});
-	
+
 	/******************************************************/
 	/*END - STUB CODE*/
 
-    return scene;
+	return scene;
 
 }
 
-Game.CreateGameScene = function() {
-    //Creation of the scene 
-    var scene = new BABYLON.Scene(Game.engine);
-    scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
+Game.CreateGameScene = function () {
+	//Creation of the scene 
+	var scene = new BABYLON.Scene(Game.engine);
+	scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
 	scene.gravity = new BABYLON.Vector3(0, -8, 0);
 	scene.collisionsEnabled = true;
 	scene.isErrthingReady = false;
-	
+
 	// Create Cameras
 	Game.cameras(scene);
 	Game.cameras.init();
-    Game.initPointerLock(scene.activeCamera);
-	
+	Game.initPointerLock(scene.activeCamera);
+
 	scene.ambientLight = new BABYLON.HemisphericLight("ambientLight", new BABYLON.Vector3(0, 1, 0), scene);
 	scene.ambientLight.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight.specular = new BABYLON.Color3(0, 0, 0);
@@ -120,8 +120,8 @@ Game.CreateGameScene = function() {
 	scene.ambientLight2.diffuse = new BABYLON.Color3(.98, .98, .98);
 	scene.ambientLight2.specular = new BABYLON.Color3(0, 0, 0);
 	scene.ambientLight2.intensity = .45;
-    
-    scene.sunlight = new BABYLON.DirectionalLight("sunlight", new BABYLON.Vector3(2, -4, 3), scene);
+
+	scene.sunlight = new BABYLON.DirectionalLight("sunlight", new BABYLON.Vector3(2, -4, 3), scene);
 	scene.sunlight.position = new BABYLON.Vector3(-20, 200, -400);
 	scene.sunlight.intensity = 2;
 	scene.sunlight.specular = new BABYLON.Color3(0, 0, 0);
@@ -131,129 +131,129 @@ Game.CreateGameScene = function() {
 	// lightSphere2.position = scene.sunlight.position;
 	// lightSphere2.material = new BABYLON.StandardMaterial("light", scene);
 	// lightSphere2.material.emissiveColor = new BABYLON.Color3(1, 1, 0);
-	
+
 	// scene.light = new BABYLON.HemisphericLight("Omni", new BABYLON.Vector3(5, 0, 0), scene);
 	// scene.light.diffuse = new BABYLON.Color3(.98, .98, .98);
 	// scene.light.specular = new BABYLON.Color3(0, 0, 0);
-	
-	scene.isLoaded=false;
+
+	scene.isLoaded = false;
 
 	/***Helper Functions*****/
-	scene.applyOutline = function(mesh, lineWidthMod, apply) {
+	scene.applyOutline = function (mesh, lineWidthMod, apply) {
 		mesh.renderOutline = (apply === undefined) ? false : apply;
-		mesh.outlineColor = new BABYLON.Color3(0.01,0.01,0.01);
+		mesh.outlineColor = new BABYLON.Color3(0.01, 0.01, 0.01);
 
 		lineWidthMod = (lineWidthMod === undefined) ? .25 : lineWidthMod;
 		mesh.outlineWidth *= lineWidthMod;
 	}
-	 // Helper functions for creating Environment
+	// Helper functions for creating Environment
 	// Use instances instead of clones, since material does not change, but only position, scaling and rotation
-	scene.instanceWithChildren = function(parentMesh, baseName, scene, index, hasCollisions) {
+	scene.instanceWithChildren = function (parentMesh, baseName, scene, index, hasCollisions) {
 		index === undefined ? index = 0 : index;
 		hasCollisions === undefined ? hasCollisions = true : hasCollisions;
 		var childMeshes = parentMesh.getChildren();
 		var parentInstance = parentMesh.createInstance(baseName + '-' + index);
 		scene.shadowGenerator.getShadowMap().renderList.push(parentInstance);
 		var childInstances = [];
-		for (var i_child = 0; i_child < childMeshes.length; i_child++){
+		for (var i_child = 0; i_child < childMeshes.length; i_child++) {
 			var childMesh = scene.getMeshByName(childMeshes[i_child].name);
 			var newChildIndex = childInstances.push(childMesh.createInstance(baseName + '-' + index + '.' + childMeshes[i_child].name)) - 1;
 			// Link instance to parent instance and keep the properties of the child mesh
 			childInstances[newChildIndex].parent = parentInstance;
 			childInstances[newChildIndex].checkCollisions = childMesh.checkCollisions && hasCollisions;
 			childInstances[newChildIndex].isVisible = childMesh.isVisible;
-        	scene.shadowGenerator.getShadowMap().renderList.push(childInstances[newChildIndex]);
+			scene.shadowGenerator.getShadowMap().renderList.push(childInstances[newChildIndex]);
 		}
 		return parentInstance;
 	};
-	scene.createChild = function(parentMesh, childrenMeshes, task, whichOne) {
+	scene.createChild = function (parentMesh, childrenMeshes, task, whichOne) {
 		var childrenIndex = childrenMeshes.push(task.loadedMeshes[whichOne]) - 1;
 		scene.shadowGenerator.getShadowMap().renderList.push(childrenMeshes[childrenIndex]);
 		childrenMeshes[childrenIndex].parent = parentMesh;
 		scene.applyOutline(childrenMeshes[childrenIndex]);
 	};
 	scene.parentMesh = function (child, parent) {
-	
-	var rotation = BABYLON.Quaternion.Identity();
-	var position = BABYLON.Vector3.Zero();
-	var m1 = BABYLON.Matrix.Identity();
-	var m2 = BABYLON.Matrix.Identity();
-	
-	parent.getWorldMatrix().decompose(BABYLON.Vector3.Zero(), rotation, position);
-	
-	rotation.toRotationMatrix(m1);
-	m2.setTranslation(position);
-	
-	m2.multiplyToRef(m1, m1);
-	
-	var invParentMatrix = BABYLON.Matrix.Invert(m1);
-	
-	var m = child.getWorldMatrix().multiply(invParentMatrix);
 
-	m.decompose(BABYLON.Vector3.Zero(), child.rotationQuaternion, position);
-	
-	invParentMatrix = BABYLON.Matrix.Invert(parent.getWorldMatrix());
-	
-	var m = child.getWorldMatrix().multiply(invParentMatrix);
-	
-	m.decompose(BABYLON.Vector3.Zero(), BABYLON.Quaternion.Identity(), position);
+		var rotation = BABYLON.Quaternion.Identity();
+		var position = BABYLON.Vector3.Zero();
+		var m1 = BABYLON.Matrix.Identity();
+		var m2 = BABYLON.Matrix.Identity();
 
-	child.scaling.x = child.scaling.x * (1 / parent.scaling.x);
-	child.scaling.y = child.scaling.y * (1 / parent.scaling.y);
-	child.scaling.z = child.scaling.z * (1 / parent.scaling.z);
-	
-	child.position.x = position.x
-	child.position.y = position.y;
-	child.position.z = position.z;
-	
-	if (parent.scaling.x != 1 || parent.scaling.y != 1 || parent.scaling.z != 1) {
+		parent.getWorldMatrix().decompose(BABYLON.Vector3.Zero(), rotation, position);
 
-		var children = parent.getChildren();
-		var scaleFixMesh;
+		rotation.toRotationMatrix(m1);
+		m2.setTranslation(position);
 
-		for (var i = 0; i < children.length; i++) {
-			if (children[i].name == 'scaleFixMesh') {
-				scaleFixMesh = children[i];
-				//alert("found");
-				break;
+		m2.multiplyToRef(m1, m1);
+
+		var invParentMatrix = BABYLON.Matrix.Invert(m1);
+
+		var m = child.getWorldMatrix().multiply(invParentMatrix);
+
+		m.decompose(BABYLON.Vector3.Zero(), child.rotationQuaternion, position);
+
+		invParentMatrix = BABYLON.Matrix.Invert(parent.getWorldMatrix());
+
+		var m = child.getWorldMatrix().multiply(invParentMatrix);
+
+		m.decompose(BABYLON.Vector3.Zero(), BABYLON.Quaternion.Identity(), position);
+
+		child.scaling.x = child.scaling.x * (1 / parent.scaling.x);
+		child.scaling.y = child.scaling.y * (1 / parent.scaling.y);
+		child.scaling.z = child.scaling.z * (1 / parent.scaling.z);
+
+		child.position.x = position.x
+		child.position.y = position.y;
+		child.position.z = position.z;
+
+		if (parent.scaling.x != 1 || parent.scaling.y != 1 || parent.scaling.z != 1) {
+
+			var children = parent.getChildren();
+			var scaleFixMesh;
+
+			for (var i = 0; i < children.length; i++) {
+				if (children[i].name == 'scaleFixMesh') {
+					scaleFixMesh = children[i];
+					//alert("found");
+					break;
+				}
 			}
+
+			if (scaleFixMesh == undefined) {
+				scaleFixMesh = new BABYLON.Mesh('scaleFixMesh', parent.getScene());
+				scaleFixMesh.parent = parent;
+			}
+
+			scaleFixMesh.scaling.x = 1 / parent.scaling.x;
+			scaleFixMesh.scaling.y = 1 / parent.scaling.y;
+			scaleFixMesh.scaling.z = 1 / parent.scaling.z;
+
+			child.parent = scaleFixMesh;
+
+		} else {
+
+			child.parent = parent;
+
 		}
 
-		if (scaleFixMesh == undefined) {
-			scaleFixMesh = new BABYLON.Mesh('scaleFixMesh', parent.getScene());
-			scaleFixMesh.parent = parent;
-		}
+	};
 
-		scaleFixMesh.scaling.x = 1 / parent.scaling.x;
-		scaleFixMesh.scaling.y = 1 / parent.scaling.y;
-		scaleFixMesh.scaling.z = 1 / parent.scaling.z;
-
-		child.parent = scaleFixMesh;
-		
-	} else {
-		
-		child.parent = parent;
-		
-	}
-	
-};
-	
 	/******************************************************/
 	/*START - STUB CODE*/
-	
+
 	//create Asset Manager
 	scene.assetsManager = new BABYLON.AssetsManager(scene);
-	scene.assetsManager.useDefaultLoadingScreen=false;
+	scene.assetsManager.useDefaultLoadingScreen = false;
 	Game.initAssetHelper(scene);
-	
+
 	//create Asset Tasks
-    // Meshes
+	// Meshes
 	scene.bowModelTask = scene.assetsManager.addMeshTask("bowModelTask", "", "./Assets/", "longBowCenteredwArrow.babylon");
 	scene.stage01Task = scene.assetsManager.addMeshTask("stage01Task", "", "./Assets/", "terrain_main.babylon");
 	// scene.landscapeCliffsideTask = scene.assetsManager.addMeshTask("landscapeCliffsideTask", "", "./Assets/", "landscape_cliffside.babylon");
 	scene.arrowModelTask = scene.assetsManager.addMeshTask("arrowModelTask", "", "./Assets/", "arrow_wood-01.babylon");
 	scene.targetModelTask = scene.assetsManager.addMeshTask("targetModelTask", "", "./Assets/", "target-Normal.babylon");
-    scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.babylon");
+	scene.targetOneShotModelTask = scene.assetsManager.addMeshTask("targetOneShotModelTask", "", "./Assets/", "target-OneShot.babylon");
 	scene.treeModelTask = scene.assetsManager.addMeshTask("treeModelTask", "", "./Assets/", "tree-04.babylon");
 	// scene.tree2ModelTask = scene.assetsManager.addMeshTask("tree2ModelTask", "", "./Assets/", "tree-02.babylon");
 	scene.fenceModelTask = scene.assetsManager.addMeshTask("fenceModelTask", "", "./Assets/", "fence.babylon");
@@ -261,19 +261,19 @@ Game.CreateGameScene = function() {
 	scene.rock01ModelTask = scene.assetsManager.addMeshTask("rock01ModelTask", "", "./Assets/", "rock-01.babylon");
 	scene.rock03ModelTask = scene.assetsManager.addMeshTask("rock03ModelTask", "", "./Assets/", "rock-03.babylon");
 	scene.rock04ModelTask = scene.assetsManager.addMeshTask("rock04ModelTask", "", "./Assets/", "rock-04.babylon");
-    // Sounds
+	// Sounds
 	scene.bowShotTask = scene.assetsManager.addBinaryFileTask("bowShotTask", "./Audio/Bow_Shot_Sound.wav");
 	scene.arrowHitTask = scene.assetsManager.addBinaryFileTask("arrowHitTask", "./Audio/Target_Hit-03.wav");
-		
+
 	//Set functions to assign loaded meshes
-	scene.bowModelTask.onSuccess = function(task) {
+	scene.bowModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.bowMesh = task.loadedMeshes[0];
 		scene.bowArrowMesh = task.loadedMeshes[1];
 		scene.bowMesh.skeletons = task.loadedSkeletons[0];
 		scene.bowArrowMesh.parent = scene.bowMesh;
 		scene.bowArrowMesh.isVisible = false;
-		
+
 		//-- Manipulate model --/
 		scene.bowMesh.scaling = new BABYLON.Vector3(2, 2, 2);
 		scene.bowMesh.material.ambientColor = new BABYLON.Color3(.1, .1, .1);
@@ -300,29 +300,29 @@ Game.CreateGameScene = function() {
 				scene.bowMesh.animatable.stop();
 			}
 			scene.bowMesh.animatable = {};
-			scene.arrowMeshes[scene.activeArrow].speed = 60*3*completionRatio;
-			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5*(completionRatio), 105, false, 2, function () {
+			scene.arrowMeshes[scene.activeArrow].speed = 60 * 3 * completionRatio;
+			scene.bowMesh.animatable = scene.beginAnimation(scene.bowMesh.skeletons, 105 - 5 * (completionRatio), 105, false, 2, function () {
 				scene.arrowMeshes[scene.activeArrow].isVisible = true;
 				scene.bowArrowMesh.isVisible = false;
 				if (!Game.debug) {
-                	scene.activeCamera.rotation.y += (Math.random() > 0.5) ? (0.01 + Math.random()*.02) : (-Math.random()*.02 - 0.01);
+					scene.activeCamera.rotation.y += (Math.random() > 0.5) ? (0.01 + Math.random() * .02) : (-Math.random() * .02 - 0.01);
 				}
 			});
 		}
 	}
-	scene.arrowModelTask.onSuccess = function(task) {
+	scene.arrowModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.arrowMesh = task.loadedMeshes[1];
-        scene.imposterArrowTip = task.loadedMeshes[0];
-        scene.imposterArrowTip.parent = scene.arrowMesh;
-        scene.imposterArrowTip.isVisible = false;
-		
+		scene.imposterArrowTip = task.loadedMeshes[0];
+		scene.imposterArrowTip.parent = scene.arrowMesh;
+		scene.imposterArrowTip.isVisible = false;
+
 		//-- Manipulate model --/
 		scene.arrowMesh.scaling = new BABYLON.Vector3(2, 2, 2);
 		scene.arrowMesh.isVisible = false;
 		scene.applyOutline(scene.arrowMesh, .1);
 	}
-	scene.stage01Task.onSuccess = function(task) {
+	scene.stage01Task.onSuccess = function (task) {
 		scene.stage01Mesh = task.loadedMeshes[25];
 		scene.cloudMesh = task.loadedMeshes[24];
 		scene.islandMesh = task.loadedMeshes[23];
@@ -330,7 +330,7 @@ Game.CreateGameScene = function() {
 		scene.islandMesh.parent = scene.stage01Mesh;
 		task.loadedMeshes[24].parent = scene.stage01Mesh;
 		scene.bridgeMeshes = [];
-		for (var i=0; i < 23; i++) {
+		for (var i = 0; i < 23; i++) {
 			task.loadedMeshes[i].isVisible = false;
 			task.loadedMeshes[i].parent = scene.islandMesh;
 			scene.bridgeMeshes.push(task.loadedMeshes[i]);
@@ -340,14 +340,14 @@ Game.CreateGameScene = function() {
 		scene.stage01Mesh.scaling = new BABYLON.Vector3(20, 20, 20);
 		scene.stage01Mesh.rotation = new BABYLON.Vector3(0, 0, 0);
 		scene.stage01Mesh.position = new BABYLON.Vector3(0, 1.25, -180);
-        scene.stage01Mesh.checkCollisions = true;
-		
+		scene.stage01Mesh.checkCollisions = true;
+
 		var terrainMaterial = new BABYLON.TerrainMaterial("terrainMaterial", scene);
 		terrainMaterial.mixTexture = new BABYLON.Texture("./Assets/texture_mixmap_terrain.png", scene);
 		terrainMaterial.diffuseTexture1 = new BABYLON.Texture("./Assets/texture_Grass-03.jpg", scene);
 		terrainMaterial.diffuseTexture2 = new BABYLON.Texture("./Assets/texture_Stone-Path-01.jpg", scene);
 		terrainMaterial.diffuseTexture3 = new BABYLON.Texture("./Assets/texture_dirt_2.jpg", scene);
-		
+
 		terrainMaterial.diffuseTexture1.uScale = terrainMaterial.diffuseTexture1.vScale = 20;
 		terrainMaterial.diffuseColor = new BABYLON.Color3(.7, .7, .7);
 		terrainMaterial.diffuseTexture2.uScale = terrainMaterial.diffuseTexture2.vScale = 140;
@@ -361,11 +361,11 @@ Game.CreateGameScene = function() {
 		scene.activeCamera.checkCollisions = true;
 		scene.activeCamera.ellipsoid = new BABYLON.Vector3(3, 4, 10);
 	}
-	
-	scene.targetModelTask.onSuccess = function(task) {
+
+	scene.targetModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.targetMesh = task.loadedMeshes[0];
-		
+
 		//-- Manipulate model --/
 		scene.targetMesh.scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.targetMesh.rotation = new BABYLON.Vector3(0, 0, 0);
@@ -373,52 +373,52 @@ Game.CreateGameScene = function() {
 		scene.applyOutline(scene.targetMesh);
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.targetMesh);
 	}
-	scene.targetOneShotModelTask.onSuccess = function(task) {
+	scene.targetOneShotModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.targetOneShotMesh = task.loadedMeshes[0];
-		
+
 		//-- Manipulate model --/
 		scene.targetOneShotMesh.scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.targetOneShotMesh.rotation = new BABYLON.Vector3(0, 0, 0);
 		scene.targetOneShotMesh.position = new BABYLON.Vector3(0, 6, 20);
 		scene.applyOutline(scene.targetOneShotMesh);
-        scene.targetOneShotMesh.isVisible = false;
+		scene.targetOneShotMesh.isVisible = false;
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.targetOneShotMesh);
 	}
-	
-    // Environment Meshes
-	scene.treeModelTask.onSuccess = function(task) {
+
+	// Environment Meshes
+	scene.treeModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.treeMesh = task.loadedMeshes[4];
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.treeMesh);
 		scene.treeLeavesMesh = [];
-        for (var i_tree = 0; i_tree < 4; i_tree++) {
-            scene.treeLeavesMesh.push(task.loadedMeshes[i_tree]);
-            scene.treeLeavesMesh[i_tree].parent = scene.treeMesh;
-            scene.applyOutline(scene.treeLeavesMesh[i_tree], .5);
+		for (var i_tree = 0; i_tree < 4; i_tree++) {
+			scene.treeLeavesMesh.push(task.loadedMeshes[i_tree]);
+			scene.treeLeavesMesh[i_tree].parent = scene.treeMesh;
+			scene.applyOutline(scene.treeLeavesMesh[i_tree], .5);
 			scene.shadowGenerator.getShadowMap().renderList.push(scene.treeLeavesMesh[i_tree]);
-        }
-        
-        scene.imposterTrunk = BABYLON.Mesh.CreateCylinder("imposterTrunk", 10, 0.5, 0.5, 6, 1, scene, false);
+		}
+
+		scene.imposterTrunk = BABYLON.Mesh.CreateCylinder("imposterTrunk", 10, 0.5, 0.5, 6, 1, scene, false);
 		scene.imposterTrunk.parent = scene.treeMesh;
-        scene.imposterTrunk.isVisible = false;
-        scene.imposterTrunk.position.y = 3;
-		
-		scene.treeMesh.material.diffuseColor.r*=1;
-		scene.treeMesh.material.diffuseColor.g*=1.6;
-		scene.treeMesh.material.diffuseColor.b*=1.8;
-		
+		scene.imposterTrunk.isVisible = false;
+		scene.imposterTrunk.position.y = 3;
+
+		scene.treeMesh.material.diffuseColor.r *= 1;
+		scene.treeMesh.material.diffuseColor.g *= 1.6;
+		scene.treeMesh.material.diffuseColor.b *= 1.8;
+
 		//-- Manipulate model --/
 		scene.treeMesh.scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.treeMesh.position = new BABYLON.Vector3(20, 0, 40);
 		scene.applyOutline(scene.treeMesh);
 	}
-    scene.fenceModelTask.onSuccess = function(task) {
+	scene.fenceModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.fenceMesh = task.loadedMeshes[3];
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMesh);
 		scene.fenceMeshes = [];
-		
+
 		// scene.createChild(scene.fenceMesh, scene.fenceMeshes, task, 1);
 		// scene.createChild(scene.fenceMesh, scene.fenceMeshes, task, 2);
 		var fenceIndex = scene.fenceMeshes.push(task.loadedMeshes[1]) - 1;
@@ -429,23 +429,23 @@ Game.CreateGameScene = function() {
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.fenceMeshes[fenceIndex]);
 		scene.fenceMeshes[1].parent = scene.fenceMesh;
 		scene.applyOutline(scene.fenceMeshes[1]);
-        
-        task.loadedMeshes[0].isVisible = false;
-        
+
+		task.loadedMeshes[0].isVisible = false;
+
 		//-- Manipulate model --/
-		scene.fenceMesh.material.diffuseColor.r*=1.4;
-		scene.fenceMesh.material.diffuseColor.g*=1.8;
-		scene.fenceMesh.material.diffuseColor.b*=2;
+		scene.fenceMesh.material.diffuseColor.r *= 1.4;
+		scene.fenceMesh.material.diffuseColor.g *= 1.8;
+		scene.fenceMesh.material.diffuseColor.b *= 2;
 		scene.fenceMesh.scaling = new BABYLON.Vector3(5, 4, 5);
 		scene.fenceMesh.rotation = new BABYLON.Vector3(0, Math.PI, 0);
 		scene.fenceMesh.position = new BABYLON.Vector3(0, 0, -40);
-        scene.fenceMesh.checkCollisions = true;
-        scene.fenceMeshes[0].checkCollisions = true;
-        scene.fenceMeshes[1].checkCollisions = true;
+		scene.fenceMesh.checkCollisions = true;
+		scene.fenceMeshes[0].checkCollisions = true;
+		scene.fenceMeshes[1].checkCollisions = true;
 		scene.applyOutline(scene.fenceMesh);
 		scene.fenceMesh.isVisible = false;
-    }
-    scene.gateModelTask.onSuccess = function(task) {
+	}
+	scene.gateModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		scene.gateMesh = task.loadedMeshes[7];
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.gateMesh);
@@ -459,7 +459,7 @@ Game.CreateGameScene = function() {
 		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 4);
 		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 5);
 		scene.createChild(scene.gateMesh, scene.gateMeshes, task, 6);
-        
+
 		scene.gateMesh.openGate = function () {
 			if (scene.gateMesh.animatable) {
 				scene.gateMesh.animatable.stop();
@@ -471,64 +471,64 @@ Game.CreateGameScene = function() {
 				scene.gateMeshes[4].checkCollisions = false;
 			});
 		}
-        
+
 		//-- Manipulate model --/
-		scene.gateMesh.material.diffuseColor.r*=1.4;
-		scene.gateMesh.material.diffuseColor.g*=1.8;
-		scene.gateMesh.material.diffuseColor.b*=2;
+		scene.gateMesh.material.diffuseColor.r *= 1.4;
+		scene.gateMesh.material.diffuseColor.g *= 1.8;
+		scene.gateMesh.material.diffuseColor.b *= 2;
 		scene.gateMesh.scaling = new BABYLON.Vector3(5, 4, 5);
 		scene.gateMesh.position = new BABYLON.Vector3(-14, 0, -40);
-        scene.gateMesh.checkCollisions = true;
-        scene.gateMeshes[1].checkCollisions = true;
-        scene.gateMeshes[4].checkCollisions = true;
+		scene.gateMesh.checkCollisions = true;
+		scene.gateMeshes[1].checkCollisions = true;
+		scene.gateMeshes[4].checkCollisions = true;
 		scene.applyOutline(scene.gateMesh);
-    }
-    scene.rockMesh = [];
-    scene.rock01ModelTask.onSuccess = function(task) {
+	}
+	scene.rockMesh = [];
+	scene.rock01ModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
-        
+
 		//-- Manipulate model --/
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(-20, 0, 10);
 		scene.applyOutline(scene.rockMesh[index]);
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
-    }
-    scene.rock03ModelTask.onSuccess = function(task) {
+	}
+	scene.rock03ModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
-        
+
 		//-- Manipulate model --/
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(0, 0, 40);
 		scene.applyOutline(scene.rockMesh[index]);
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
-    }
-    scene.rock04ModelTask.onSuccess = function(task) {
+	}
+	scene.rock04ModelTask.onSuccess = function (task) {
 		//-- Load known meshes from model --//
 		var index = scene.rockMesh.push(task.loadedMeshes[0]) - 1;
-        
+
 		//-- Manipulate model --/
 		scene.rockMesh[index].scaling = new BABYLON.Vector3(3, 3, 3);
 		scene.rockMesh[index].position = new BABYLON.Vector3(30, 0, 30);
 		scene.applyOutline(scene.rockMesh[index]);
 		scene.shadowGenerator.getShadowMap().renderList.push(scene.rockMesh[index]);
-    }
-	
+	}
+
 	// On success Audio Tasks
 	scene.audio = {};
 	scene.bowShotTask.onSuccess = function (task) {
-		scene.audio.bowShot = new BABYLON.Sound("BowShot", task.data, scene, function () {}, { loop: false });
+		scene.audio.bowShot = new BABYLON.Sound("BowShot", task.data, scene, function () { }, { loop: false });
 	}
 	scene.arrowHitTask.onSuccess = function (task) {
-		scene.audio.targetHit = new BABYLON.Sound("targetHit", task.data, scene, function () {}, { loop: false });
+		scene.audio.targetHit = new BABYLON.Sound("targetHit", task.data, scene, function () { }, { loop: false });
 	}
-	
+
 	// scene.octree = scene.createOrUpdateSelectionOctree(64, 2);
 	// Set up Players
 	scene.Players = [];
-	scene.activePlayer = scene.Players.push(new Player({points: 0})) - 1;
-    scene.isfloatingScoreActive = false;
+	scene.activePlayer = scene.Players.push(new Player({ points: 0 })) - 1;
+	scene.isfloatingScoreActive = false;
 	//Set up Scene after all Tasks are complete
 	scene.assetsManager.onFinish = function (tasks) {
 		// If audio is not working (seems to be something wrong with Chrome and BJS?)
@@ -544,49 +544,53 @@ Game.CreateGameScene = function() {
 		}
 
 		Game.bindPlayerReset(scene.cloudMesh, scene.bowMesh, scene);
-		
+
 		Game.createStage(scene, 0);
 		// Game.Data.activeStage.allowNextStage(scene);
 		Game.createChallenge(scene, Game.challengeCount);
 		Game.skipRound = function () {
 			// Game.Data.activeStage.allowNextStage(scene);
-    		var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
+			var thisChallenge = Game.Data.activeStage.challenges[Game.challengeCount];
 			scene.Players[scene.activePlayer].points = 500;
 			Game.setAllOneShotsHit(thisChallenge.targetData);
 			Game.startNextRound(scene.Players[scene.activePlayer], scene);
 		}
-		
-        // Apply Gravity and shadows
-		// scene.enablePhysics();
+
+		// Apply Gravity and shadows
+		scene.enablePhysics();
+		scene.testBox = BABYLON.Mesh.CreateSphere("testSphere", 16, 2, scene);
+		scene.testBox.position.y = 20;
+		scene.testBox.Imposter = new BABYLON.PhysicsImpostor(scene.testBox, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 1, restitution: 0.9 }, scene);
+		scene.stage01Mesh.Imposter = new BABYLON.PhysicsImpostor(scene.stage01Mesh, BABYLON.PhysicsImpostor.MeshImpostor, { mass: 0, restitution: 0.9 }, scene);
 		// scene.setGravity(new BABYLON.Vector3(0, -10, 0));
 		// scene.activeCamera.position.y = 8;
 		scene.activeCamera.applyGravity = true;
-		
-		scene.shadowGenerator.useExponentialShadowMap  = true;
-        scene.stage01Mesh.receiveShadows = true;
-		
-		scene.isLoaded=true;
+
+		scene.shadowGenerator.useExponentialShadowMap = true;
+		scene.stage01Mesh.receiveShadows = true;
+
+		scene.isLoaded = true;
 	};
-	
+
 	//Load all tasks
 	scene.assetsManager.load();
-	
+
 	if (Game.debug) {
 		scene.joystick = {};
 		scene.joystickAction = {};
-		scene.joystick.deltaJoystickVector = new BABYLON.Vector2(0,0);
+		scene.joystick.deltaJoystickVector = new BABYLON.Vector2(0, 0);
 		scene.joystickAction._isPressed = false;
 	}
 	else if (Game.enableJoystick) {
-		scene.joystick = new BABYLON.GameFX.VirtualJoystick(true,"white");
-		scene.joystickAction = new BABYLON.GameFX.VirtualJoystick(false,"yellow");
+		scene.joystick = new BABYLON.GameFX.VirtualJoystick(true, "white");
+		scene.joystickAction = new BABYLON.GameFX.VirtualJoystick(false, "yellow");
 	}
 
 	scene.logicLoop = function () {
 		var self = scene;
-		switch (Game.engine.loopCounter) {   
+		switch (Game.engine.loopCounter) {
 			case 500:
-				Game.engine.loopCounter=0;
+				Game.engine.loopCounter = 0;
 				break;
 			default:
 				Game.engine.loopCounter++;
@@ -597,19 +601,19 @@ Game.CreateGameScene = function() {
 		//Game.processEnemies(self);
 		// processInput(self.player, self.player.speed);
 	};
-	
+
 	scene.cameraCounter = 0;
 	scene.easingCounter = 0;
 	scene.targetCounter = 0;
 	scene.moveMeshes = function () {
 		var self = scene;
-		var i=0;
+		var i = 0;
 		var tempVal;
 		var animationRatio = self.getAnimationRatio();
-		
-		var arrowRot = new BABYLON.Vector3(0,0,0);
+
+		var arrowRot = new BABYLON.Vector3(0, 0, 0);
 		var activeArrowMesh = scene.arrowMeshes[scene.activeArrow];
-		
+
 		if (activeArrowMesh != undefined) {
 			if (scene.Players[scene.activePlayer].arrows != 0) {
 				if ((SpacebarState == KeyState.Down) && (activeArrowMesh.arrowDrawing == false) && (activeArrowMesh.arrowFiring == false) && (scene.bowArrowMesh.isVisible)) {
@@ -617,19 +621,19 @@ Game.CreateGameScene = function() {
 					scene.bowMesh.drawArrow();
 					SpacebarState = KeyState.Clear;
 					activeArrowMesh.arrowDrawing = true;
-					scene.easingCounter=0;
+					scene.easingCounter = 0;
 				}
 				else if ((SpacebarState == KeyState.Up) && activeArrowMesh.arrowFiring == false && activeArrowMesh.arrowDrawing) {
 					// This gets called once for shooting the arrow
-					activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.position);
-					activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1,1,1).multiply(scene.activeCamera.rotation);
+					activeArrowMesh.currentCameraPos = new BABYLON.Vector3(1, 1, 1).multiply(scene.activeCamera.position);
+					activeArrowMesh.currentCameraRot = new BABYLON.Vector3(1, 1, 1).multiply(scene.activeCamera.rotation);
 					var arrowPos = activeArrowMesh.position;
-					
+
 					SpacebarState = KeyState.Clear;
 					activeArrowMesh.arrowDrawing = false;
 					scene.Players[scene.activePlayer].arrowFired();
-					$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows,2));
-					
+					$('#arrowInfo').html(pad(scene.Players[scene.activePlayer].arrows, 2));
+
 					arrowRot = activeArrowMesh.rotation;
 					var worldMat = activeArrowMesh.getWorldMatrix();
 					var newTranslation = new BABYLON.Vector3();
@@ -639,12 +643,12 @@ Game.CreateGameScene = function() {
 					activeArrowMesh.parent = null;
 
 					activeArrowMesh.rotationQuaternion = newQuaterion;
-					activeArrowMesh.initialRot = new BABYLON.Vector3(1,1,1).multiply(activeArrowMesh.rotation);
+					activeArrowMesh.initialRot = new BABYLON.Vector3(1, 1, 1).multiply(activeArrowMesh.rotation);
 					activeArrowMesh.position = newTranslation;
 
 					scene.bindActionToArrow(scene.activeArrow); // Create onIntersectMesh Action
 					scene.audio.bowShot.play(); // Play Shooting sound
-					
+
 					activeArrowMesh.arrowFiring = true;
 					scene.bowMesh.shootArrow();
 					// Make sure timer is not active, if it is kill it
@@ -670,7 +674,7 @@ Game.CreateGameScene = function() {
 			}
 			if (activeArrowMesh.arrowFiring) {
 				// Handles the arrow firing
-				var deltaTime = 1.0/Game.engine.getFps();
+				var deltaTime = 1.0 / Game.engine.getFps();
 				var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, deltaTime, activeArrowMesh.currentCameraRot.y, activeArrowMesh.currentCameraRot.x);
 				// var motion = calcProjectileMotion(activeArrowMesh.position.x, activeArrowMesh.position.y, activeArrowMesh.position.z, activeArrowMesh.speed, animationRatio, activeArrowMesh.rotation.y - Math.PI/1.999, activeArrowMesh.rotation.z - .02);
 				activeArrowMesh.position.x = motion.x;
@@ -678,37 +682,37 @@ Game.CreateGameScene = function() {
 				activeArrowMesh.position.z = motion.z;
 				activeArrowMesh.speed = motion.v;
 			}
-			
+
 			if (Game.debug) {
 				$('#debugInfo').html('Camera<br />rY: ' + scene.activeCamera.rotation.y + '<br />rX: ' + scene.activeCamera.rotation.x + '<br />X: ' + scene.activeCamera.position.x + '<br />Y: ' + scene.activeCamera.position.y + '<br />Z: ' + scene.activeCamera.position.z +
-				'<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
-				'<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
+					'<br />Arrow<br />X: ' + activeArrowMesh.position.x + '<br />Y: ' + activeArrowMesh.position.y + '<br />Z: ' + activeArrowMesh.position.z +
+					'<br />rX: ' + activeArrowMesh.rotation.x + '<br />rY: ' + activeArrowMesh.rotation.y + '<br />rZ: ' + activeArrowMesh.rotation.z);
 			}
 		}
-		
+
 		// Move camera up and down to simulate breathing
 		scene.cameraCounter += .04;
-		scene.bowMesh.position.y += .0001*Math.cos(scene.cameraCounter);
+		scene.bowMesh.position.y += .0001 * Math.cos(scene.cameraCounter);
 		// scene.arrowMeshes[scene.activeArrow].position.y += .000025*Math.cos(scene.cameraCounter);
 		// scene.arrowMeshes[scene.activeArrow].rotation.z += .000015*Math.sin(scene.cameraCounter - .4);
-        
-        if (scene.isfloatingScoreActive) {
-            // keep score at previous arrow
-    		var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
-            var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow-1].absolutePosition, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
-            $('.floatingHitScore').css({'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px'});
-            scene.floatingTextCounter += 1;
-        }
-        
-		
+
+		if (scene.isfloatingScoreActive) {
+			// keep score at previous arrow
+			var globalViewPort = scene.activeCamera.viewport.toGlobal(Game.engine.getRenderWidth(), Game.engine.getRenderHeight());
+			var screenCoords = BABYLON.Vector3.Project(scene.arrowMeshes[scene.activeArrow - 1].absolutePosition, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), globalViewPort);
+			$('.floatingHitScore').css({ 'left': ((screenCoords.x - 40) / window.devicePixelRatio) + 'px', 'top': ((screenCoords.y - (40 + scene.floatingTextCounter)) / window.devicePixelRatio) + 'px' });
+			scene.floatingTextCounter += 1;
+		}
+
+
 		// scene.targetCounter += .01;
 		// scene.targetMesh.position.z += .1*Math.cos(scene.targetCounter);
-		
+
 		//----For movement, this needs updated every frame, otherwise it would not update----//
 		//tempVal = new BABYLON.Vector3(self.player.velocity.magnitude.x*animationRatio,self.player.velocity.magnitude.y*animationRatio,self.player.velocity.magnitude.z*animationRatio);
 		// tempVal = self.player.velocity.magnitude.multiply(new BABYLON.Vector3(animationRatio,animationRatio,animationRatio));
 		// self.player.mesh.moveWithCollisions(tempVal);
-		
+
 		if (KDown == true) {
 			if (Game.preferences.cameraType != Game.cameraType.Normal) {
 				Game.preferences.cameraType = Game.cameraType.Debug;
@@ -720,38 +724,38 @@ Game.CreateGameScene = function() {
 			}
 		}
 
-		scene.skybox.rotation.y += Math.PI*.00003;
+		scene.skybox.rotation.y += Math.PI * .00003;
 	}
-	
-    scene.registerBeforeRender(function(){
+
+	scene.registerBeforeRender(function () {
 		scene.moveMeshes();
 	});
-	
+
 	/******************************************************/
 	/*END - STUB CODE*/
 
-    return scene;
+	return scene;
 
 }
 
 this.getScale = function () {
-    this.viewportScale = undefined;
-    // Calculate viewport scale 
-    this.viewportScale = screen.width / window.innerWidth;
-    return this.viewportScale;
+	this.viewportScale = undefined;
+	// Calculate viewport scale 
+	this.viewportScale = screen.width / window.innerWidth;
+	return this.viewportScale;
 }
 
 // This is for creating textures for native BJS objects
 function createMaterials(activeScene) {
 	//var activeScene = Game.scene[Game.activeScene];
 	//Create me some textures
-	var randomColor = new BABYLON.Color3(Game.getRandomInt(0,10)/10, Game.getRandomInt(0,10)/10, Game.getRandomInt(0,10)/10);
+	var randomColor = new BABYLON.Color3(Game.getRandomInt(0, 10) / 10, Game.getRandomInt(0, 10) / 10, Game.getRandomInt(0, 10) / 10);
 	// randomColor =  new BABYLON.Color3(0,0,0); // awesome black tiles
 	activeScene.transportRingMaterial = function () {
 		var fireTexture = new BABYLON.FireProceduralTexture("fire", 128, activeScene);
 		fireTexture.fireColors = BABYLON.FireProceduralTexture.PurpleFireColors;
-		
-		$.extend(this,new BABYLON.StandardMaterial("transportRingMaterial", activeScene));
+
+		$.extend(this, new BABYLON.StandardMaterial("transportRingMaterial", activeScene));
 		this.diffuseTexture = fireTexture;
 		this.opacityTexture = fireTexture;
 	}

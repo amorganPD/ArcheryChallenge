@@ -598,7 +598,7 @@ Game.startNextRound = function (player, scene) {
     else {
         Game.createChallenge(scene, Game.challengeCount);
         Game.sceneAlert("Too bad<br/>Score: <div class='points'>" + player.points + "</div><br/>Try Again", function () {
-            Game.startTargetAnimations(newChallenge, scene);
+            Game.startTargetAnimations(thisChallenge, scene);
             Game.resetChallengeInfo(player, scene);
         });
     }
